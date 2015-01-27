@@ -54,7 +54,7 @@ if __name__ == "__main__":
 	network		= False
 	rendering	= 'OpenGL'
 	xml			= True
-	identifier	= 'ru.plus7gamestudio.xyz'
+	identifier	= ''
 
 	execfile( Makefile.SourceDir + '/Makefile.py' )
 
