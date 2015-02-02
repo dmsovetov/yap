@@ -59,6 +59,7 @@ if __name__ == "__main__":
 	rendering	= 'OpenGL'
 	xml			= True
 	identifier	= ''
+<<<<<<< HEAD:yap.py
 
 	findFramework   = ExternalLibrary.find
 	findPackage     = ExternalPackage.find
@@ -82,6 +83,8 @@ if __name__ == "__main__":
 				self.path = path
 
 		return [File( path ) for path in glob.glob( os.path.join( Makefile.getCurrentSourceDir(), path ) ) if os.path.isfile( path )]
+=======
+>>>>>>> FETCH_HEAD:configure.py
 
 	execfile( Makefile.SourceDir + '/Makefile.py' )
 
