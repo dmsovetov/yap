@@ -1,3 +1,29 @@
+#################################################################################
+#
+# The MIT License (MIT)
+#
+# Copyright (c) 2015 Dmitry Sovetov
+#
+# https://github.com/dmsovetov
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+#
+#################################################################################
+
 import os, shutil
 
 from ..Generator import Generator
@@ -79,10 +105,13 @@ class Xcode5( Generator ):
 
 		# Create target
 		if target.type == 'executable':
-			pbx = project.addApplicationBundle( name, name + '.app', settings, 'Debug', self.makefile.get( 'DEVELOPMENT_TEAM' ) )
-			self.addInfoPlist( target, pbx )
-			if target.resources:
-				self.addResources( target, pbx )
+			if target.params and target.params['bundle']:
+				pbx = project.addApplicationBundle( name, name + '.app', settings, 'Debug', self.makefile.get( 'DEVELOPMENT_TEAM' ) )
+				self.addInfoPlist( target, pbx )
+				if target.resources:
+					self.addResources( target, pbx )
+			else:
+				pbx = project.addApplication( name, name, settings, 'Debug' )
 		else:
 			pbx = project.addStaticLibrary( name, 'lib' + name + '.a', settings, 'Debug' )
 
@@ -160,16 +189,8 @@ class Xcode5( Generator ):
 	def addTargetSources( self, name, target, pbx ):
 
 		# addSourceFile
-		def addSourceFile( filePath, baseName, ext ):
-			fullPath   = os.path.normpath( os.path.join( target.binaryPath, filePath ) )
-			sourcePath = os.path.normpath( target.sourcePath )
-
-			if not fullPath.startswith( sourcePath ):
-				groupPath = os.path.join( 'GeneratedFiles', os.path.dirname( filePath ) )
-				addSourceFile.target.addGeneratedFile( filePath )
-			else:
-				groupPath = os.path.dirname( os.path.relpath( fullPath, sourcePath ) )
-				addSourceFile.target.addSourceFile( filePath, groupPath )
+		def addSourceFile( file ):
+			addSourceFile.target.addSourceFile( file.fullPath, file.sourceFolder )
 
 		# Add source files to target
 		addSourceFile.target = pbx
@@ -193,13 +214,18 @@ class Xcode5( Generator ):
 	def addTargetLibraries( self, name, target, pbx ):
 
 		# addLibrary
-		def addLibrary( target, name, library ):
-			if not name in self.projects.keys():
-				folder = os.path.dirname( name )
-				name   = 'lib' + os.path.basename( name ) + '.a'
-				addLibrary.target.addLibrary( os.path.join( self.sourceDir, os.path.join( folder, name ) ) )
+		def addLibrary( library ):
+			if library.type == 'local':
+				if library.name in self.projects.keys():
+					addLibrary.target.addProjectLibrary( self.projects[library.name]['pbx'] )
+				else:
+					addLibrary.target.addLibrary( 'lib' + library.name + '.a' )
+			elif library.type == 'package':
+				addLibrary.target.addLibrary( os.path.join( library.libs, library.fileName ) )
+				for item in library.items:
+					addLibrary.target.addLibrary( item )
 			else:
-				addLibrary.target.addProjectLibrary( self.projects[name]['pbx'] )
+				addLibrary.target.addLibrary( os.path.join( library.libs, library.fileName ) )
 
 		# Add linked libraries
 		addLibrary.target = pbx
@@ -232,17 +258,25 @@ class Xcode5( Generator ):
 		def generateHeaderIncludePaths( target, path ):
 			return ' ' + path + ' '
 
+		# generateLibrarySearchPaths
+		def generateLibrarySearchPaths( library ):
+			return ' ' + library.libs + ' ' if library.type == 'external' else None
+
 		# generateDefines
 		def generateDefines( target, define ):
 			return ' ' + define + ' '
 
-		paths   = self.processEachTargetInclude( target, generateHeaderIncludePaths ).split( ' ' )
-		defines = self.processEachTargetDefine( target, generateDefines ).split( ' ' )
+		paths   = self.processEachTargetInclude( target, generateHeaderIncludePaths ).strip().split( ' ' )
+		defines = self.processEachTargetDefine( target, generateDefines ).strip().split( ' ' )
+		libs    = self.processEachTargetLib( target, generateLibrarySearchPaths ).strip().split( ' ' )
 		paths   = set( paths )
 		paths   = list( paths )
+		libs    = set( libs )
+		libs    = list( libs )
+		libs.append( '$(inherited)' )
 		paths.append( '$(inherited)' )
 
-		return { 'PRODUCT_NAME': '"$(TARGET_NAME)"', 'HEADER_SEARCH_PATHS': paths, 'GCC_PREPROCESSOR_DEFINITIONS': defines }
+		return { 'PRODUCT_NAME': '"$(TARGET_NAME)"', 'HEADER_SEARCH_PATHS': paths, 'LIBRARY_SEARCH_PATHS': libs, 'GCC_PREPROCESSOR_DEFINITIONS': defines }
 
 	CodegenCommand = """
 {output}: {input}

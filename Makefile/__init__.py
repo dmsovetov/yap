@@ -24,6 +24,4 @@
 #
 #################################################################################
 
-import Makefile
-from Target		import Target
-from Project	import Project
+from Makefile import *

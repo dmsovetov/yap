@@ -1,3 +1,29 @@
+#################################################################################
+#
+# The MIT License (MIT)
+#
+# Copyright (c) 2015 Dmitry Sovetov
+#
+# https://github.com/dmsovetov
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+#
+#################################################################################
+
 import os
 
 from Resource   import Resource
@@ -131,7 +157,7 @@ class Target( Resource ):
 		return file
 
 	# Types
-	Types = { 'archive.ar': 'com.apple.product-type.library.static', 'wrapper.application': 'com.apple.product-type.application' }
+	Types = { 'archive.ar': 'com.apple.product-type.library.static', 'wrapper.application': 'com.apple.product-type.application', 'compiled.mach-o.executable': 'com.apple.product-type.tool' }
 
 	# Root
 	Root = """
@@ -204,6 +230,12 @@ class StaticLibrary( Target ):
 	# ctor
 	def __init__( self, objects, group, name, path, configurations, defaultConfiguration ):
 		Target.__init__( self, objects, group, 'archive.ar', name, path, configurations, defaultConfiguration )
+
+# class Application
+class Application( Target ):
+	# ctor
+	def __init__( self, objects, group, name, path, configurations, defaultConfiguration ):
+		Target.__init__( self, objects, group, 'compiled.mach-o.executable', name, path, configurations, defaultConfiguration )
 
 # class ApplicationBundle
 class ApplicationBundle( Target ):

@@ -27,8 +27,11 @@
 from Eclipse.Android        import Android
 from Make.HTML5             import HTML5
 from Make.Flash             import Flash
+from Target                 import Target, Project
 from VisualStudio.Windows 	import Windows
-import Target, Project, Env, Xcode, importlib
+import Env
+import Xcode
+
 
 Generators = {
 	'iOS':      Xcode.iOS,
@@ -94,7 +97,7 @@ def set( name, value ):
 	global _Env
 	_Env.set( name, value )
 
-	Target.Target.message( "\t{0} = '{1}'".format( name, value ) )
+	Target.message( "\t{0} = '{1}'".format( name, value ) )
 
 # get
 def get( name ):

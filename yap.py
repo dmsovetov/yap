@@ -24,29 +24,33 @@
 #
 #################################################################################
 
-import argparse, os
+import argparse, os, glob
 
-from Makefile import Makefile
-from Makefile import Target
+from Makefile   import Makefile
+from Target     import Target
+from Target     import StaticLibrary
+from Target     import Executable
+from Target     import ExternalLibrary
+from Target     import ExternalPackage
 
 # Entry point
 if __name__ == "__main__":
 	# Parse arguments
 	parser = argparse.ArgumentParser( description = 'Yet Another Project Generator' )
-	
-	parser.add_argument( 'src', type = str, help = 'Source Path' )
-	parser.add_argument( 'dst', type = str, help = 'Binary Path' )
-	parser.add_argument( 'name', type = str, help = 'Solution Name' )
-	parser.add_argument( 'target', type = str, help = 'Target' )
+
+	parser.add_argument( "-s", "--source",      type = str, help = "Project source path" )
+	parser.add_argument( "-o", "--output",      type = str, help = "Output path" )
+	parser.add_argument( "-n", "--name",        type = str, help = "Workspace (solution) name" )
+	parser.add_argument( "-p", "--platform",    type = str, help = "Target platform" )
 
 	args = parser.parse_args()
 
 	# Generate project
-	Makefile.setPaths( os.path.abspath( args.src ), os.path.abspath( args.dst ) )
-	Makefile.Initialize( args.name, args.target, (lambda fileName: execfile( fileName )) )
+	Makefile.setPaths( os.path.abspath( args.source ), os.path.abspath( args.output ) )
+	Makefile.Initialize( args.name, args.platform, (lambda fileName: execfile( fileName )) )
 
 	# Build config
-	platform	= args.target
+	platform	= args.platform
 	scripting 	= 'Lua'
 	sound		= 'OpenAL'
 	stage		= True
@@ -54,7 +58,30 @@ if __name__ == "__main__":
 	network		= False
 	rendering	= 'OpenGL'
 	xml			= True
-	identifier	= 'ru.plus7gamestudio.xyz'
+	identifier	= ''
+
+	findFramework   = ExternalLibrary.find
+	findPackage     = ExternalPackage.find
+
+	# Folders
+	def Folders( path ):
+		# class Folder
+		class Folder:
+			def __init__( self, path ):
+				self.name = os.path.basename( path )
+				self.path = path
+
+		return [Folder( path ) for path in glob.glob( os.path.join( Makefile.getCurrentSourceDir(), path ) ) if os.path.isdir( path )]
+
+	# Files
+	def Files( path ):
+		# class Folder
+		class File:
+			def __init__( self, path ):
+				self.name = os.path.basename( path )
+				self.path = path
+
+		return [File( path ) for path in glob.glob( os.path.join( Makefile.getCurrentSourceDir(), path ) ) if os.path.isfile( path )]
 
 	execfile( Makefile.SourceDir + '/Makefile.py' )
 

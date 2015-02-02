@@ -27,6 +27,7 @@
 import os, string
 
 import Makefile
+from Target import Target
 
 # class Generator
 class Generator:
@@ -141,8 +142,8 @@ class Generator:
 	# processEachTargetLib
 	def processEachTargetLib( self, target, processor ):
 		# callback
-		def callback( target, name, lib ):
-			result = processor( target, name, lib )
+		def callback( library ):
+			result = processor( library )
 
 			if result != None:
 				callback.result += result
@@ -168,38 +169,46 @@ class Generator:
 
 	# forEachTargetSource
 	def forEachTargetSource( self, target, callback, filter = None ):
-		path = self.getPathForTarget( target )
+		for file in target.filterSourceFiles( filter ):
+			callback( file )
+	#	path = self.getPathForTarget( target )
 
-		for source in target.sources:
-			fileName		= os.path.basename( source )
-			baseName, ext 	= os.path.splitext( fileName )
-			filePath		= string.replace( os.path.relpath( source, path ), '\\', '/' )
+	#	for source in target.sources:
+		#	fileName		= os.path.basename( source )
+		#	baseName, ext 	= os.path.splitext( fileName )
+		#	filePath		= string.replace( os.path.relpath( source, path ), '\\', '/' )
+	#		name, ext = source.nameAndExtension
 
-			if filter == None or ext in filter:
-				callback( filePath, baseName, ext )
+	#		if filter == None or ext in filter:
+	#			callback( source.relativePath( path ), name, ext )
 
 	# forEachTarget
 	def forEachTarget( self, callback, filter = None ):
-		for name, target in self.sourceProject.targets.items():
-			if filter == None or filter == target.type:
-				callback( name, target )
+		for target in self.sourceProject.filterTargets( filter ):
+			callback( target.name, target )
+	#	for name, target in self.sourceProject.targets.items():
+	#		if filter == None or filter == target.type:
+	#			callback( name, target )
 
 	# forEachTargetLibrary
 	def forEachTargetLibrary( self, target, callback ):
+		for lib in target.filterLibraries():
+			callback( lib )
 		# Get libs
-		libs = []
-		for lib in self.getLibsForTarget( target ):
-			if not lib in libs:
-				libs.append( lib )
+	#	libs = []
+	#	for lib in self.getLibsForTarget( target ):
+	#		if not lib in libs:
+	#			libs.append( lib )
 
-		for name in libs:
-			callback( target, name, self.sourceProject.targets[name] if name in self.sourceProject.targets.keys() else None )
+	#	for name in libs:
+	#		callback( target, name, self.sourceProject.findTarget( name, [Target.StaticLibrary, Target.SharedLibrary] ) )
 
 	# forEachTargetFramework
 	def forEachTargetFramework( self, target, callback ):
-		for lib in target.libs:
-			if lib['framework']:
-				callback( target, lib['name'], None )
+		for framework in target.filterFrameworks():
+			callback( target, framework.name, None )
+		#	if lib['framework']:
+		#		callback( target, lib['name'], None )
 
 	# findTargetByName
 	def findTargetByName( self, name ):
@@ -212,21 +221,22 @@ class Generator:
 	def getLibsForTarget( self, target ):
 		result = []
 
-		for lib in target.libs:
-			name = lib['name']
+		for library in target.libraries:
+			result.append( library )
+		#	name = lib['name']
 
-			if not lib['framework']:
-				result.append( name )
+		#	if not lib['framework']:
+		#		result.append( name )
 
-			if not name in self.sourceProject.targets.keys():
-				continue
+		#	if not name in self.sourceProject.targets.keys():
+		#		continue
 
-			lib = self.sourceProject.targets[name]
+		#	lib = self.sourceProject.targets[name]
 
-			if lib.type == 'static':
-				libs = self.getLibsForTarget( lib )
-				for name in libs:
-					result.append( name )
+		#	if lib.type == 'static':
+		#		libs = self.getLibsForTarget( lib )
+		#		for name in libs:
+		#			result.append( name )
 
 		return result
 
@@ -246,6 +256,10 @@ class Generator:
 				include = string.replace( os.path.relpath( include, path ), '\\', '/' )
 
 			callback( include )
+
+		# Libraries
+		for library in target.filterLibraries( lambda lib: lib.type == 'external' ):
+			callback( library.headers )
 
 	# forEachTargetDefine
 	def forEachTargetDefine( self, target, callback ):
