@@ -92,6 +92,15 @@ def setPaths( source, binary ):
 	BinaryDir = binary
 	CurrentBinaryDir.append( binary )
 
+# substituteVars
+def substituteVars( str ):
+	global _Env
+
+	for k, v in _Env.vars.items():
+		str = str.replace( '$(' + k + ')', v )
+
+	return str
+
 # set
 def set( name, value ):
 	global _Env
