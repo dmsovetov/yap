@@ -41,10 +41,13 @@ class iOS( Xcode5 ):
 
 	# getProjectSettings
 	def getProjectSettings( self ):
+		if not self.makefile.get( 'SDK' ):
+			self.makefile.set( 'SDK', Xcode5.listAvailableSDKs( 'iPhoneOS' )[0] )
+
 		return {
 			'Debug': {
 				'ARCHS':                        'armv7',
-				'SDKROOT':                      self.makefile.get( 'IOS_SDK' ),
+				'SDKROOT':                      self.makefile.get( 'SDK' ),
 		        'TARGETED_DEVICE_FAMILY':       '"1,2"',
 			    'ALWAYS_SEARCH_USER_PATHS':     'NO',
 			    'CODE_SIGN_IDENTITY':           '"iPhone Developer"',
@@ -52,7 +55,7 @@ class iOS( Xcode5 ):
 			},
 		    'Release': {
 				'ARCHS':                        'armv7',
-				'SDKROOT':                      self.makefile.get( 'IOS_SDK' ),
+				'SDKROOT':                      self.makefile.get( 'SDK' ),
 		        'TARGETED_DEVICE_FAMILY':       '"1,2"',
 			    'ALWAYS_SEARCH_USER_PATHS':     'NO',
 		        'CODE_SIGN_IDENTITY':           '"iPhone Developer"',

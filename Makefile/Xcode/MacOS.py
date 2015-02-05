@@ -42,15 +42,18 @@ class MacOS( Xcode5 ):
 
 	# getProjectSettings
 	def getProjectSettings( self ):
+		if not self.makefile.get( 'SDK' ):
+			self.makefile.set( 'SDK', Xcode5.listAvailableSDKs( 'MacOSX' )[0] )
+
 		return {
 			'Debug': {
 				'ARCHS':                        'i386',
-				'SDKROOT':                      self.makefile.get( 'MACOS_SDK' ),
+				'SDKROOT':                      self.makefile.get( 'SDK' ),
 			    'ALWAYS_SEARCH_USER_PATHS':     'NO',
 			},
 		    'Release': {
 				'ARCHS':                        'i386',
-				'SDKROOT':                      self.makefile.get( 'MACOS_SDK' ),
+				'SDKROOT':                      self.makefile.get( 'SDK' ),
 			    'ALWAYS_SEARCH_USER_PATHS':     'NO',
 		    }
 		}

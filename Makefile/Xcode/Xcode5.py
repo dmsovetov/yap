@@ -24,7 +24,7 @@
 #
 #################################################################################
 
-import os, shutil
+import os, shutil, plistlib
 
 from ..Generator import Generator
 from PBX         import Project
@@ -59,6 +59,19 @@ class Xcode5( Generator ):
 
 		# Create workspace
 		self.generateWorkspace()
+
+	# listAvailableSDKs
+	@staticmethod
+	def listAvailableSDKs( platform ):
+		result = []
+		path   = '/Applications/Xcode.app/Contents/Developer/Platforms/{0}.platform/Developer/SDKs/'.format( platform )
+
+		for sdk in os.listdir( path ):
+			with open( os.path.join( path, sdk, 'SDKSettings.plist' ), 'rb' ) as fp:
+				result.append( plistlib.readPlist( fp )['CanonicalName'] )
+				fp.close()
+
+		return result
 
 	# generateWorkspace
 	def generateWorkspace( self ):

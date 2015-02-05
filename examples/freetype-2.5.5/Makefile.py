@@ -1,8 +1,5 @@
-# Project
-project = Makefile.getProject()
-
 # Freetype library
-freetype = StaticLibrary( 'freetype', project, sources = [ 'src/base/*', 'src/gzip/ftgzip.c', 'src/winfonts/winfnt.c', 'src/cid/type1cid.c' ], defines = [ 'FT2_BUILD_LIBRARY', 'FT_CONFIG_OPTION_SYSTEM_ZLIB' ] )
+freetype = StaticLibrary( 'freetype', sources = [ 'src/base/*', 'src/gzip/ftgzip.c', 'src/winfonts/winfnt.c', 'src/cid/type1cid.c' ], defines = [ 'FT2_BUILD_LIBRARY', 'FT_CONFIG_OPTION_SYSTEM_ZLIB' ] )
 freetype.include( 'include' )
 
 # Add Freetype modules sources
@@ -15,7 +12,4 @@ for folder in Folders( 'src/*' ):
 
 # Platform specific settings
 if platform == 'MacOS':
-	Makefile.set( 'MACOS_SDK', 'macosx10.10' )
 	freetype.define( 'DARWIN_NO_CARBON' )
-elif platform == 'iOS':
-	Makefile.set( 'IOS_SDK', 'iphoneos8.0' )

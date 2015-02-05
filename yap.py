@@ -24,6 +24,8 @@
 #
 #################################################################################
 
+#!/usr/bin/python
+
 import argparse, os, glob
 
 from Makefile   import Makefile
@@ -33,35 +35,61 @@ from Target     import Executable
 from Target     import ExternalLibrary
 from Target     import ExternalPackage
 
+# parseUnknownArguments
+def parseUnknownArguments( args ):
+	for arg in args:
+		if not arg.startswith( '--' ):
+			continue
+
+		items = arg.split( '=' )
+		name  = items[0][2:].upper()
+
+		if len( items ) == 1:
+			Makefile.getProject().define( 'DC_' + name + '_ENABLED' )
+		else:
+			Makefile.getProject().define( 'DC_' + name + '=' + items[1] )
+			Makefile.getProject().define( 'DC_' + name + '_' + items[1].upper() )
+			Makefile.set( name, items[1] )
+
 # Entry point
 if __name__ == "__main__":
 	# Parse arguments
-	parser = argparse.ArgumentParser( description = 'Yet Another Project Generator' )
+	parser = argparse.ArgumentParser( description = 'Yet Another Project Generator', prefix_chars = '--' )
 
-	parser.add_argument( "-s", "--source",      type = str, help = "Project source path" )
-	parser.add_argument( "-o", "--output",      type = str, help = "Output path" )
-	parser.add_argument( "-n", "--name",        type = str, help = "Workspace (solution) name" )
-	parser.add_argument( "-p", "--platform",    type = str, help = "Target platform" )
+	parser.add_argument( "platform",                        type = str, help = "Target platform" )
+	parser.add_argument( "-s", "--source", default = '',    type = str, help = "Project source path" )
+	parser.add_argument( "-o", "--output", default = '',    type = str, help = "Output path" )
+	parser.add_argument( "-n", "--name",   default = '',    type = str, help = "Workspace (solution) name" )
 
-	args = parser.parse_args()
+	args, unknown = parser.parse_known_args()
+
+	if not os.path.exists( os.path.join( args.source, 'Makefile.py' ) ):
+		print 'Error: no Makefile.py file found.'
+		exit(1)
 
 	# Generate project
+	Makefile.set( 'PLATFORM', args.platform )
 	Makefile.setPaths( os.path.abspath( args.source ), os.path.abspath( args.output ) )
 	Makefile.Initialize( args.name, args.platform, (lambda fileName: execfile( fileName )) )
+	Makefile.getProject().define( 'DC_PLATFORM_' + args.platform.upper() )
+	Makefile.getProject().define( 'DC_PLATFORM=' + args.platform )
+
+	# Parse unknown arguments
+	parseUnknownArguments( unknown )
 
 	# Build config
-	platform	= args.platform
-	scripting 	= 'Lua'
-	sound		= 'OpenAL'
-	stage		= True
-	ui			= True
-	network		= False
-	rendering	= 'OpenGL'
-	xml			= True
-	identifier	= ''
-
+	platform	    = args.platform
 	findFramework   = ExternalLibrary.find
 	findPackage     = ExternalPackage.find
+
+	# Include
+	def Include( *list ):
+		for path in list:
+			Makefile.getProject().target( path )
+
+	# Has
+	def Has( name ):
+		return Makefile.get( name.upper() ) != None
 
 	# Folders
 	def Folders( path ):
