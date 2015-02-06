@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Code">
+      <UniqueIdentifier>{53563556-a759-49fe-aa24-fef9b0b3aff7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\nested">
+      <UniqueIdentifier>{a5de21a0-15dd-4bbe-bf01-2e6858a37088}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\child">
+      <UniqueIdentifier>{381af2f2-5176-4be9-acb5-dd7bdc9ee830}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\nested\foobar">
+      <UniqueIdentifier>{58f148c0-d8c1-4124-b53a-1bbb4929a17b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
