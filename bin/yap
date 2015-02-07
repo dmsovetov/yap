@@ -36,6 +36,8 @@ from yap import Executable
 from yap import ExternalLibrary
 from yap import ExternalPackage
 
+from yap.Generator.VisualStudio.VCX import WindowsProject
+
 # parseUnknownArguments
 def parseUnknownArguments( args ):
 	for arg in args:
@@ -128,5 +130,40 @@ if __name__ == "__main__":
 		return [File( path ) for path in glob.glob( os.path.join( Makefile.getCurrentSourceDir(), path ) ) if os.path.isfile( path )]
 
 	execfile( Makefile.SourceDir + '/Makefile.py' )
+
+	'''
+	project = WindowsProject( WindowsProject.StaticLibrary, 'StaticLibraryWithFiles' )
+
+	project.setConfigurations( [
+		project.createConfiguration( 'Debug', dict(
+			ClCompile = dict(
+				WarningLevel = 'Level3',
+			    Optimization = 'Disabled',
+			    PreprocessorDefinitions = 'WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)'
+			),
+		    Link = dict(
+			    SubSystem = 'Windows',
+		        GenerateDebugInformation = True
+		    )
+		) ),
+	    project.createConfiguration( 'Release',dict(
+		    ClCompile = dict(
+			    WarningLevel = 'Level3',
+		        Optimization = 'MaxSpeed',
+		        FunctionLevelLinking = True,
+		        IntrinsicFunctions = True,
+		        PreprocessorDefinitions = 'WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)'
+		    ),
+	        Link = dict(
+			    SubSystem = 'Windows',
+		        GenerateDebugInformation = True,
+	            EnableCOMDATFolding = True,
+	            OptimizeReferences = True
+	        )
+	    ) )
+	] )
+
+	project.serialize( 'output.xml' )
+	'''
 
 	Makefile.generate()
