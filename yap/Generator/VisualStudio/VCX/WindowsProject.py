@@ -1,4 +1,3 @@
-#################################################################################
 #
 # The MIT License (MIT)
 #
@@ -22,6 +21,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
-#################################################################################
 
+from Project import Project
 
+# class WindowsProject
+class WindowsProject( Project ):
+	StaticLibrary   = 'StaticLibrary'
+	Executable      = 'Application'
+
+	# ctor
+	def __init__( self, type, name ):
+		Project.__init__( self, type, name, 'Win32Proj', 'Win32' )

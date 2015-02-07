@@ -24,4 +24,35 @@
 #
 #################################################################################
 
+# class Configuration
+class Configuration:
+	# ctor
+	def __init__(self, name, settings, platform):
+		self._name = name
+		self._settings = settings
+		self._platform = platform
 
+	# name
+	@property
+	def name(self):
+		return self._name
+
+	# settings
+	@property
+	def settings(self):
+		return self._settings
+
+	# condition
+	@property
+	def condition(self):
+		return "'$(Configuration)|$(Platform)'=='{0}'".format(self.identifier)
+
+	# platform
+	@property
+	def platform(self):
+		return self._platform
+
+	# identifier
+	@property
+	def identifier(self):
+		return self._name + '|' + self._platform
