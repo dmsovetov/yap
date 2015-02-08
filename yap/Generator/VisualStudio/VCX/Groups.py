@@ -56,12 +56,26 @@ class PropertyGroup( Group ):
 class PropertySheets( PropertyGroup ):
 	# ctor
 	def __init__( self, parent, configuration ):
-		PropertyGroup.__init__( self, parent, 'ItemGroup', Label = 'PropertySheets', Condition = configuration.condition )
+		PropertyGroup.__init__( self, parent, 'ImportGroup', Label = 'PropertySheets', Condition = configuration.condition )
 		Group( self._xml, 'Import', dict(
 			Project = '$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props',
 			Condition = "exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')",
 			Label = 'LocalAppDataPlatform'
 		) )
+
+# class ItemGroup
+class ItemGroup( Group ):
+	# ctor
+	def __init__( self, parent ):
+		Group.__init__( self, parent, 'ItemGroup', {})
+
+	# addInclude
+	def addInclude( self, name ):
+		Group( self._xml, 'ClInclude', dict( Include = name ) )
+
+	# addSource
+	def addSource( self, name ):
+		Group( self._xml, 'ClCompile', dict( Include = name ) )
 
 # class ProjectConfigurations
 class ProjectConfigurations( PropertyGroup ):
