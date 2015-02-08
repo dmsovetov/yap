@@ -26,6 +26,7 @@ import  uuid
 import  xml.etree.ElementTree as Xml
 from    xml.dom import minidom
 
+from Groups         import ItemGroup
 from Groups         import ProjectConfigurations
 from Groups         import PropertyGroup
 from Groups         import PropertySheets
@@ -79,6 +80,16 @@ class Project:
 		for cfg in configurations:
 			definition = PropertyGroup( self._xml, 'ItemDefinitionGroup', Condition = cfg.condition )
 			definition.setProperties( cfg.settings )
+
+	# addHeaderFiles
+	def addHeaderFiles( self, files ):
+		group = ItemGroup( self._xml )
+		[group.addInclude( file ) for file in files]
+
+	# addSourceFiles
+	def addSourceFiles( self, files ):
+		group = ItemGroup( self._xml )
+		[group.addSource( file ) for file in files]
 
 	# serialize
 	def serialize( self, fileName ):

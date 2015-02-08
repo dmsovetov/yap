@@ -131,8 +131,16 @@ if __name__ == "__main__":
 
 	execfile( Makefile.SourceDir + '/Makefile.py' )
 
-	'''
 	project = WindowsProject( WindowsProject.StaticLibrary, 'StaticLibraryWithFiles' )
+
+	project.addHeaderFiles( [
+		'HeaderFile.h'
+	] )
+
+	project.addSourceFiles( [
+		'CFile.c',
+	    'SourceFile.cpp'
+	] )
 
 	project.setConfigurations( [
 		project.createConfiguration( 'Debug', dict(
@@ -164,6 +172,5 @@ if __name__ == "__main__":
 	] )
 
 	project.serialize( 'output.xml' )
-	'''
 
-	Makefile.generate()
+#	Makefile.generate()
