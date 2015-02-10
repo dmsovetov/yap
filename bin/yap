@@ -132,6 +132,7 @@ if __name__ == "__main__":
 
 	execfile( Makefile.SourceDir + '/Makefile.py' )
 
+	'''
 	solution = Solution()
 	project = solution.addProject( WindowsProject.StaticLibrary, 'StaticLibraryWithFiles' )
 
@@ -175,5 +176,6 @@ if __name__ == "__main__":
 
 	project.serialize( 'output.xml' )
 	solution.serialize( 'output.sln' )
+	'''
 
-#	Makefile.generate()
+	Makefile.generate()

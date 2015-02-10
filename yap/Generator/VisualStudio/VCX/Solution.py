@@ -24,7 +24,7 @@
 #
 #################################################################################
 
-import ID, codecs
+import ID, codecs, os
 from ...Template    import Template
 from WindowsProject import WindowsProject
 
@@ -64,7 +64,7 @@ class Solution:
 																 			'solution.id': 	self._id,
 																 			'name': 		project.name,
 																 			'id':			project.uid,
-																 			'fileName':		'project.fileName',
+																 			'fileName':		os.path.join( project.name + '.dir', project.name + '.vcxproj' ),
 																			'dependencies':	dependencies,
 																		}, True )
 
