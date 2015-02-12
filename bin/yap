@@ -65,6 +65,7 @@ if __name__ == "__main__":
 	parser.add_argument( "-s", "--source", default = '.',        type = str, help = "Project source path" )
 	parser.add_argument( "-o", "--output", default = 'projects', type = str, help = "Output path" )
 	parser.add_argument( "-n", "--name",   default = name,       type = str, help = "Workspace (solution) name" )
+	parser.add_argument( "-a", "--arch",   default = 'default',  type = str, help = "Target build architecture" )
 
 	args, unknown = parser.parse_known_args()
 
@@ -86,6 +87,7 @@ if __name__ == "__main__":
 
 	# Generate project
 	Makefile.set( 'PLATFORM', args.platform )
+	Makefile.set( 'ARCH', args.arch )
 	Makefile.setPaths( os.path.abspath( args.source ), os.path.abspath( args.output ) )
 	Makefile.initialize( Project, args.name, args.platform, (lambda fileName: execfile( fileName )) )
 	Makefile.getProject().define( 'DC_PLATFORM_' + args.platform.upper() )

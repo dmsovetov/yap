@@ -45,14 +45,17 @@ class MacOS( Xcode5 ):
 		if not self.makefile.get( 'SDK' ):
 			self.makefile.set( 'SDK', Xcode5.listAvailableSDKs( 'MacOSX' )[0] )
 
+		if not self.makefile.get( 'ARCH' ) or self.makefile.get( 'ARCH' ) == 'default':
+			self.makefile.set( 'ARCH', 'i386' )
+
 		return {
 			'Debug': {
-				'ARCHS':                        'i386',
+				'ARCHS':                        self.makefile.get( 'ARCH' ),
 				'SDKROOT':                      self.makefile.get( 'SDK' ),
 			    'ALWAYS_SEARCH_USER_PATHS':     'NO',
 			},
 		    'Release': {
-				'ARCHS':                        'i386',
+				'ARCHS':                        self.makefile.get( 'ARCH' ),
 				'SDKROOT':                      self.makefile.get( 'SDK' ),
 			    'ALWAYS_SEARCH_USER_PATHS':     'NO',
 		    }
