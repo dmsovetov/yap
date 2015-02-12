@@ -30,6 +30,7 @@ from Library    import LocalLibrary
 from Library    import ExternalLibrary
 from Framework  import Framework
 from Folder     import Folder
+from Path       import Path
 from ..Makefile import Makefile
 
 # class Target
@@ -40,18 +41,19 @@ class Target:
 	Executable      = 'executable'
 
 	# ctor
-	def __init__( self, name, sources = None, include = None, defines = None, linkTo = None, libs = None ):
+	def __init__( self, name, sources = None, paths = None, defines = None, linkTo = None, link = None ):
 		self.message( 'Configure ' + name + '...' )
 
 		self.project        = Makefile.getProject()
 		self.name           = name
 		self.defines        = []
 		self._root          = Folder( self )
-		self.includes       = []
+	#	self.includes       = []
 		self.resources      = []
 		self.commands       = []
 		self._libraries     = []
 		self._frameworks    = []
+		self._paths         = []
 		self.type           = linkTo
 
 		self._currentSourceDir = Makefile.getCurrentSourceDir()
@@ -62,13 +64,16 @@ class Target:
 			self.project.registerTarget( self )
 
 		# Add default include folders
-		if include:
-			for path in include:
-				self.include( path )
+		if paths:
+			for path in paths:
+				if path.startswith( 'L:' ):
+					self.librarySearchPaths( path.split( ':' )[1] )
+				else:
+					self.include( path )
 
 		# Add default libs
-		if libs:
-			for lib in libs:
+		if link:
+			for lib in link:
 				if isinstance( lib, Framework ):
 					self.frameworks( lib )
 				if isinstance( lib, Target ):
@@ -141,7 +146,11 @@ class Target:
 
 	# include
 	def include( self, *list ):
-		[self.includes.append( self.toFullPath( path ) ) for path in list]
+		[self._paths.append( Path( Path.Headers, self.toFullPath( path ) ) ) for path in list]
+
+	# librarySearchPaths
+	def librarySearchPaths( self, *list ):
+		[self._paths.append( Path( Path.Libraries, self.toFullPath( path ) ) ) for path in list]
 
 	# assets
 	def assets( self, *list ):
@@ -158,6 +167,10 @@ class Target:
 	# filterLibraries
 	def filterLibraries( self, filter = None ):
 		return [library for library in self._libraries if filter == None or filter( library )]
+
+	# filterPaths
+	def filterPaths( self, filter = None ):
+		return [path for path in self._paths if filter == None or filter( path )]
 
 	# sharedLibrary
 	def sharedLibrary( self ):

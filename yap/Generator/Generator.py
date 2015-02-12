@@ -246,11 +246,11 @@ class Generator:
 			self.forEachTargetInclude( self.sourceProject, callback )
 
 		# Target
-		for include in target.includes:
+		for include in target.filterPaths( lambda path: path.isHeaders ):
 			if os.path.isabs( path ):
-				include = string.replace( include, '\\', '/' )
+				include = string.replace( include.path, '\\', '/' )
 			else:
-				include = string.replace( os.path.relpath( include, path ), '\\', '/' )
+				include = string.replace( os.path.relpath( include.path, path ), '\\', '/' )
 
 			callback( include )
 

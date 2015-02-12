@@ -22,10 +22,38 @@
 # SOFTWARE.
 #
 
-from Target import Target
+# class Path
+class Path:
+	Headers     = 'Headers'
+	Libraries   = 'Libraries'
+	Frameworks  = 'Frameworks'
 
-# class Executable
-class Executable( Target ):
 	# ctor
-	def __init__( self, name, sources = None, paths = None, defines = None, link = None ):
-		Target.__init__( self, name, sources = sources, paths = paths, defines = defines, link = link, linkTo = Target.Executable )
+	def __init__( self, type, path ):
+		self._path = path
+		self._type = type
+
+	# type
+	@property
+	def type( self ):
+		return self._type
+
+	# path
+	@property
+	def path( self ):
+		return self._path
+
+	# isHeaders
+	@property
+	def isHeaders( self ):
+		return self._type == Path.Headers
+
+	# isLibraries
+	@property
+	def isLibraries( self ):
+		return self._type == Path.Libraries
+
+	# isFrameworks
+	@property
+	def isFrameworks( self ):
+		return self._type == Path.Frameworks

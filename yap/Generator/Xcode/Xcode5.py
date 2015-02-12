@@ -312,6 +312,10 @@ class Xcode5( Generator ):
 		paths   = list( paths )
 		libs    = set( libs )
 		libs    = list( libs )
+
+		for libraries in target.filterPaths( lambda path: path.isLibraries ):
+			libs.append( libraries.path )
+
 		libs.append( '$(inherited)' )
 		paths.append( '$(inherited)' )
 

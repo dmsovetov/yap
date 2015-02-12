@@ -27,5 +27,5 @@ from Target import Target
 # class StaticLibrary
 class StaticLibrary( Target ):
 	# ctor
-	def __init__( self, name, sources = None, include = None, defines = None, libs = None ):
-		Target.__init__( self, name, sources = sources, include = include, defines = defines, libs = libs, linkTo = Target.StaticLibrary )
+	def __init__( self, name, sources = None, paths = None, defines = None, link = None ):
+		Target.__init__( self, name, sources = sources, paths = paths, defines = defines, link = link, linkTo = Target.StaticLibrary )
