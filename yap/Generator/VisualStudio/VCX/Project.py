@@ -1,3 +1,4 @@
+#################################################################################
 #
 # The MIT License (MIT)
 #
@@ -21,11 +22,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
+#################################################################################
 
-import  uuid
+import  ID
 import  xml.etree.ElementTree as Xml
 from    xml.dom import minidom
 
+from Groups         import Group
 from Groups         import ItemGroup
 from Groups         import ProjectConfigurations
 from Groups         import PropertyGroup
@@ -40,18 +43,39 @@ class Project:
 
 	# ctor
 	def __init__( self, type, name, keyword, platform ):
-		self._xml       = Xml.Element( 'Project', attrib=dict( DefaultTargets = Project.DefaultTargets, ToolsVersion = Project.ToolsVersion, xmlns = Project.xmlns ) )
-		self._id        = Project.generateId()
-		self._type      = type
-		self._name      = name
-		self._keyword   = keyword
-		self._platform  = platform
+		self._xml           = Xml.Element( 'Project', attrib=dict( DefaultTargets = Project.DefaultTargets, ToolsVersion = Project.ToolsVersion, xmlns = Project.xmlns ) )
+		self._id            = ID.generate()
+		self._type          = type
+		self._name          = name
+		self._keyword       = keyword
+		self._platform      = platform
+		self._dependencies  = []
 
 		# Add globals
 		globals = PropertyGroup( self._xml, None, Label = 'Globals' )
 		globals.set( 'ProjectGuid', self._id )
 		globals.set( 'Keyword',self._keyword )
 		globals.set( 'RootNamespace', self._name )
+
+		# Add imports
+		Group( self._xml, 'Import', dict( Project = '$(VCTargetsPath)\Microsoft.Cpp.Default.props' ) )
+		Group( self._xml, 'Import', dict( Project = '$(VCTargetsPath)\Microsoft.Cpp.props' ) )
+		Group( self._xml, 'Import', dict( Project = '$(VCTargetsPath)\Microsoft.Cpp.targets' ) )
+
+	# name
+	@property
+	def name( self ):
+		return self._name
+
+	# uid
+	@property
+	def uid( self ):
+		return self._id
+
+	# dependencies
+	@property
+	def dependencies( self ):
+		return self._dependencies
 
 	# createConfiguration
 	def createConfiguration( self, name, settings ):
@@ -99,8 +123,3 @@ class Project:
 		with open( fileName, 'wt' ) as fh:
 			fh.write( reparsed.toprettyxml( indent = "\t" ) )
 			fh.close()
-
-	# generateId
-	@staticmethod
-	def generateId():
-		return '{' + str( uuid.uuid1() ).upper() + '}'

@@ -1,3 +1,4 @@
+#################################################################################
 #
 # The MIT License (MIT)
 #
@@ -21,6 +22,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
+#################################################################################
 
-from Solution       import Solution
-from WindowsProject import WindowsProject
+import uuid
+
+# generate
+def generate():
+	return '{' + str( uuid.uuid1() ).upper() + '}'

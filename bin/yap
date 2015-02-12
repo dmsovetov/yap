@@ -36,7 +36,8 @@ from yap import Executable
 from yap import ExternalLibrary
 from yap import ExternalPackage
 
-from yap.Generator.VisualStudio.VCX import WindowsProject
+#from yap.Generator.VisualStudio.VCX import WindowsProject
+#from yap.Generator.VisualStudio.VCX import Solution
 
 # parseUnknownArguments
 def parseUnknownArguments( args ):
@@ -134,7 +135,8 @@ if __name__ == "__main__":
 	execfile( Makefile.SourceDir + '/Makefile.py' )
 
 	'''
-	project = WindowsProject( WindowsProject.StaticLibrary, 'StaticLibraryWithFiles' )
+	solution = Solution()
+	project = solution.addProject( WindowsProject.StaticLibrary, 'StaticLibraryWithFiles' )
 
 	project.addHeaderFiles( [
 		'HeaderFile.h'
@@ -175,6 +177,7 @@ if __name__ == "__main__":
 	] )
 
 	project.serialize( 'output.xml' )
+	solution.serialize( 'output.sln' )
 	'''
 
 	Makefile.generate()

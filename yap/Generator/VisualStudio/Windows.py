@@ -26,16 +26,18 @@
 
 import os, uuid, codecs
 
+from VCX import Solution
+from VCX import WindowsProject
 from ..Generator import Generator
 from ..Template  import Template
 
 # ID
-def ID():
-	return '{' + str( uuid.uuid1() ).upper() + '}'
+#def ID():
+#	return '{' + str( uuid.uuid1() ).upper() + '}'
 
 # Open
-def Open( fileName ):
-	return codecs.open( fileName, "w", "utf-8-sig" )
+#def Open( fileName ):
+#	return codecs.open( fileName, "w", "utf-8-sig" )
 
 # class Windows
 class Windows( Generator ):
@@ -43,16 +45,59 @@ class Windows( Generator ):
 	def __init__( self ):
 		Generator.__init__( self )
 
-		self.id 		= ID()
-		self.projects 	= {}
+		self._solution = Solution()
+
+	#	self.id 		= ID()
+	#	self.projects 	= {}
 
 	# generate
 	def generate( self ):
 		print( 'Generating Win32 project...' )
 		Generator.generate( self )
 
-		self.generateSolutionProjects()
-		self.generateSolution()
+		for target in self.sourceProject.filterTargets():
+			project = self._generateProject( target )
+			project.serialize( os.path.join( self.binaryDir, target.name + '.dir', target.name + '.vcxproj' ) )
+
+		self._solution.serialize( os.path.join( self.binaryDir, self.sourceProject.name + '.sln' ) )
+
+	#	self.generateSolutionProjects()
+	#	self.generateSolution()
+
+	def _generateProject( self, target ):
+		types   = dict( static = WindowsProject.StaticLibrary, executable = WindowsProject.Executable )
+		project = self._solution.addProject( types[target.type], target.name )
+
+		project.setConfigurations( [
+			project.createConfiguration( 'Debug', dict(
+				ClCompile = dict(
+					WarningLevel = 'Level3',
+				    Optimization = 'Disabled',
+				    PreprocessorDefinitions = 'WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)'
+				),
+			    Link = dict(
+				    SubSystem = 'Windows',
+			        GenerateDebugInformation = True
+			    )
+			) ),
+		    project.createConfiguration( 'Release', dict(
+			    ClCompile = dict(
+				    WarningLevel = 'Level3',
+			        Optimization = 'MaxSpeed',
+			        FunctionLevelLinking = True,
+			        IntrinsicFunctions = True,
+			        PreprocessorDefinitions = 'WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)'
+			    ),
+		        Link = dict(
+				    SubSystem = 'Windows',
+			        GenerateDebugInformation = True,
+		            EnableCOMDATFolding = True,
+		            OptimizeReferences = True
+		        )
+		    ) )
+		] )
+
+		return project
 		
 	# generateSolution
 	def generateSolution( self ):
