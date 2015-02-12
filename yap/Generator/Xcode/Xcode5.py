@@ -84,11 +84,11 @@ class Xcode5( Generator ):
 
 		xcode  = findXcode()
 		result = []
-		path   = '{0}/Platforms/{1}.platform/Developer/SDKs/'.format( xcode, platform )
+		path   = '{0}/Contents/Developer/Platforms/{1}.platform/Developer/SDKs/'.format( xcode, platform )
 
 		# No SDK path found
 		if not os.path.exists( path ):
-			print 'Warning: no {0} SDK found'.format( platform )
+			print 'Warning: no {0} SDK found, Xcode path {1}, SDK path {2}'.format( platform, xcode, path )
 			return [ platform ]
 
 		# List SDKs

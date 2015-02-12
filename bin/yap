@@ -77,7 +77,7 @@ if __name__ == "__main__":
 		exit(1)
 
 	if not os.path.exists( os.path.join( args.source, 'Makefile.py' ) ):
-		print 'Error: no Makefile.py file found.'
+		print 'Error: no Makefile.py file found in directory', args.source
 		exit(1)
 
 	platforms = { 'macos': 'MacOS', 'windows': 'Windows', 'flash': 'Flash', 'android': 'Android', 'ios': 'iOS', 'html5': 'HTML5' }
@@ -131,6 +131,7 @@ if __name__ == "__main__":
 
 	execfile( Makefile.SourceDir + '/Makefile.py' )
 
+	'''
 	project = WindowsProject( WindowsProject.StaticLibrary, 'StaticLibraryWithFiles' )
 
 	project.addHeaderFiles( [
@@ -172,5 +173,6 @@ if __name__ == "__main__":
 	] )
 
 	project.serialize( 'output.xml' )
+	'''
 
-#	Makefile.generate()
+	Makefile.generate()
