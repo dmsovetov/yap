@@ -1,1 +1,1 @@
-curl = StaticLibrary( 'curl', sources = [ 'src/*' ], defines = [ 'HAVE_CONFIG_H' ], include = [ 'src', 'include' ] )
+curl = StaticLibrary( 'curl', sources = [ 'src/*' ], defines = [ 'HAVE_CONFIG_H' ], paths = [ 'src', 'include' ] )
