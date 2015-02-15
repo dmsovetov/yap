@@ -78,6 +78,10 @@ if __name__ == "__main__":
 		print 'Error: build is not implemented'
 		exit(1)
 
+	if not os.path.exists( args.source ):
+		print 'Error: source directory {0} does not exist'.format( args.source )
+		exit(1)
+
 	if not os.path.exists( os.path.join( args.source, 'Makefile.py' ) ):
 		print 'Error: no Makefile.py file found in directory', args.source
 		exit(1)
