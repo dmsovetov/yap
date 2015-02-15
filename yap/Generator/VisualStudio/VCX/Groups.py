@@ -71,11 +71,15 @@ class ItemGroup( Group ):
 
 	# addInclude
 	def addInclude( self, name ):
-		Group( self._xml, 'ClInclude', dict( Include = name ) )
+		return Group( self._xml, 'ClInclude', dict( Include = name ) )
 
 	# addSource
 	def addSource( self, name ):
-		Group( self._xml, 'ClCompile', dict( Include = name ) )
+		return Group( self._xml, 'ClCompile', dict( Include = name ) )
+
+	# addFilter
+	def addFilter( self, name ):
+		return Group( self._xml, 'Filter', dict( Include = name ) )
 
 # class ProjectConfigurations
 class ProjectConfigurations( PropertyGroup ):

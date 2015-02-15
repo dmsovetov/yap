@@ -24,7 +24,8 @@
 
 import glob, os
 
-from File import File
+from File       import File
+from ..Makefile import Makefile
 
 # class Folder
 class Folder:
@@ -47,25 +48,30 @@ class Folder:
 
 	# addFileAtPath
 	def addFileAtPath( self, path ):
+		assert path.find( '\\' ) == -1
 		self.resolve( path ).addFile( os.path.basename( path ) )
 
 	# addFilesFromDirectory
 	def addFilesFromDirectory( self, path ):
+		assert path.find( '\\' ) == -1
+
 		if path.endswith( '/*' ):
 			return self.addFilesFromDirectoryRecursive( path )
 
-		for fileName in glob.glob( os.path.join( path, '*.*' ) ):
-			self.addFileAtPath( os.path.relpath( fileName, self._target.sourcePath ) )
+		for fileName in Folder.glob( os.path.join( path, '*.*' ) ):
+			self.addFileAtPath( Folder.relativeTo( fileName, self._target.sourcePath ) )
 
 	# addFilesFromDirectoryRecursive
 	def addFilesFromDirectoryRecursive( self, path ):
+		assert path.find( '\\' ) == -1
+
 		self.addFilesFromDirectory( path.replace( '/*', '/' ) )
 
 		# Recursively add all nested folders
-		for folder in glob.glob( path ):
+		for folder in Folder.glob( path ):
 			if os.path.isdir( folder ):
 				# Continue recursive add
-				self.addFilesFromDirectoryRecursive( os.path.join( folder, '*' ) )
+				self.addFilesFromDirectoryRecursive( Folder.join( folder, '*' ) )
 
 	# resolve
 	def resolve( self, path ):
@@ -88,3 +94,22 @@ class Folder:
 			result = result + folder.filterFiles( filter )
 
 		return result
+
+	# relativeTo
+	@staticmethod
+	def relativeTo( path, start ):
+		return os.path.relpath( path, start ).replace( '\\', '/' )
+
+	# glob
+	@staticmethod
+	def glob( path ):
+		return [item.replace( '\\', '/' ) for item in glob.glob( path )]
+
+	# join
+	@staticmethod
+	def join( *items ):
+		result = ''
+		for item in items:
+			result = os.path.join( result, item )
+
+		return result.replace( '\\', '/' )

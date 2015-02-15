@@ -59,6 +59,12 @@ class LocalLibrary( Library ):
 	def type( self ):
 		return 'local'
 
+	# projectPath
+	@property
+	def projectPath( self ):
+		target = self._target.project.findTarget( self._name )
+		return target.projectPath if target else None
+
 	# __str__
 	def __str__( self ):
 		return "[LocalLibrary {0}]".format( self._name )

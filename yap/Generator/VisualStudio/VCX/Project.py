@@ -34,6 +34,7 @@ from Groups         import ProjectConfigurations
 from Groups         import PropertyGroup
 from Groups         import PropertySheets
 from Configuration  import Configuration
+from Filters        import Filters
 
 # class Project
 class Project:
@@ -51,16 +52,10 @@ class Project:
 		self._platform      = platform
 		self._dependencies  = []
 
-		# Add globals
-		globals = PropertyGroup( self._xml, None, Label = 'Globals' )
-		globals.set( 'ProjectGuid', self._id )
-		globals.set( 'Keyword',self._keyword )
-		globals.set( 'RootNamespace', self._name )
-
-		# Add imports
-		Group( self._xml, 'Import', dict( Project = '$(VCTargetsPath)\Microsoft.Cpp.Default.props' ) )
-		Group( self._xml, 'Import', dict( Project = '$(VCTargetsPath)\Microsoft.Cpp.props' ) )
-		Group( self._xml, 'Import', dict( Project = '$(VCTargetsPath)\Microsoft.Cpp.targets' ) )
+		self._filters           = Filters( Project )
+		self._configurations    = []
+		self._sourceFiles       = []
+		self._headerFiles       = []
 
 	# name
 	@property
@@ -77,49 +72,91 @@ class Project:
 	def dependencies( self ):
 		return self._dependencies
 
+	# filters
+	@property
+	def filters( self ):
+		return self._filters
+
+	# addDependency
+	def addDependency( self, project ):
+		self._dependencies.append( project )
+
 	# createConfiguration
 	def createConfiguration( self, name, settings ):
 		return Configuration( name, settings, self._platform )
 
 	# setConfigurations
 	def setConfigurations( self, configurations ):
+		self._configurations = configurations
+
+	# addHeaderFiles
+	def addHeaderFiles( self, files ):
+		self._headerFiles = self._headerFiles + files
+
+	# addSourceFiles
+	def addSourceFiles( self, files ):
+		self._sourceFiles = self._sourceFiles + files
+
+	# serialize
+	def serialize( self, fileName ):
+		self._createXml()
+
+		str      = Xml.tostring( self._xml, 'utf-8' )
+		reparsed = minidom.parseString( str )
+
+		with open( fileName, 'wt' ) as fh:
+			fh.write( reparsed.toprettyxml( indent = "  ", encoding = 'utf-8') )
+			fh.close()
+
+		self._filters.serialize( fileName + '.filters' )
+
+	# _createXml
+	def _createXml( self ):
 		# Add project configurations group
 		configurationsGroup = ProjectConfigurations( self._xml )
-		[configurationsGroup.add( cfg ) for cfg in configurations]
+		[configurationsGroup.add( cfg ) for cfg in self._configurations]
+
+		# Source files
+		group = ItemGroup( self._xml )
+		[group.addSource( file ) for file in self._sourceFiles]
+
+		# Header files
+		group = ItemGroup( self._xml )
+		[group.addInclude( file ) for file in self._headerFiles]
+
+		# Add globals
+		globals = PropertyGroup( self._xml, None, Label = 'Globals' )
+		globals.set( 'ProjectGuid', self._id )
+		globals.set( 'Keyword',self._keyword )
+		globals.set( 'RootNamespace', self._name )
+
+		# Add imports
+		Group( self._xml, 'Import', dict( Project = '$(VCTargetsPath)\Microsoft.Cpp.Default.props' ) )
 
 		# Add property groups
-		for cfg in configurations:
-			group = PropertyGroup( self._xml, 'PropertyGroup', Condition = cfg.condition )
+		for cfg in self._configurations:
+			group = PropertyGroup( self._xml, 'PropertyGroup', Condition = cfg.condition, Label = 'Configuration' )
 			group.setProperties( dict(
 				ConfigurationType = self._type,
 			    UseDebugLibraries = True if cfg.name == 'Debug' else False,
 			    CharacterSet = 'Unicode'
 			) )
 
+		# Add import properties
+		Group( self._xml, 'Import', dict( Project = '$(VCTargetsPath)\Microsoft.Cpp.props' ) )
+
 		# Add property sheets
-		for cfg in configurations:
+		for cfg in self._configurations:
 			PropertySheets( self._xml, cfg )
 
+		# Output folders
+		for cfg in self._configurations:
+			PropertyGroup( self._xml, 'PropertyGroup', Condition = cfg.condition ).set( 'OutDir', '$(ProjectDir)$(Configuration)/' )
+
 		# Add item definition groups
-		for cfg in configurations:
+		for cfg in self._configurations:
 			definition = PropertyGroup( self._xml, 'ItemDefinitionGroup', Condition = cfg.condition )
 			definition.setProperties( cfg.settings )
 
-	# addHeaderFiles
-	def addHeaderFiles( self, files ):
-		group = ItemGroup( self._xml )
-		[group.addInclude( file ) for file in files]
-
-	# addSourceFiles
-	def addSourceFiles( self, files ):
-		group = ItemGroup( self._xml )
-		[group.addSource( file ) for file in files]
-
-	# serialize
-	def serialize( self, fileName ):
-		str      = Xml.tostring( self._xml, 'utf-8' )
-		reparsed = minidom.parseString( str )
-
-		with open( fileName, 'wt' ) as fh:
-			fh.write( reparsed.toprettyxml( indent = "\t" ) )
-			fh.close()
+		# Add import targets
+		Group( self._xml, 'Import', dict( Project = '$(VCTargetsPath)\Microsoft.Cpp.targets' ) )

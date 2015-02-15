@@ -83,9 +83,9 @@ class Project( Target ):
 		return [target for target in self._targets if filter == None or filter( target )]
 
 	# findTarget
-	def findTarget( self, name, types ):
+	def findTarget( self, name, types = None ):
 		for target in self._targets:
-			if target.name == name and target.type in types:
+			if target.name == name and (types == None or target.type in types):
 				return target
 
 		return None

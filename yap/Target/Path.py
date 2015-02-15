@@ -22,6 +22,8 @@
 # SOFTWARE.
 #
 
+from Folder import Folder
+
 # class Path
 class Path:
 	Headers     = 'Headers'
@@ -29,9 +31,10 @@ class Path:
 	Frameworks  = 'Frameworks'
 
 	# ctor
-	def __init__( self, type, path ):
-		self._path = path
-		self._type = type
+	def __init__( self, target, type, path ):
+		self._target    = target
+		self._path      = path
+		self._type      = type
 
 	# type
 	@property
@@ -42,6 +45,11 @@ class Path:
 	@property
 	def path( self ):
 		return self._path
+
+	# relativeToProject
+	@property
+	def pathRelativeToProject( self ):
+		return Folder.relativeTo( self.path, self._target.projectPath )
 
 	# isHeaders
 	@property

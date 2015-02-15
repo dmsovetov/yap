@@ -37,20 +37,26 @@ class File:
 	def sourcePath( self ):
 		return os.path.join( self._folder.sourcePath, self._fileName )
 
+	# binaryPath
+	@property
+	def projectPath( self ):
+		assert os.path.exists( self.fullPath )
+		return os.path.relpath( self.fullPath, self._target.projectPath)
+
 	# fullPath
 	@property
 	def fullPath( self ):
 		return os.path.abspath( os.path.join( self._target.sourcePath, self.sourcePath ) )
 
-	# sourceFolder
+	# folder
 	@property
-	def sourceFolder( self ):
-		return self._folder.sourcePath
+	def folder( self ):
+		return self._folder
 
 	# fileName
 	@property
 	def fileName( self ):
-		return os.path.basename( self.localPath )
+		return os.path.basename( self._fileName )
 
 	# name
 	@property

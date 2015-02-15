@@ -35,9 +35,7 @@ from yap import StaticLibrary
 from yap import Executable
 from yap import ExternalLibrary
 from yap import ExternalPackage
-
-#from yap.Generator.VisualStudio.VCX import WindowsProject
-#from yap.Generator.VisualStudio.VCX import Solution
+from yap import Folder
 
 # parseUnknownArguments
 def parseUnknownArguments( args ):
@@ -134,54 +132,8 @@ if __name__ == "__main__":
 				self.name = os.path.basename( path )
 				self.path = path
 
-		return [File( path ) for path in glob.glob( os.path.join( Makefile.getCurrentSourceDir(), path ) ) if os.path.isfile( path )]
+		return [File( path ) for path in Folder.glob( os.path.join( Makefile.getCurrentSourceDir(), path ) ) if os.path.isfile( path )]
 
 	execfile( Makefile.SourceDir + '/Makefile.py' )
-
-	'''
-	solution = Solution()
-	project = solution.addProject( WindowsProject.StaticLibrary, 'StaticLibraryWithFiles' )
-
-	project.addHeaderFiles( [
-		'HeaderFile.h'
-	] )
-
-	project.addSourceFiles( [
-		'CFile.c',
-	    'SourceFile.cpp'
-	] )
-
-	project.setConfigurations( [
-		project.createConfiguration( 'Debug', dict(
-			ClCompile = dict(
-				WarningLevel = 'Level3',
-			    Optimization = 'Disabled',
-			    PreprocessorDefinitions = 'WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)'
-			),
-		    Link = dict(
-			    SubSystem = 'Windows',
-		        GenerateDebugInformation = True
-		    )
-		) ),
-	    project.createConfiguration( 'Release',dict(
-		    ClCompile = dict(
-			    WarningLevel = 'Level3',
-		        Optimization = 'MaxSpeed',
-		        FunctionLevelLinking = True,
-		        IntrinsicFunctions = True,
-		        PreprocessorDefinitions = 'WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)'
-		    ),
-	        Link = dict(
-			    SubSystem = 'Windows',
-		        GenerateDebugInformation = True,
-	            EnableCOMDATFolding = True,
-	            OptimizeReferences = True
-	        )
-	    ) )
-	] )
-
-	project.serialize( 'output.xml' )
-	solution.serialize( 'output.sln' )
-	'''
 
 	Makefile.generate()

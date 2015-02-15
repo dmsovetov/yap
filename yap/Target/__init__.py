@@ -28,3 +28,4 @@ from StaticLibrary  import StaticLibrary
 from Executable     import Executable
 from Library        import ExternalLibrary
 from Library        import ExternalPackage
+from Folder         import Folder
