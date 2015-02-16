@@ -89,6 +89,10 @@ if __name__ == "__main__":
 	if args.platform in platforms.keys():
 		args.platform = platforms[args.platform]
 
+	# Set search paths
+	if args.platform == 'MacOS':
+		Externals.Library.setSearchPaths( headers = [ '/usr/local/include' ], libraries = [ '/usr/local/lib' ], frameworks = [ '/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk/System/Library/Frameworks' ] )
+
 	# Generate project
 	Makefile.set( 'PLATFORM', args.platform )
 	Makefile.set( 'ARCH', args.arch )

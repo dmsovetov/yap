@@ -27,9 +27,10 @@ import os
 # class Library
 class Library:
 	# HeaderSearchPaths
-	HeaderSearchPaths       = [ '/usr/local/include' ]
-	LibrarySearchPaths      = [ '/usr/local/lib'     ]
-	FrameworkSearchPaths    = [ '/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk/System/Library/Frameworks' ]
+	HeaderSearchPaths       = []
+	LibrarySearchPaths      = []
+	FrameworkSearchPaths    = []
+	UserPaths               = os.environ['PATH'].split( ':' )
 
 	# ctor
 	def __init__( self, name, headers, libraries, shared = False ):
@@ -87,7 +88,7 @@ class Library:
 
 		# Locate header search path
 		for header in self._headers:
-			path = self.findFilePath( header, Library.HeaderSearchPaths )
+			path = self.findFilePath( header, Library.HeaderSearchPaths + Library.UserPaths )
 
 			if path:
 				headerSearchPath = path
@@ -95,7 +96,7 @@ class Library:
 
 		# Locate library search path
 		for library in self._libraries:
-			path = self.findFilePath( self.formatLibraryName( library, self._shared ), Library.LibrarySearchPaths )
+			path = self.findFilePath( self.formatLibraryName( library, self._shared ), Library.LibrarySearchPaths + Library.UserPaths )
 
 			if path:
 				librarySearchPath = path
@@ -112,7 +113,7 @@ class Library:
 
 	# locateFramework
 	def locateFramework( self ):
-		for path in Library.FrameworkSearchPaths:
+		for path in Library.FrameworkSearchPaths + Library.UserPaths:
 			if os.path.exists( os.path.join( path, self._name + '.framework' ) ):
 				self._headersSearchPaths = []
 				self._librarySearchPaths = []
@@ -130,6 +131,13 @@ class Library:
 	def formatLinkName( self, name, shared ):
 		return 'lib' + name + '.a' if not shared else 'lib' + name + '.dlyb'
 
+	# setSearchPaths
+	@staticmethod
+	def setSearchPaths( headers = [], libraries = [], frameworks = [] ):
+		Library.HeaderSearchPaths    = headers
+		Library.LibrarySearchPaths   = libraries
+		Library.FrameworkSearchPaths = frameworks
+
 	# find
 	@staticmethod
 	def find( name, required = False ):
@@ -137,6 +145,8 @@ class Library:
 				vorbis = dict( name = 'Vorbis', headers = [ 'vorbis/codec.h', 'vorbis/vorbisfile.h' ],              libraries = [ 'vorbis', 'vorbisfile', 'ogg' ] )
 			,   OpenAL = dict( name = 'OpenAL', headers = [ 'OpenAL/al.h', 'OpenAL/alc.h' ],                        libraries = [ 'OpenAL' ] )
 		    ,   OpenGL = dict( name = 'OpenGL', headers = [ 'OpenGL/gl.h' 'OpenGL/OpenGL.h', 'OpenGL/glext.h' ],    libraries = [ 'OpenGL', 'QuartzCore' ] )
+
+		    ,   llvm = dict( name = 'llvm', headers = [ 'llvm/Value.h' ], libraries = [ 'LLVMCore' ] )
 		)
 
 		library = None
