@@ -113,7 +113,8 @@ class Xcode5( Generator ):
 
 		for name, project in self.projects.items():
 			folder    = self.getPathForTarget( project['target'] )
-			projects += "<FileRef location='group:{0}'/>\n".format( os.path.join( folder, name + '.xcodeproj') )
+			path      = os.path.relpath( os.path.join( folder, name + '.xcodeproj' ), self.binaryDir )
+			projects += "<FileRef location='group:{0}'/>\n".format( path )
 
 		# Dump workspace to file
 		Template( Xcode5.Workspace ).compileToFile( os.path.join( workspace, 'contents.xcworkspacedata' ), { 'projects': projects } )
@@ -299,7 +300,7 @@ class Xcode5( Generator ):
 	def generateConfiguration( self, target, name ):
 		# generatePaths
 		def generatePaths( path ):
-			return ' ' + path + ' '
+			return ' ' + path.pathRelativeToProject + ' '
 
 		# generateLibrarySearchPaths
 		def generateLibrarySearchPaths( library ):
@@ -311,14 +312,15 @@ class Xcode5( Generator ):
 
 		paths   = self.processEachTargetInclude( target, generatePaths ).strip().split( ' ' )
 		defines = self.processEachTargetDefine( target, generateDefines ).strip().split( ' ' )
-		libs    = self.processEachTargetLib( target, generateLibrarySearchPaths ).strip().split( ' ' )
+	#	libs    = self.processEachTargetLib( target, generateLibrarySearchPaths ).strip().split( ' ' )
+		libs    = []
 		paths   = set( paths )
 		paths   = list( paths )
-		libs    = set( libs )
-		libs    = list( libs )
+	#	libs    = set( libs )
+	#	libs    = list( libs )
 
 		if target.shouldLinkLibraries:
-			libs = libs + self.processEachTargetLibrarySearchPath( target, generatePaths ).strip().split( ' ' )
+			libs = self.processEachTargetLibrarySearchPath( target, generatePaths ).strip().split( ' ' )
 
 		libs.append( '$(inherited)' )
 		paths.append( '$(inherited)' )

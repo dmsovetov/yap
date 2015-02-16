@@ -22,6 +22,9 @@
 # SOFTWARE.
 #
 
+from ..Makefile import Makefile
+from ..Target   import Path
+
 import os
 
 # class Library
@@ -82,7 +85,7 @@ class Library:
 		return None
 
 	# locate
-	def locate( self ):
+	def locate( self, sourceDir, targetProjectDir, targetSourceDir ):
 		headerSearchPath    = None
 		librarySearchPath   = None
 
@@ -105,9 +108,10 @@ class Library:
 		if not headerSearchPath or not librarySearchPath:
 			return self.locateFramework()
 
-		self._headersSearchPaths = [ headerSearchPath ]
-		self._librarySearchPaths = [ librarySearchPath ]
-		self._linkTo             = [self.formatLinkName( name, self._shared ) for name in self._libraries]
+		# Initialize library
+		self._headersSearchPaths = [ Path( sourceDir, targetProjectDir, targetSourceDir, Path.Headers, headerSearchPath ) ]
+		self._librarySearchPaths = [ Path( sourceDir, targetProjectDir, targetSourceDir, Path.Libraries, librarySearchPath ) ]
+		self._linkTo             = [ self.formatLinkName( name, self._shared ) for name in self._libraries ]
 
 		return self.isFound
 
@@ -134,13 +138,13 @@ class Library:
 	# addSearchPaths
 	@staticmethod
 	def addSearchPaths( headers = [], libraries = [], frameworks = [] ):
-		Library.HeaderSearchPaths    = Library.HeaderSearchPaths    + headers
-		Library.LibrarySearchPaths   = Library.LibrarySearchPaths   + libraries
-		Library.FrameworkSearchPaths = Library.FrameworkSearchPaths + frameworks
+		Library.HeaderSearchPaths    = headers      + Library.HeaderSearchPaths
+		Library.LibrarySearchPaths   = libraries    + Library.LibrarySearchPaths
+		Library.FrameworkSearchPaths = frameworks   + Library.FrameworkSearchPaths
 
 	# find
 	@staticmethod
-	def find( name, required = False ):
+	def find( sourceDir, targetProjectDir, targetSourceDir, name, required = False ):
 		libraries = dict(
 				vorbis  = dict( name = 'Vorbis',  headers = [ 'vorbis/codec.h', 'vorbis/vorbisfile.h' ],              libraries = [ 'vorbis', 'vorbisfile', 'ogg' ] )
 			,   embree2 = dict( name = 'Embree2', headers = [ 'embree2/rtcore.h', 'embree2/rtcore_ray.h' ],           libraries = [ 'embree', 'sys', 'simd', 'embree_sse41', 'embree_sse42' ] )
@@ -153,7 +157,7 @@ class Library:
 
 		if name in libraries.keys():
 			library = Library( **libraries[name] )
-			if not library.locate():
+			if not library.locate( sourceDir, targetProjectDir, targetSourceDir ):
 				library = None
 
 		if not library and required:

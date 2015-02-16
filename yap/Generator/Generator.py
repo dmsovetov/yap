@@ -182,29 +182,16 @@ class Generator:
 	def forEachTargetSource( self, target, callback, filter = None ):
 		for file in target.filterSourceFiles( filter ):
 			callback( file )
-	#	path = self.getPathForTarget( target )
-
-	#	for source in target.sources:
-		#	fileName		= os.path.basename( source )
-		#	baseName, ext 	= os.path.splitext( fileName )
-		#	filePath		= string.replace( os.path.relpath( source, path ), '\\', '/' )
-	#		name, ext = source.nameAndExtension
-
-	#		if filter == None or ext in filter:
-	#			callback( source.relativePath( path ), name, ext )
 
 	# forEachTarget
 	def forEachTarget( self, callback, filter = None ):
 		for target in self.sourceProject.filterTargets( filter ):
 			callback( target.name, target )
-	#	for name, target in self.sourceProject.targets.items():
-	#		if filter == None or filter == target.type:
-	#			callback( name, target )
 
 	# forEachTargetLibrarySearchPath
 	def forEachTargetLibrarySearchPath( self, target, callback ):
 		for libraries in target.filterPaths( lambda path: path.isLibraries ):
-			callback( libraries.path )
+			callback( libraries )
 
 		# Run a callback for all dependencies
 		for library in target.filterLibraries():
@@ -265,17 +252,8 @@ class Generator:
 			self.forEachTargetInclude( self.sourceProject, callback )
 
 		# Target
-		for include in target.filterPaths( lambda path: path.isHeaders ):
-			if os.path.isabs( path ):
-				include = string.replace( include.path, '\\', '/' )
-			else:
-				include = string.replace( os.path.relpath( include.path, path ), '\\', '/' )
-
-			callback( include )
-
-		# Libraries
-		for library in target.filterLibraries( lambda lib: lib.type == 'external' ):
-			callback( library.headers )
+		for path in target.filterPaths( lambda path: path.isHeaders ):
+			callback( path )
 
 	# forEachTargetDefine
 	def forEachTargetDefine( self, target, callback ):

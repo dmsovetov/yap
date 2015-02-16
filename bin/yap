@@ -117,7 +117,7 @@ if __name__ == "__main__":
 
 	# Library
 	def Library( name, required = False ):
-		return Externals.Library.find( name, required )
+		return Externals.Library.find( Makefile.getSourceDir(), Makefile.getCurrentBinaryDir(), Makefile.getCurrentSourceDir(), name, required )
 
 	# Has
 	def Has( name ):
@@ -130,7 +130,7 @@ if __name__ == "__main__":
 	# Project
 	def Project( externals = None ):
 		if externals:
-			Externals.Library.addSearchPaths( headers = [ os.path.join( externals, 'include' ) ], libraries = [ os.path.join( externals, 'lib', args.platform ) ] )
+			Externals.Library.addSearchPaths( headers = [ os.path.join( Makefile.getSourceDir(), externals, 'include' ) ], libraries = [ os.path.join( Makefile.getSourceDir(), externals, 'lib', args.platform ) ] )
 
 	# Folders
 	def Folders( path ):

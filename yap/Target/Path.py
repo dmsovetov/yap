@@ -23,6 +23,7 @@
 #
 
 from Folder import Folder
+import os
 
 # class Path
 class Path:
@@ -31,10 +32,12 @@ class Path:
 	Frameworks  = 'Frameworks'
 
 	# ctor
-	def __init__( self, target, type, path ):
-		self._target    = target
-		self._path      = path
-		self._type      = type
+	def __init__( self, sourceDir, targetProjectDir, targetSourceDir, type, path ):
+		self._targetSourceDir   = targetSourceDir
+		self._targetProjectDir  = targetProjectDir
+		self._sourceDir         = sourceDir
+		self._path              = path
+		self._type              = type
 
 	# type
 	@property
@@ -49,7 +52,10 @@ class Path:
 	# relativeToProject
 	@property
 	def pathRelativeToProject( self ):
-		return Folder.relativeTo( self.path, self._target.projectPath )
+		if self.path.startswith( self._sourceDir ):
+			return Folder.relativeTo( self.path, self._targetProjectDir )
+
+		return self.path
 
 	# isHeaders
 	@property

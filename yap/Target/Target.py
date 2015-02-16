@@ -55,8 +55,10 @@ class Target:
 		self._paths         = []
 		self.type           = linkTo
 
-		self._currentSourceDir = Makefile.getCurrentSourceDir()
-		self._currentBinaryDir = Makefile.getCurrentBinaryDir()
+		self._rootProjectDir    = Makefile.getBinaryDir()
+		self._rootSourceDir     = Makefile.getSourceDir()
+		self._currentSourceDir  = Makefile.getCurrentSourceDir()
+		self._currentBinaryDir  = Makefile.getCurrentBinaryDir()
 
 		# Register this target
 		if self.project:
@@ -115,6 +117,11 @@ class Target:
 	def sourcePath( self ):
 		return self._currentSourceDir
 
+	# rootProjectDir
+	@property
+	def rootProjectDir( self ):
+		return self._rootProjectDir
+
 	# project
 	@property
 	def project( self ):
@@ -164,8 +171,7 @@ class Target:
 
 			self.link( *lib.linkTo )
 			self.define( 'HAVE_' + lib.name.upper() )
-			self.headerSearchPaths( *lib.headersSearchPaths )
-			self.librarySearchPaths( *lib.librarySearchPaths )
+			self._paths = self._paths + lib.headersSearchPaths + lib.librarySearchPaths
 
 		return allLinked
 
@@ -175,15 +181,15 @@ class Target:
 
 	# include
 	def include( self, *list ):
-		[self._paths.append( Path( self, Path.Headers, self.toFullPath( path ) ) ) for path in list]
+		[self._paths.append( Path( self._rootSourceDir, self._currentBinaryDir, self._currentSourceDir, Path.Headers, self.toFullPath( path ) ) ) for path in list]
 
 	# librarySearchPaths
 	def librarySearchPaths( self, *list ):
-		[self._paths.append( Path( self, Path.Libraries, self.toFullPath( path ) ) ) for path in list]
+		[self._paths.append( Path( self._rootSourceDir, self._currentBinaryDir, self._currentSourceDir, Path.Libraries, self.toFullPath( path ) ) ) for path in list]
 
 	# headerSearchPaths
 	def headerSearchPaths( self, *list ):
-		[self._paths.append( Path( self, Path.Headers, self.toFullPath( path ) ) ) for path in list]
+		[self._paths.append( Path( self._rootSourceDir, self._currentBinaryDir, self._currentSourceDir, Path.Headers, self.toFullPath( path ) ) ) for path in list]
 
 	# assets
 	def assets( self, *list ):
