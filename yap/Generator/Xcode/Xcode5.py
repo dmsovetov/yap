@@ -229,7 +229,7 @@ class Xcode5( Generator ):
 
 		# addSourceFile
 		def addSourceFile( file ):
-			addSourceFile.target.addSourceFile( file.fullPath, file.folder.sourcePath )
+			addSourceFile.target.addSourceFile( file.projectPath, file.folder.sourcePath )
 
 		# Add source files to target
 		addSourceFile.target = pbx
