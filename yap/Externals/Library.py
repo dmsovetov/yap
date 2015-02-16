@@ -146,6 +146,7 @@ class Library:
 			,   embree2 = dict( name = 'Embree2', headers = [ 'embree2/rtcore.h', 'embree2/rtcore_ray.h' ],           libraries = [ 'embree', 'sys', 'simd', 'embree_sse41', 'embree_sse42' ] )
 			,   OpenAL  = dict( name = 'OpenAL',  headers = [ 'OpenAL/al.h', 'OpenAL/alc.h' ],                        libraries = [ 'OpenAL' ] )
 		    ,   OpenGL  = dict( name = 'OpenGL',  headers = [ 'OpenGL/gl.h' 'OpenGL/OpenGL.h', 'OpenGL/glext.h' ],    libraries = [ 'OpenGL', 'QuartzCore' ] )
+		    ,   GLUT    = dict( name = 'GLUT',    headers = [ 'GLUT/GLUT.h' ],                                        libraries = [ 'GLUT' ] )
 		)
 
 		library = None
