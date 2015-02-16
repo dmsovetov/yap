@@ -102,7 +102,7 @@ class Generator:
 	def processEachTargetInclude( self, target, processor ):
 		# callback
 		def callback( path ):
-			callback.result += processor( target, path )
+			callback.result += processor( path )
 
 		callback.result = ''
 		self.forEachTargetInclude( target, callback )
@@ -150,6 +150,20 @@ class Generator:
 
 		return callback.result
 
+	# processEachTargetLibrarySearchPath
+	def processEachTargetLibrarySearchPath( self, target, processor ):
+		# callback
+		def callback( library ):
+			result = processor( library )
+
+			if result != None:
+				callback.result += result
+
+		callback.result = ''
+		self.forEachTargetLibrarySearchPath( target, callback )
+
+		return callback.result
+
 	# processEachTargetFramework
 	def processEachTargetFramework( self, target, processor ):
 		# callback
@@ -187,30 +201,49 @@ class Generator:
 	#		if filter == None or filter == target.type:
 	#			callback( name, target )
 
+	# forEachTargetLibrarySearchPath
+	def forEachTargetLibrarySearchPath( self, target, callback ):
+		for libraries in target.filterPaths( lambda path: path.isLibraries ):
+			callback( libraries.path )
+
+		# Run a callback for all dependencies
+		for library in target.filterLibraries():
+			target = self.findTargetByName( library.name )
+
+			if target:
+				self.forEachTargetLibrarySearchPath( target, callback )
+
 	# forEachTargetLibrary
 	def forEachTargetLibrary( self, target, callback ):
+		# Run a callback for all target's libraries
 		for lib in target.filterLibraries():
 			callback( lib )
-		# Get libs
-	#	libs = []
-	#	for lib in self.getLibsForTarget( target ):
-	#		if not lib in libs:
-	#			libs.append( lib )
 
-	#	for name in libs:
-	#		callback( target, name, self.sourceProject.findTarget( name, [Target.StaticLibrary, Target.SharedLibrary] ) )
+		# Run a callback for all dependencies
+		for library in target.filterLibraries():
+			target = self.findTargetByName( library.name )
+
+			if target:
+				self.forEachTargetLibrary( target, callback )
 
 	# forEachTargetFramework
 	def forEachTargetFramework( self, target, callback ):
+		# Run a callback for all target's frameworks
 		for framework in target.filterFrameworks():
 			callback( target, framework.name, None )
-		#	if lib['framework']:
-		#		callback( target, lib['name'], None )
+
+		# Run a callback for all dependencies
+		for library in target.filterLibraries():
+			target = self.findTargetByName( library.name )
+
+			if target:
+				self.forEachTargetFramework( target, callback )
 
 	# findTargetByName
 	def findTargetByName( self, name ):
-		if name in self.sourceProject.targets.keys():
-			return self.sourceProject.targets[name]
+		for target in self.sourceProject._targets:
+			if target.name == name:
+				return target
 
 		return None
 
@@ -220,20 +253,6 @@ class Generator:
 
 		for library in target.libraries:
 			result.append( library )
-		#	name = lib['name']
-
-		#	if not lib['framework']:
-		#		result.append( name )
-
-		#	if not name in self.sourceProject.targets.keys():
-		#		continue
-
-		#	lib = self.sourceProject.targets[name]
-
-		#	if lib.type == 'static':
-		#		libs = self.getLibsForTarget( lib )
-		#		for name in libs:
-		#			result.append( name )
 
 		return result
 

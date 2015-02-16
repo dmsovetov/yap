@@ -36,6 +36,7 @@ from yap import Executable
 from yap import ExternalLibrary
 from yap import ExternalPackage
 from yap import Folder
+from yap import Externals
 
 # parseUnknownArguments
 def parseUnknownArguments( args ):
@@ -110,9 +111,17 @@ if __name__ == "__main__":
 		for path in list:
 			Makefile.getProject().target( path )
 
+	# Library
+	def Library( name, required = False ):
+		return Externals.Library.find( name, required )
+
 	# Has
 	def Has( name ):
 		return Makefile.get( name.upper() ) != None
+
+	# Get
+	def Get( name ):
+		return Makefile.get( name.upper() )
 
 	# Folders
 	def Folders( path ):

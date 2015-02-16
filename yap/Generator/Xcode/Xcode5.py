@@ -229,7 +229,7 @@ class Xcode5( Generator ):
 
 		# addSourceFile
 		def addSourceFile( file ):
-			addSourceFile.target.addSourceFile( file.fullPath, file.sourceFolder )
+			addSourceFile.target.addSourceFile( file.fullPath, file.folder.sourcePath )
 
 		# Add source files to target
 		addSourceFile.target = pbx
@@ -237,6 +237,8 @@ class Xcode5( Generator ):
 
 	# addTargetFrameworks
 	def addTargetFrameworks( self, name, target, pbx ):
+		if not target.shouldLinkLibraries:
+			return
 
 		# addFramework
 		def addFramework( target, name, library ):
@@ -251,6 +253,8 @@ class Xcode5( Generator ):
 		
 	# addTargetLibraries
 	def addTargetLibraries( self, name, target, pbx ):
+		if not target.shouldLinkLibraries:
+			return
 
 		# addLibrary
 		def addLibrary( library ):
@@ -258,7 +262,7 @@ class Xcode5( Generator ):
 				if library.name in self.projects.keys():
 					addLibrary.target.addProjectLibrary( self.projects[library.name]['pbx'] )
 				else:
-					addLibrary.target.addLibrary( 'lib' + library.name + '.a' )
+					addLibrary.target.addLibrary( 'lib' + library.name + '.a' if library.name.find( '.a' ) == -1 else library.name )
 			elif library.type == 'package':
 				addLibrary.target.addLibrary( os.path.join( library.libs, library.fileName ) )
 				for item in library.items:
@@ -293,8 +297,8 @@ class Xcode5( Generator ):
 
 	# generateConfiguration
 	def generateConfiguration( self, target, name ):
-		# generateHeaderIncludePaths
-		def generateHeaderIncludePaths( target, path ):
+		# generatePaths
+		def generatePaths( path ):
 			return ' ' + path + ' '
 
 		# generateLibrarySearchPaths
@@ -305,7 +309,7 @@ class Xcode5( Generator ):
 		def generateDefines( target, define ):
 			return ' ' + define + ' '
 
-		paths   = self.processEachTargetInclude( target, generateHeaderIncludePaths ).strip().split( ' ' )
+		paths   = self.processEachTargetInclude( target, generatePaths ).strip().split( ' ' )
 		defines = self.processEachTargetDefine( target, generateDefines ).strip().split( ' ' )
 		libs    = self.processEachTargetLib( target, generateLibrarySearchPaths ).strip().split( ' ' )
 		paths   = set( paths )
@@ -313,8 +317,8 @@ class Xcode5( Generator ):
 		libs    = set( libs )
 		libs    = list( libs )
 
-		for libraries in target.filterPaths( lambda path: path.isLibraries ):
-			libs.append( libraries.path )
+		if target.shouldLinkLibraries:
+			libs = libs + self.processEachTargetLibrarySearchPath( target, generatePaths ).strip().split( ' ' )
 
 		libs.append( '$(inherited)' )
 		paths.append( '$(inherited)' )

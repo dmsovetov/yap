@@ -22,15 +22,4 @@
 # SOFTWARE.
 #
 
-from Target import Target
-
-# class Executable
-class Executable( Target ):
-	# ctor
-	def __init__( self, name, sources = None, paths = None, defines = None, link = None ):
-		Target.__init__( self, name, sources = sources, paths = paths, defines = defines, link = link, linkTo = Target.Executable )
-
-	# shouldLinkLibraries
-	@property
-	def shouldLinkLibraries( self ):
-		return True
+from Library import Library

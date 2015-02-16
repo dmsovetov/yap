@@ -38,6 +38,11 @@ class Library:
 	def type( self ):
 		return 'unknown'
 
+	# target
+	@property
+	def target( self ):
+		return self._target
+
 	# __str__
 	def __str__( self ):
 		return "[Library {0}]".format( self._name )

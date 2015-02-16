@@ -22,6 +22,8 @@
 # SOFTWARE.
 #
 
+import Externals
+
 from Makefile   import Makefile
 from Target     import Project
 from Target     import Target

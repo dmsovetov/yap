@@ -29,3 +29,8 @@ class StaticLibrary( Target ):
 	# ctor
 	def __init__( self, name, sources = None, paths = None, defines = None, link = None ):
 		Target.__init__( self, name, sources = sources, paths = paths, defines = defines, link = link, linkTo = Target.StaticLibrary )
+
+	# shouldLinkLibraries
+	@property
+	def shouldLinkLibraries( self ):
+		return False

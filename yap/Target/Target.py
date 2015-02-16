@@ -28,7 +28,7 @@ import os
 
 from Library    import LocalLibrary
 from Library    import ExternalLibrary
-from Framework  import Framework
+from Library    import Framework
 from Folder     import Folder
 from Path       import Path
 from ..Makefile import Makefile
@@ -149,6 +149,26 @@ class Target:
 	def link( self, *list ):
 		[self._libraries.append( item if isinstance( item, ExternalLibrary ) else LocalLibrary( self, item ) ) for item in list]
 
+	# linkExternal
+	def linkExternal( self, *list ):
+		allLinked = True
+
+		for lib in list:
+			if not lib:
+				allLinked = False
+				continue
+
+			if lib.isFramework:
+				self.frameworks( lib.name )
+				continue
+
+			self.link( *lib.linkTo )
+			self.define( 'HAVE_' + lib.name.upper() )
+			self.headerSearchPaths( *lib.headersSearchPaths )
+			self.librarySearchPaths( *lib.librarySearchPaths )
+
+		return allLinked
+
 	# frameworks
 	def frameworks( self, *list ):
 		[self._frameworks.append( Framework( self, item ) if isinstance( item, str ) else item ) for item in list]
@@ -160,6 +180,10 @@ class Target:
 	# librarySearchPaths
 	def librarySearchPaths( self, *list ):
 		[self._paths.append( Path( self, Path.Libraries, self.toFullPath( path ) ) ) for path in list]
+
+	# headerSearchPaths
+	def headerSearchPaths( self, *list ):
+		[self._paths.append( Path( self, Path.Headers, self.toFullPath( path ) ) ) for path in list]
 
 	# assets
 	def assets( self, *list ):
@@ -189,18 +213,6 @@ class Target:
 	def _configure( self, type ):
 		Target.Ident = Target.Ident - 1
 		self.type    = type
-
-		'''
-		# Add local libraries path
-		if type in [Target.Executable, Target.SharedLibrary]:
-			for library in self.filterLibraries( lambda library: library.type == 'local' ):
-				target = self.project.findTarget( library.name )
-				if target == None:
-					print 'Warning: no local library {0}'.format( library.name )
-					continue
-
-				self.librarySearchPaths( target.projectPath )
-		'''
 
 	# sharedLibrary
 	def sharedLibrary( self ):
