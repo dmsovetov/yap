@@ -36,11 +36,12 @@ class Library:
 	UserPaths               = os.environ['PATH'].split( ':' )
 
 	# ctor
-	def __init__( self, name, headers, libraries, shared = False ):
+	def __init__( self, name, headers, libraries, defines = [], shared = False ):
 		self._name                  = name
 		self._headers               = headers
 		self._libraries             = libraries
 		self._shared                = shared
+		self._defines               = defines
 		self._headersSearchPaths    = None
 		self._librarySearchPaths    = None
 		self._linkTo                = []
@@ -50,6 +51,11 @@ class Library:
 	@property
 	def name( self ):
 		return self._name
+
+	# defines
+	@property
+	def defines( self ):
+		return self._defines
 
 	# isFramework
 	@property
@@ -146,14 +152,18 @@ class Library:
 	@staticmethod
 	def find( sourceDir, targetProjectDir, targetSourceDir, name, required = False ):
 		libraries = dict(
-				vorbis  = dict( name = 'Vorbis',  headers = [ 'vorbis/codec.h', 'vorbis/vorbisfile.h' ],              libraries = [ 'vorbis', 'vorbisfile', 'ogg' ] )
-			,   embree2 = dict( name = 'Embree2', headers = [ 'embree2/rtcore.h', 'embree2/rtcore_ray.h' ],           libraries = [ 'embree', 'sys', 'simd', 'embree_sse41', 'embree_sse42' ] )
-			,   OpenAL  = dict( name = 'OpenAL',  headers = [ 'OpenAL/al.h', 'OpenAL/alc.h' ],                        libraries = [ 'OpenAL' ] )
-		    ,   OpenGL  = dict( name = 'OpenGL',  headers = [ 'OpenGL/gl.h' 'OpenGL/OpenGL.h', 'OpenGL/glext.h' ],    libraries = [ 'OpenGL', 'QuartzCore' ] )
-		    ,   GLUT    = dict( name = 'GLUT',    headers = [ 'GLUT/GLUT.h' ],                                        libraries = [ 'GLUT' ] )
+				vorbis      = dict( name = 'Vorbis',   headers = [ 'vorbis/codec.h', 'vorbis/vorbisfile.h' ],                   libraries = [ 'vorbis', 'vorbisfile', 'ogg' ] )
+			,   embree2     = dict( name = 'Embree2',  headers = [ 'embree2/rtcore.h', 'embree2/rtcore_ray.h' ],                libraries = [ 'embree', 'sys', 'simd', 'embree_sse41', 'embree_sse42' ] )
+			,   OpenAL      = dict( name = 'OpenAL',   headers = [ 'OpenAL/al.h', 'OpenAL/alc.h' ],                             libraries = [ 'OpenAL' ] )
+		    ,   OpenGL      = dict( name = 'OpenGL',   headers = [ 'OpenGL/gl.h' 'OpenGL/OpenGL.h', 'OpenGL/glext.h' ],         libraries = [ 'OpenGL', 'QuartzCore' ] )
+		    ,   OpenGLES    = dict( name = 'OpenGLES', headers = [ 'OpenGLES/gl.h' 'OpenGLES/OpenGL.h', 'OpenGLES/glext.h' ],   libraries = [ 'OpenGLES' ], defines = [ 'OPENGL_ES' ] )
+		    ,   GLUT        = dict( name = 'GLUT',     headers = [ 'GLUT/GLUT.h' ],                                             libraries = [ 'GLUT' ] )
 		)
 
 		library = None
+
+		if Makefile.platform == 'iOS' and name == 'OpenGL':
+			name = 'OpenGLES'
 
 		if name in libraries.keys():
 			library = Library( **libraries[name] )

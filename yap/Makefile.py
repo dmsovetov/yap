@@ -51,6 +51,8 @@ class Makefile:
 	BinaryDir 		 = ''
 	CurrentBinaryDir = []
 
+	platform    = None
+
 	# getProject
 	@staticmethod
 	def getProject():
@@ -131,9 +133,6 @@ class Makefile:
 	def generate():
 		global _Generator
 		_Generator.generate()
-
-#FLACC       = ''
-#Flex        = ''
 
 _Env       = Env.Env()
 _Project   = None

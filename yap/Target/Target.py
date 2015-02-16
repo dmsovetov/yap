@@ -165,12 +165,14 @@ class Target:
 				allLinked = False
 				continue
 
+			self.define( 'HAVE_' + lib.name.upper() )
+			self.define( *lib.defines )
+
 			if lib.isFramework:
 				self.frameworks( *lib.linkTo )
 				continue
 
 			self.link( *lib.linkTo )
-			self.define( 'HAVE_' + lib.name.upper() )
 			self._paths = self._paths + lib.headersSearchPaths + lib.librarySearchPaths
 
 		return allLinked

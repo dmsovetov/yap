@@ -60,19 +60,24 @@ class Xcode5( Generator ):
 		# Create workspace
 		self.generateWorkspace()
 
+	# commandLineToolsSupported
+	@property
+	def commandLineToolsSupported( self ):
+		return False
+
 	# listAvailableSDKs
 	@staticmethod
 	def listAvailableSDKs( platform ):
-		# parseVersion
-		def parseVersion( path ):
-			return subprocess.check_output( '/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "{0}/Contents/Info.plist"'.format( path ), shell=True )
+		# parseProperty
+		def parseProperty( path, key ):
+			return subprocess.check_output( '/usr/libexec/PlistBuddy -c "Print :{1}" "{0}"'.format( path, key ), shell=True ).strip()
 
 		# findXcode
 		def findXcode():
 			value = subprocess.check_output( ['xcode-select', '-p'] )
 
 			# Found
-			if value.find( '@/Xcode.app/' ) != -1:
+			if value.find( '/Xcode.app/' ) != -1:
 				return value.strip()
 
 			# List applications
@@ -80,11 +85,11 @@ class Xcode5( Generator ):
 			if len( apps ) == 0:
 				return None
 
-			return max( apps, key=lambda item: distutils.version.LooseVersion( parseVersion( item ) ) )
+			return max( apps, key=lambda item: distutils.version.LooseVersion( parseProperty( os.path.join( item, '/Contents/Info.plist' ), 'CFBundleShortVersionString' ) ) )
 
 		xcode  = findXcode()
 		result = []
-		path   = '{0}/Contents/Developer/Platforms/{1}.platform/Developer/SDKs/'.format( xcode, platform )
+		path   = '{0}/Platforms/{1}.platform/Developer/SDKs/'.format( xcode, platform )
 
 		# No SDK path found
 		if not os.path.exists( path ):
@@ -93,9 +98,7 @@ class Xcode5( Generator ):
 
 		# List SDKs
 		for sdk in os.listdir( path ):
-			with open( os.path.join( path, sdk, 'SDKSettings.plist' ), 'rb' ) as fp:
-				result.append( plistlib.readPlist( fp )['CanonicalName'] )
-				fp.close()
+			result.append( parseProperty( os.path.join( path, sdk, 'SDKSettings.plist' ), 'CanonicalName' ) )
 
 		return result
 
@@ -145,7 +148,7 @@ class Xcode5( Generator ):
 
 		# Create target
 		if target.type == 'executable':
-			if target.params and target.params['bundle']:
+			if (target.params and target.params['bundle']) or not self.commandLineToolsSupported:
 				pbx = project.addApplicationBundle( name, name + '.app', settings, 'Debug', self.makefile.get( 'DEVELOPMENT_TEAM' ) )
 				self.addInfoPlist( target, pbx )
 				if target.resources:
@@ -312,12 +315,9 @@ class Xcode5( Generator ):
 
 		paths   = self.processEachTargetInclude( target, generatePaths ).strip().split( ' ' )
 		defines = self.processEachTargetDefine( target, generateDefines ).strip().split( ' ' )
-	#	libs    = self.processEachTargetLib( target, generateLibrarySearchPaths ).strip().split( ' ' )
 		libs    = []
 		paths   = set( paths )
 		paths   = list( paths )
-	#	libs    = set( libs )
-	#	libs    = list( libs )
 
 		if target.shouldLinkLibraries:
 			libs = self.processEachTargetLibrarySearchPath( target, generatePaths ).strip().split( ' ' )

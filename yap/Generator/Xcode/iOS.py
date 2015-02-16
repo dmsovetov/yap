@@ -39,6 +39,11 @@ class iOS( Xcode5 ):
 	def getPlatformId( self ):
 		return 'ios'
 
+	# commandLineToolsSupported
+	@property
+	def commandLineToolsSupported( self ):
+		return False
+
 	# getProjectSettings
 	def getProjectSettings( self ):
 		if not self.makefile.get( 'SDK' ):

@@ -39,6 +39,10 @@ class MacOS( Xcode5 ):
 	def getPlatformId( self ):
 		return 'osx'
 
+	# commandLineToolsSupported
+	@property
+	def commandLineToolsSupported( self ):
+		return True
 
 	# getProjectSettings
 	def getProjectSettings( self ):
