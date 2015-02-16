@@ -91,7 +91,7 @@ if __name__ == "__main__":
 
 	# Set search paths
 	if args.platform == 'MacOS':
-		Externals.Library.setSearchPaths( headers = [ '/usr/local/include' ], libraries = [ '/usr/local/lib' ], frameworks = [ '/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk/System/Library/Frameworks' ] )
+		Externals.Library.addSearchPaths( headers = [ '/usr/local/include' ], libraries = [ '/usr/local/lib' ], frameworks = [ '/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk/System/Library/Frameworks' ] )
 
 	# Generate project
 	Makefile.set( 'PLATFORM', args.platform )
@@ -126,6 +126,11 @@ if __name__ == "__main__":
 	# Get
 	def Get( name ):
 		return Makefile.get( name.upper() )
+
+	# Project
+	def Project( externals = None ):
+		if externals:
+			Externals.Library.addSearchPaths( headers = [ os.path.join( externals, 'include' ) ], libraries = [ os.path.join( externals, 'lib', args.platform ) ] )
 
 	# Folders
 	def Folders( path ):

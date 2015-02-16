@@ -131,22 +131,21 @@ class Library:
 	def formatLinkName( self, name, shared ):
 		return 'lib' + name + '.a' if not shared else 'lib' + name + '.dlyb'
 
-	# setSearchPaths
+	# addSearchPaths
 	@staticmethod
-	def setSearchPaths( headers = [], libraries = [], frameworks = [] ):
-		Library.HeaderSearchPaths    = headers
-		Library.LibrarySearchPaths   = libraries
-		Library.FrameworkSearchPaths = frameworks
+	def addSearchPaths( headers = [], libraries = [], frameworks = [] ):
+		Library.HeaderSearchPaths    = Library.HeaderSearchPaths    + headers
+		Library.LibrarySearchPaths   = Library.LibrarySearchPaths   + libraries
+		Library.FrameworkSearchPaths = Library.FrameworkSearchPaths + frameworks
 
 	# find
 	@staticmethod
 	def find( name, required = False ):
 		libraries = dict(
-				vorbis = dict( name = 'Vorbis', headers = [ 'vorbis/codec.h', 'vorbis/vorbisfile.h' ],              libraries = [ 'vorbis', 'vorbisfile', 'ogg' ] )
-			,   OpenAL = dict( name = 'OpenAL', headers = [ 'OpenAL/al.h', 'OpenAL/alc.h' ],                        libraries = [ 'OpenAL' ] )
-		    ,   OpenGL = dict( name = 'OpenGL', headers = [ 'OpenGL/gl.h' 'OpenGL/OpenGL.h', 'OpenGL/glext.h' ],    libraries = [ 'OpenGL', 'QuartzCore' ] )
-
-		    ,   llvm = dict( name = 'llvm', headers = [ 'llvm/Value.h' ], libraries = [ 'LLVMCore' ] )
+				vorbis  = dict( name = 'Vorbis',  headers = [ 'vorbis/codec.h', 'vorbis/vorbisfile.h' ],              libraries = [ 'vorbis', 'vorbisfile', 'ogg' ] )
+			,   embree2 = dict( name = 'Embree2', headers = [ 'embree2/rtcore.h', 'embree2/rtcore_ray.h' ],           libraries = [ 'embree', 'sys', 'simd', 'embree_sse41', 'embree_sse42' ] )
+			,   OpenAL  = dict( name = 'OpenAL',  headers = [ 'OpenAL/al.h', 'OpenAL/alc.h' ],                        libraries = [ 'OpenAL' ] )
+		    ,   OpenGL  = dict( name = 'OpenGL',  headers = [ 'OpenGL/gl.h' 'OpenGL/OpenGL.h', 'OpenGL/glext.h' ],    libraries = [ 'OpenGL', 'QuartzCore' ] )
 		)
 
 		library = None
