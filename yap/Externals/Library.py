@@ -117,7 +117,7 @@ class Library:
 				self._headersSearchPaths = []
 				self._librarySearchPaths = []
 				self._isFramework        = True
-				self._linkTo             = [ self._name ]
+				self._linkTo             = self._libraries
 				break
 
 		return self.isFound
@@ -134,8 +134,9 @@ class Library:
 	@staticmethod
 	def find( name, required = False ):
 		libraries = dict(
-				vorbis = dict( name = 'Vorbis', headers = [ 'vorbis/codec.h', 'vorbis/vorbisfile.h' ],  libraries = [ 'vorbis', 'vorbisfile', 'ogg' ] )
-			,   OpenAL = dict( name = 'OpenAL', headers = [ 'OpenAL/al.h', 'OpenAL/alc.h' ],            libraries = [ 'OpenAL' ] )
+				vorbis = dict( name = 'Vorbis', headers = [ 'vorbis/codec.h', 'vorbis/vorbisfile.h' ],              libraries = [ 'vorbis', 'vorbisfile', 'ogg' ] )
+			,   OpenAL = dict( name = 'OpenAL', headers = [ 'OpenAL/al.h', 'OpenAL/alc.h' ],                        libraries = [ 'OpenAL' ] )
+		    ,   OpenGL = dict( name = 'OpenGL', headers = [ 'OpenGL/gl.h' 'OpenGL/OpenGL.h', 'OpenGL/glext.h' ],    libraries = [ 'OpenGL', 'QuartzCore' ] )
 		)
 
 		library = None

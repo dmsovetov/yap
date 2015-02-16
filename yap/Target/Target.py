@@ -159,7 +159,7 @@ class Target:
 				continue
 
 			if lib.isFramework:
-				self.frameworks( lib.name )
+				self.frameworks( *lib.linkTo )
 				continue
 
 			self.link( *lib.linkTo )
