@@ -25,7 +25,7 @@
 from setuptools import setup, find_packages
 
 setup(name='yap',
-      version='0.5.3',
+      version='0.5.4',
       description='yap is a yet another project generator.',
       url='https://github.com/dmsovetov/yap',
       scripts=['bin/yap'],
