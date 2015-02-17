@@ -29,6 +29,6 @@ from Target     import Project
 from Target     import Target
 from Target     import StaticLibrary
 from Target     import Executable
-from Target     import ExternalLibrary
-from Target     import ExternalPackage
+#from Target     import ExternalLibrary
+#from Target     import ExternalPackage
 from Target     import Folder

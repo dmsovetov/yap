@@ -5,10 +5,10 @@ project.define( 'LUA_COMPAT_5_2' )
 lua     = StaticLibrary( 'liblua', sources = ['src'] )
 
 # Lua shell
-shell   = Executable( 'lua', link = [ lua ], sources = ['src/lua.c'] )
+shell   = Executable( 'lua', link = [ 'liblua' ], sources = ['src/lua.c'] )
 
 # Lua compiler
-luac    = Executable( 'luac', link = [ lua ], sources = ['src/luac.c'] )
+luac    = Executable( 'luac', link = [ 'liblua' ], sources = ['src/luac.c'] )
 
 # Platform specific settings
 if platform == 'MacOS':

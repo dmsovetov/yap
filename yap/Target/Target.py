@@ -26,9 +26,7 @@
 
 import os
 
-from Library    import LocalLibrary
-from Library    import ExternalLibrary
-from Library    import Framework
+from Library    import LinkWith
 from Folder     import Folder
 from Path       import Path
 from ..Makefile import Makefile
@@ -50,8 +48,7 @@ class Target:
 		self._root          = Folder( self )
 		self.resources      = []
 		self.commands       = []
-		self._libraries     = []
-		self._frameworks    = []
+		self._linkWith      = []
 		self._paths         = []
 		self.type           = linkTo
 
@@ -74,18 +71,11 @@ class Target:
 
 		# Add default libs
 		if link:
-			for lib in link:
-				if isinstance( lib, Framework ):
-					self.frameworks( lib )
-				if isinstance( lib, Target ):
-					self.link( lib.name )
-				else:
-					self.link( lib )
+			self.link( *link )
 
 		# Add default defines
 		if defines:
-			for define in defines:
-				self.define( define )
+			self.define( *defines )
 
 		# Add default sources
 		if sources:
@@ -154,7 +144,7 @@ class Target:
 
 	# link
 	def link( self, *list ):
-		[self._libraries.append( item if isinstance( item, ExternalLibrary ) else LocalLibrary( self, item ) ) for item in list]
+		[self._linkWith.append( LinkWith( LinkWith.Library, item ) ) for item in list]
 
 	# linkExternal
 	def linkExternal( self, *list ):
@@ -169,17 +159,14 @@ class Target:
 			self.define( *lib.defines )
 
 			if lib.isFramework:
-				self.frameworks( *lib.linkTo )
+				[self._linkWith.append( LinkWith( LinkWith.Framework, name ) ) for name in lib.linkTo]
+				self._paths = self._paths + lib.frameworkSearchPaths
 				continue
 
 			self.link( *lib.linkTo )
 			self._paths = self._paths + lib.headersSearchPaths + lib.librarySearchPaths
 
 		return allLinked
-
-	# frameworks
-	def frameworks( self, *list ):
-		[self._frameworks.append( Framework( self, item ) if isinstance( item, str ) else item ) for item in list]
 
 	# include
 	def include( self, *list ):
@@ -201,13 +188,9 @@ class Target:
 	def filterSourceFiles( self, filter = None ):
 		return self._root.filterFiles( filter )
 
-	# filterFrameworks
-	def filterFrameworks( self, filter = None ):
-		return [framework for framework in self._frameworks if filter == None or filter( framework )]
-
 	# filterLibraries
 	def filterLibraries( self, filter = None ):
-		return [library for library in self._libraries if filter == None or filter( library )]
+		return [library for library in self._linkWith if filter == None or filter( library )]
 
 	# filterLocalLibraries
 	def filterLocalLibraries( self, filter = None ):
@@ -217,27 +200,27 @@ class Target:
 	def filterPaths( self, filter = None ):
 		return [path for path in self._paths if filter == None or filter( path )]
 
-	# _configure
-	def _configure( self, type ):
-		Target.Ident = Target.Ident - 1
-		self.type    = type
-
 	# sharedLibrary
 	def sharedLibrary( self ):
 		self.message( 'Configured as shared library' )
-		self._configure( Target.SharedLibrary )
+
+		Target.Ident = Target.Ident - 1
+		self.type    = Target.SharedLibrary
 
 	# staticLibrary
 	def staticLibrary( self ):
 		self.message( 'Configured as static library' )
-		self._configure( Target.StaticLibrary )
+
+		Target.Ident = Target.Ident - 1
+		self.type    = Target.StaticLibrary
 
 	# executable
 	def executable( self, **params ):
 		self.message( 'Configured as executable' )
 		self.params = params
 
-		self._configure( Target.Executable )
+		Target.Ident = Target.Ident - 1
+		self.type    = Target.Executable
 
 	# message
 	@classmethod

@@ -44,6 +44,7 @@ class Library:
 		self._defines               = defines
 		self._headersSearchPaths    = None
 		self._librarySearchPaths    = None
+		self._frameworkSearchPaths  = []
 		self._linkTo                = []
 		self._isFramework           = False
 
@@ -82,6 +83,11 @@ class Library:
 	def librarySearchPaths( self ):
 		return self._librarySearchPaths
 
+	# frameworkSearchPaths
+	@property
+	def frameworkSearchPaths( self ):
+		return self._frameworkSearchPaths
+
 	# findFilePath
 	def findFilePath( self, fileName, paths ):
 		for path in paths:
@@ -113,6 +119,7 @@ class Library:
 
 		if not headerSearchPath or not librarySearchPath:
 			return self.locateFramework()
+		#	return self.isFound
 
 		# Initialize library
 		self._headersSearchPaths = [ Path( sourceDir, targetProjectDir, targetSourceDir, Path.Headers, headerSearchPath ) ]
@@ -152,12 +159,12 @@ class Library:
 	@staticmethod
 	def find( sourceDir, targetProjectDir, targetSourceDir, name, required = False ):
 		libraries = dict(
-				vorbis      = dict( name = 'Vorbis',   headers = [ 'vorbis/codec.h', 'vorbis/vorbisfile.h' ],                   libraries = [ 'vorbis', 'vorbisfile', 'ogg' ] )
-			,   embree2     = dict( name = 'Embree2',  headers = [ 'embree2/rtcore.h', 'embree2/rtcore_ray.h' ],                libraries = [ 'embree', 'sys', 'simd', 'embree_sse41', 'embree_sse42' ] )
-			,   OpenAL      = dict( name = 'OpenAL',   headers = [ 'OpenAL/al.h', 'OpenAL/alc.h' ],                             libraries = [ 'OpenAL' ] )
-		    ,   OpenGL      = dict( name = 'OpenGL',   headers = [ 'OpenGL/gl.h' 'OpenGL/OpenGL.h', 'OpenGL/glext.h' ],         libraries = [ 'OpenGL', 'QuartzCore' ] )
-		    ,   OpenGLES    = dict( name = 'OpenGLES', headers = [ 'OpenGLES/gl.h' 'OpenGLES/OpenGL.h', 'OpenGLES/glext.h' ],   libraries = [ 'OpenGLES' ], defines = [ 'OPENGL_ES' ] )
-		    ,   GLUT        = dict( name = 'GLUT',     headers = [ 'GLUT/GLUT.h' ],                                             libraries = [ 'GLUT' ] )
+				vorbis      = dict( name = 'Vorbis',     headers = [ 'vorbis/codec.h', 'vorbis/vorbisfile.h' ],                   libraries = [ 'vorbis', 'vorbisfile', 'ogg' ] )
+			,   embree2     = dict( name = 'Embree2',    headers = [ 'embree2/rtcore.h', 'embree2/rtcore_ray.h' ],                libraries = [ 'embree', 'sys', 'simd', 'embree_sse41', 'embree_sse42' ] )
+			,   OpenAL      = dict( name = 'OpenAL',     headers = [ 'OpenAL/al.h', 'OpenAL/alc.h' ],                             libraries = [ 'OpenAL' ] )
+		    ,   OpenGL      = dict( name = 'OpenGL',     headers = [ 'OpenGL/gl.h' 'OpenGL/OpenGL.h', 'OpenGL/glext.h' ],         libraries = [ 'OpenGL', 'QuartzCore' ] )
+		    ,   OpenGLES    = dict( name = 'OpenGLES',   headers = [ 'OpenGLES/gl.h' 'OpenGLES/OpenGL.h', 'OpenGLES/glext.h' ],   libraries = [ 'OpenGLES', 'QuartzCore' ], defines = [ 'OPENGL_ES' ] )
+		    ,   GLUT        = dict( name = 'GLUT',       headers = [ 'GLUT/GLUT.h' ],                                             libraries = [ 'GLUT' ] )
 		)
 
 		library = None
@@ -168,6 +175,11 @@ class Library:
 		if name in libraries.keys():
 			library = Library( **libraries[name] )
 			if not library.locate( sourceDir, targetProjectDir, targetSourceDir ):
+				library = None
+
+		if not library:
+			library = Library( name, [], [ name ], [] )
+			if not library.locateFramework():
 				library = None
 
 		if not library and required:

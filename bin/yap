@@ -33,8 +33,8 @@ from yap import Generator
 from yap import Makefile
 from yap import StaticLibrary
 from yap import Executable
-from yap import ExternalLibrary
-from yap import ExternalPackage
+#from yap import ExternalLibrary
+#from yap import ExternalPackage
 from yap import Folder
 from yap import Externals
 
@@ -109,8 +109,8 @@ if __name__ == "__main__":
 
 	# Build config
 	platform	    = args.platform
-	findFramework   = ExternalLibrary.find
-	findPackage     = ExternalPackage.find
+#	findFramework   = ExternalLibrary.find
+#	findPackage     = ExternalPackage.find
 	project         = Makefile.getProject()
 
 	# Include

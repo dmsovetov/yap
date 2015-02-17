@@ -216,7 +216,7 @@ class Generator:
 	# forEachTargetFramework
 	def forEachTargetFramework( self, target, callback ):
 		# Run a callback for all target's frameworks
-		for framework in target.filterFrameworks():
+		for framework in target.filterLibraries( lambda lib: lib.framework ):
 			callback( target, framework.name, None )
 
 		# Run a callback for all dependencies
@@ -284,3 +284,37 @@ class Generator:
 			callback( path, group.files )
 
 		iterator( target.groups )
+
+	###
+
+	# listLibraries
+	def listLibraries( self, target, filter = None ):
+		# List all target's libraries
+		libraries = target.filterLibraries( filter )
+
+		# List libraries for all dependencies
+		dependencies = []
+
+		for library in libraries:
+			target = self.findTargetByName( library.name )
+
+			if target:
+				dependencies = dependencies + self.listLibraries( target, filter )
+
+		return libraries + dependencies
+
+	# listLibraryPaths
+	def listLibraryPaths( self, target ):
+		# List all target's library paths
+		paths = [path.path for path in target.filterPaths( lambda path: path.isLibraries )]
+
+		# List paths for all dependencies
+		dependencies = []
+
+		for library in target.filterLibraries():
+			target = self.findTargetByName( library.name )
+
+			if target:
+				dependencies = dependencies + self.listLibraryPaths( target )
+
+		return paths + dependencies

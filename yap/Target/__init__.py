@@ -26,7 +26,7 @@ from Project        import Project
 from Target         import Target
 from StaticLibrary  import StaticLibrary
 from Executable     import Executable
-from Library        import ExternalLibrary
-from Library        import ExternalPackage
+#from Library        import ExternalLibrary
+#from Library        import ExternalPackage
 from Folder         import Folder
 from Path           import Path

@@ -260,23 +260,12 @@ class Xcode5( Generator ):
 		if not target.shouldLinkLibraries:
 			return
 
-		# addLibrary
-		def addLibrary( library ):
-			if library.type == 'local':
-				if library.name in self.projects.keys():
-					addLibrary.target.addProjectLibrary( self.projects[library.name]['pbx'] )
-				else:
-					addLibrary.target.addLibrary( 'lib' + library.name + '.a' if library.name.find( '.a' ) == -1 else library.name )
-			elif library.type == 'package':
-				addLibrary.target.addLibrary( os.path.join( library.libs, library.fileName ) )
-				for item in library.items:
-					addLibrary.target.addLibrary( item )
-			else:
-				addLibrary.target.addLibrary( os.path.join( library.libs, library.fileName ) )
-
 		# Add linked libraries
-		addLibrary.target = pbx
-		self.forEachTargetLibrary( target, addLibrary )
+		for library in self.listLibraries( target, lambda lib: lib.library ):
+			if library.name in self.projects.keys():
+				pbx.addProjectLibrary( self.projects[library.name]['pbx'] )
+			else:
+				pbx.addLibrary( 'lib' + library.name + '.a' if library.name.find( '.a' ) == -1 else library.name )
 
 	# compileCommand
 	def compileCommand( self, target, cmd ):
@@ -320,7 +309,7 @@ class Xcode5( Generator ):
 		paths   = list( paths )
 
 		if target.shouldLinkLibraries:
-			libs = self.processEachTargetLibrarySearchPath( target, generatePaths ).strip().split( ' ' )
+			libs = self.listLibraryPaths( target )
 
 		libs.append( '$(inherited)' )
 		paths.append( '$(inherited)' )
