@@ -24,8 +24,6 @@
 
 import os
 
-from FindLibrary import findLibrary
-
 # class Library
 class Library:
 	# ctor
