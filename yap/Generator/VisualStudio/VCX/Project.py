@@ -149,10 +149,6 @@ class Project:
 		for cfg in self._configurations:
 			PropertySheets( self._xml, cfg )
 
-		# Output folders
-		for cfg in self._configurations:
-			PropertyGroup( self._xml, 'PropertyGroup', Condition = cfg.condition ).set( 'OutDir', '$(ProjectDir)$(Configuration)/' )
-
 		# Add item definition groups
 		for cfg in self._configurations:
 			definition = PropertyGroup( self._xml, 'ItemDefinitionGroup', Condition = cfg.condition )

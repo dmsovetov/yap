@@ -301,12 +301,15 @@ class Generator:
 			if target:
 				dependencies = dependencies + self.listLibraries( target, filter )
 
-		return libraries + dependencies
+		return list( set( libraries + dependencies ) )
 
 	# listLibraryPaths
 	def listLibraryPaths( self, target ):
 		# List all target's library paths
 		paths = [path.path for path in target.filterPaths( lambda path: path.isLibraries )]
+
+		# List path for project
+		project = [path.path for path in target.project.filterPaths( lambda path: path.isLibraries )]
 
 		# List paths for all dependencies
 		dependencies = []
@@ -317,4 +320,14 @@ class Generator:
 			if target:
 				dependencies = dependencies + self.listLibraryPaths( target )
 
-		return paths + dependencies
+		return list( set( paths + dependencies + project ) )
+
+	# listHeaderPaths
+	def listHeaderPaths( self, target ):
+		# List all target's header paths
+		paths = [path.path for path in target.filterPaths( lambda path: path.isHeaders )]
+
+		# List paths for project
+		project = [path.path for path in target.project.filterPaths( lambda path: path.isHeaders )]
+
+		return list( set( paths + project ) )

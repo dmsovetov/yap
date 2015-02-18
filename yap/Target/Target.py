@@ -192,10 +192,6 @@ class Target:
 	def filterLibraries( self, filter = None ):
 		return [library for library in self._linkWith if filter == None or filter( library )]
 
-	# filterLocalLibraries
-	def filterLocalLibraries( self, filter = None ):
-		return [library for library in self.filterLibraries( lambda library: library.type == 'local' ) if filter == None or filter( library )]
-
 	# filterPaths
 	def filterPaths( self, filter = None ):
 		return [path for path in self._paths if filter == None or filter( path )]

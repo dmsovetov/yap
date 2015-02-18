@@ -56,11 +56,27 @@ class Windows( Generator ):
 		for target in self.sourceProject.filterTargets():
 			project = self._projects[target.name]
 
-			for local in target.filterLocalLibraries():
-				project.addDependency( self._projects[local.name] )
+			for lib in self.listLibraries( target ):
+				if lib.name in self._projects.keys():
+					project.addDependency( self._projects[lib.name] )
 
 		self._solution.serialize( os.path.join( self.binaryDir, self.sourceProject.name + '.sln' ) )
 
+	# _generateLibrariesForTarget
+	def _generateLibrariesForTarget( self, target ):
+		result = []
+
+		for library in self.listLibraries( target ):
+			name = library.name + '.lib' if library.name.find( '.lib' ) == -1 else library.name
+
+			if self.findTargetByName( library.name ):
+				name = os.path.join( self.binaryDir, '$(Configuration)', name )
+
+			result.append( name )
+
+		return result
+
+	# _generateProject
 	def _generateProject( self, target ):
 		types       = dict( static = WindowsProject.StaticLibrary, executable = WindowsProject.Executable )
 		project     = self._solution.addProject( types[target.type], target.name )
@@ -68,10 +84,10 @@ class Windows( Generator ):
 		# Filter files
 		sourceFiles     = [file for file in target.filterSourceFiles( lambda file: file.ext in Windows.SourceFiles )]
 		headerFiles     = [file for file in target.filterSourceFiles( lambda file: file.ext in Windows.HeaderFiles )]
-		headers         = [path.pathRelativeToProject for path in target.filterPaths( lambda path: path.isHeaders )]
-		link            = [library.name + '.lib' for library in target.filterLibraries()]
+		headers         = self.listHeaderPaths( target )
+		link            = self._generateLibrariesForTarget( target )
 		libraries       = [path.pathRelativeToProject for path in target.filterPaths( lambda path: path.isLibraries )]
-		localLibraries  = [os.path.relpath( library.projectPath, target.projectPath ) + '/$(Configuration)' for library in target.filterLocalLibraries() if library.projectPath]
+		localLibraries  = self.listLibraryPaths( target )
 
 		# Add project source files
 		project.addSourceFiles( [file.projectPath for file in sourceFiles] )

@@ -94,6 +94,9 @@ if __name__ == "__main__":
 		Externals.Library.addSearchPaths( headers = [ '/usr/local/include' ], libraries = [ '/usr/local/lib' ], frameworks = [ '/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk/System/Library/Frameworks' ] )
 	elif args.platform == 'iOS':
 		Externals.Library.addSearchPaths( frameworks = [ '/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/System/Library/Frameworks' ] )
+	elif args.platform == 'Windows':
+		platformSdk = os.path.join( os.environ['ProgramFiles(x86)'], 'Microsoft SDKs/Windows/v7.0A/' )
+		Externals.Library.addSearchPaths( headers = [ os.path.join( platformSdk, 'Include' ) ], libraries = [ os.path.join( platformSdk, 'Lib' ) ] )
 
 	# Generate project
 	Makefile.platform = args.platform
@@ -137,7 +140,11 @@ if __name__ == "__main__":
 	# Project
 	def Project( externals = None ):
 		if externals:
-			Externals.Library.addSearchPaths( headers = [ os.path.join( Makefile.getSourceDir(), externals, 'include' ) ], libraries = [ os.path.join( Makefile.getSourceDir(), externals, 'lib', args.platform ) ] )
+			headers     = os.path.join( Makefile.getSourceDir(), externals, 'include' )
+			libraries   = os.path.join( Makefile.getSourceDir(), externals, 'lib', args.platform )
+			project.headerSearchPaths( headers )
+			project.librarySearchPaths( libraries )
+			Externals.Library.addSearchPaths( headers = [ headers ], libraries = [ libraries ] )
 
 	# Folders
 	def Folders( path ):

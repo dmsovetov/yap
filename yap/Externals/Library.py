@@ -33,7 +33,7 @@ class Library:
 	HeaderSearchPaths       = []
 	LibrarySearchPaths      = []
 	FrameworkSearchPaths    = []
-	UserPaths               = os.environ['PATH'].split( ':' )
+	UserPaths               = os.environ['PATH'].split( ':' if Makefile.platform != 'Windows' else ';' )
 
 	# ctor
 	def __init__( self, name, headers, libraries, defines = [], shared = False ):
@@ -142,11 +142,17 @@ class Library:
 
 	# formatLibraryName
 	def formatLibraryName( self, name, shared ):
-		return 'lib' + name + '.a' if not shared else 'lib' + name + '.dlyb'
+		if Makefile.platform == 'Windows':
+			return name + '.lib'
+		else:
+			return 'lib' + name + '.a' if not shared else 'lib' + name + '.dlyb'
 
 	# formatLinkName
 	def formatLinkName( self, name, shared ):
-		return 'lib' + name + '.a' if not shared else 'lib' + name + '.dlyb'
+		if Makefile.platform == 'Windows':
+			return name + '.lib'
+		else:
+			return 'lib' + name + '.a' if not shared else 'lib' + name + '.dlyb'
 
 	# addSearchPaths
 	@staticmethod
@@ -166,6 +172,11 @@ class Library:
 		    ,   OpenGLES    = dict( name = 'OpenGLES',   headers = [ 'OpenGLES/gl.h' 'OpenGLES/OpenGL.h', 'OpenGLES/glext.h' ],   libraries = [ 'OpenGLES', 'QuartzCore' ], defines = [ 'OPENGL_ES' ] )
 		    ,   GLUT        = dict( name = 'GLUT',       headers = [ 'GLUT/GLUT.h' ],                                             libraries = [ 'GLUT' ] )
 		)
+
+		if Makefile.platform == 'Windows':
+			libraries = dict(
+				OpenGL = dict( name = 'OpenGL', headers = [ 'gl/GL.h' ], libraries = [ 'OpenGL32'  ] )
+			)
 
 		library = None
 
