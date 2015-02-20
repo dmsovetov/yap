@@ -112,8 +112,6 @@ if __name__ == "__main__":
 
 	# Build config
 	platform	    = args.platform
-#	findFramework   = ExternalLibrary.find
-#	findPackage     = ExternalPackage.find
 	project         = Makefile.getProject()
 
 	# Include
@@ -140,8 +138,8 @@ if __name__ == "__main__":
 	# Project
 	def Project( externals = None ):
 		if externals:
-			headers     = os.path.join( Makefile.getSourceDir(), externals, 'include' )
-			libraries   = os.path.join( Makefile.getSourceDir(), externals, 'lib', args.platform )
+			headers     = os.path.abspath( os.path.join( Makefile.getSourceDir(), externals, 'include' ) )
+			libraries   = os.path.abspath( os.path.join( Makefile.getSourceDir(), externals, 'lib', args.platform ) )
 			project.headerSearchPaths( headers )
 			project.librarySearchPaths( libraries )
 			Externals.Library.addSearchPaths( headers = [ headers ], libraries = [ libraries ] )
