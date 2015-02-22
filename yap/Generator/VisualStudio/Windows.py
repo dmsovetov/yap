@@ -104,6 +104,7 @@ class Windows( Generator ):
 					WarningLevel                    = 'Level3',
 				    Optimization                    = 'Disabled',
 				    MultiProcessorCompilation       = True,
+				    MinimalRebuild                  = False,
 				    PreprocessorDefinitions         = ';'.join( target.project.defines + target.defines + ['WIN32', '_DEBUG', '%(PreprocessorDefinitions)'] ),
 				    AdditionalIncludeDirectories    = ';'.join( headers )
 				),
@@ -119,6 +120,7 @@ class Windows( Generator ):
 				    WarningLevel                    = 'Level3',
 			        Optimization                    = 'MaxSpeed',
 			        MultiProcessorCompilation       = True,
+			        MinimalRebuild                  = False,
 			        FunctionLevelLinking            = True,
 			        IntrinsicFunctions              = True,
 			        AdditionalDependencies          = ';'.join( link ),
