@@ -139,7 +139,7 @@ class Project:
 			group.setProperties( dict(
 				ConfigurationType = self._type,
 			    UseDebugLibraries = True if cfg.name == 'Debug' else False,
-			    CharacterSet = 'Unicode'
+			    CharacterSet = 'MultiByte'
 			) )
 
 		# Add import properties
