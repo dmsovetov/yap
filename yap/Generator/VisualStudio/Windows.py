@@ -112,7 +112,7 @@ class Windows( Generator ):
 				    SubSystem                       = 'Console',
 			        GenerateDebugInformation        = True,
 			        AdditionalLibraryDirectories    = ';'.join( libraries + localLibraries ),
-			        AdditionalDependencies          = ';'.join( link )
+			        AdditionalDependencies          = ';'.join( link + [ '%(AdditionalDependencies)' ] )
 			    )
 			) ),
 		    project.createConfiguration( 'Release', dict(
@@ -123,7 +123,6 @@ class Windows( Generator ):
 			        MinimalRebuild                  = False,
 			        FunctionLevelLinking            = True,
 			        IntrinsicFunctions              = True,
-			        AdditionalDependencies          = ';'.join( link ),
 			        PreprocessorDefinitions         = ';'.join( target.project.defines + target.defines + ['WIN32', 'NDEBUG', '%(PreprocessorDefinitions)'] ),
 			        AdditionalIncludeDirectories    = ';'.join( headers )
 			    ),
@@ -133,7 +132,7 @@ class Windows( Generator ):
 		            EnableCOMDATFolding             = True,
 		            OptimizeReferences              = True,
 		            AdditionalLibraryDirectories    = ';'.join( libraries + localLibraries ),
-		            AdditionalDependencies          = ';'.join( link )
+		            AdditionalDependencies          = ';'.join( link + [ '%(AdditionalDependencies)' ] )
 		        )
 		    ) )
 		] )
