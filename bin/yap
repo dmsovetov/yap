@@ -36,7 +36,7 @@ from yap import Executable
 #from yap import ExternalLibrary
 #from yap import ExternalPackage
 from yap import Folder
-from yap import Externals
+from yap import Platform
 
 # parseUnknownArguments
 def parseUnknownArguments( args ):
@@ -85,21 +85,19 @@ if __name__ == "__main__":
 		print 'Error: no Makefile.py file found in directory', args.source
 		exit(1)
 
-	platforms = { 'macos': 'MacOS', 'windows': 'Windows', 'flash': 'Flash', 'android': 'Android', 'ios': 'iOS', 'html5': 'HTML5' }
-	if args.platform in platforms.keys():
-		args.platform = platforms[args.platform]
+	# Platform aliases
+	aliases = dict( macos = 'MacOS', windows = 'Windows', flash = 'Flash', android = 'Android', ios = 'iOS', html5 = 'HTML5' )
+	if args.platform in aliases.keys():
+		args.platform = aliases[args.platform]
 
-	# Set search paths
-	if args.platform == 'MacOS':
-		Externals.Library.addSearchPaths( headers = [ '/usr/local/include' ], libraries = [ '/usr/local/lib' ], frameworks = [ '/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk/System/Library/Frameworks' ] )
-	elif args.platform == 'iOS':
-		Externals.Library.addSearchPaths( frameworks = [ '/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/System/Library/Frameworks' ] )
-	elif args.platform == 'Windows':
-		platformSdk = os.path.join( os.environ['ProgramFiles(x86)'], 'Microsoft SDKs/Windows/v7.0A/' )
-		Externals.Library.addSearchPaths( headers = [ os.path.join( platformSdk, 'Include' ) ], libraries = [ os.path.join( platformSdk, 'Lib' ) ] )
+	# Platforms
+	platforms = dict( Windows = Platform.Windows, MacOS = Platform.MacOS )
+	if not args.platform in platforms.keys():
+		print 'Error: unknown platform', args.platform
+		exit(1)
 
 	# Generate project
-	Makefile.platform = args.platform
+	Makefile.platform = platforms[args.platform]()
 	Makefile.set( 'PLATFORM', args.platform )
 	Makefile.set( 'ARCH', args.arch )
 	Makefile.setPaths( os.path.abspath( args.source ), os.path.abspath( args.output ) )
@@ -121,7 +119,13 @@ if __name__ == "__main__":
 
 	# Library
 	def Library( name, required = False ):
-		return Externals.Library.find( Makefile.getSourceDir(), Makefile.getCurrentBinaryDir(), Makefile.getCurrentSourceDir(), name, required )
+		library = Makefile.platform.find_library( name )
+
+		if not library and required:
+			print 'Error:', name, 'is required'
+			exit(1)
+
+		return library
 
 	# Has
 	def Has( name ):
@@ -142,7 +146,8 @@ if __name__ == "__main__":
 			libraries   = os.path.abspath( os.path.join( Makefile.getSourceDir(), externals, 'lib', args.platform ) )
 			project.headerSearchPaths( headers )
 			project.librarySearchPaths( libraries )
-			Externals.Library.addSearchPaths( headers = [ headers ], libraries = [ libraries ] )
+			Makefile.platform.add_header_search_paths( headers )
+			Makefile.platform.add_library_search_paths( libraries )
 
 	# Folders
 	def Folders( path ):

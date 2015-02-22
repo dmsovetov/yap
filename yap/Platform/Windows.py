@@ -1,3 +1,4 @@
+#################################################################################
 #
 # The MIT License (MIT)
 #
@@ -21,12 +22,33 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
+#################################################################################
 
-import Platform
+import os
 
-from Makefile   import Makefile
-from Target     import Project
-from Target     import Target
-from Target     import StaticLibrary
-from Target     import Executable
-from Target     import Folder
+from Platform import Platform
+
+# class Windows
+class Windows( Platform ):
+	# ctor
+	def __init__( self ):
+		Platform.__init__( self )
+
+		# Add system search paths
+		sdk = os.path.join( os.environ['ProgramFiles(x86)'], 'Microsoft SDKs/Windows/v7.0A/' )
+		self.add_header_search_paths( os.path.join( sdk, 'Include' ) )
+		self.add_library_search_paths( os.path.join( sdk, 'Lib' ) )
+
+		# Register libraries
+		self.register_library('OpenAL',  headers=['OpenAL/al.h', 'OpenAL/alc.h'],   libraries=['openal32'])
+		self.register_library('OpenGL',  headers=['gl/gl.h'],                       libraries=['opengl32'])
+		self.register_library('GLUT',    headers=['glut/glut.h'],                   libraries=['glut32'])
+
+	# userPaths
+	@property
+	def userPaths(self):
+		return os.environ['PATH'].split( ';' )
+
+	# library_file_names
+	def library_file_names(self, name):
+		return [name + '.lib', 'lib' + name + '.a']

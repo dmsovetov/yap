@@ -23,7 +23,6 @@
 #
 
 from Folder import Folder
-import os
 
 # class Path
 class Path:

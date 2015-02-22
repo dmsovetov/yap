@@ -1,3 +1,4 @@
+#################################################################################
 #
 # The MIT License (MIT)
 #
@@ -21,12 +22,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
+#################################################################################
 
-import Platform
-
-from Makefile   import Makefile
-from Target     import Project
-from Target     import Target
-from Target     import StaticLibrary
-from Target     import Executable
-from Target     import Folder
+from Windows import Windows
+from MacOS   import MacOS
