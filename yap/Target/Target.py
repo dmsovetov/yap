@@ -103,12 +103,14 @@ class Target:
 	@property
 	def projectPath( self ):
 		return (self.project.generator.getPathForTarget( self ) if self.project else self._currentBinaryDir).replace( '\\', '/' )
+	'''
 
 	# sourcePath
 	@property
 	def sourcePath( self ):
-		return self._currentSourceDir
+		return self._pathScope.source
 
+	'''
 	# rootProjectDir
 	@property
 	def rootProjectDir( self ):
@@ -173,15 +175,15 @@ class Target:
 
 	# include
 	def include( self, *paths ):
-		[self._paths.append( Path( Path.Headers, self.toFullPath( path ) ) ) for path in paths]
+		[self._paths.append( Path( Path.Headers, path ) ) for path in paths]
 
 	# add_library_search_paths
 	def add_library_search_paths( self, *paths ):
-		[self._paths.append( Path( Path.Libraries, self.toFullPath( path ) ) ) for path in paths]
+		[self._paths.append( Path( Path.Libraries, path ) ) for path in paths]
 
 	# add_headers_search_paths
 	def add_headers_search_paths( self, *paths ):
-		[self._paths.append( Path( Path.Headers, self.toFullPath( path ) ) ) for path in paths]
+		[self._paths.append( Path( Path.Headers, path ) ) for path in paths]
 
 	# assets
 	def assets( self, *list ):
