@@ -40,10 +40,8 @@ class Generator:
 		return os.path.join( self.binaryDir, target.name + '.dir' )
 
 	# initialize
-	def initialize( self, makefile, source, binary, project ):
+	def initialize( self, makefile, project ):
 		self.makefile       = makefile
-		self.sourceDir      = source
-		self.binaryDir      = binary
 		self.sourceProject  = project
 
 	# generate

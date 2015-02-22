@@ -22,7 +22,44 @@
 # SOFTWARE.
 #
 
-from Folder import Folder
+class classproperty(object):
+	def __init__(self, getter):
+		self.getter= getter
+	def __get__(self, instance, owner):
+		return self.getter(owner)
+
+# class PathScope
+class PathScope:
+	_Stack = []
+
+	# ctor
+	def __init__(self, source, project):
+		self._project = project
+		self._source  = source
+
+	# source
+	@property
+	def source(self):
+		return self._source
+
+	# project
+	@property
+	def project(self):
+		return self._project
+
+	@classproperty
+	def current(cls):
+		return cls._Stack[-1]
+
+	# push
+	@staticmethod
+	def push(source, project):
+		PathScope._Stack.append(PathScope(source, project))
+
+	# pop
+	@staticmethod
+	def pop():
+		PathScope._Stack.pop()
 
 # class Path
 class Path:
@@ -31,12 +68,10 @@ class Path:
 	Frameworks  = 'Frameworks'
 
 	# ctor
-	def __init__( self, sourceDir, targetProjectDir, targetSourceDir, type, path ):
-		self._targetSourceDir   = targetSourceDir
-		self._targetProjectDir  = targetProjectDir
-		self._sourceDir         = sourceDir
-		self._path              = path
-		self._type              = type
+	def __init__( self, type, path ):
+		self._scope = PathScope.current
+		self._path  = path
+		self._type  = type
 
 	# type
 	@property

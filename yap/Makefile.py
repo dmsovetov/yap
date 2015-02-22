@@ -45,11 +45,11 @@ class Makefile:
 		'HTML5':    HTML5,
 	}
 
-	SourceDir 		 = ''
-	CurrentSourceDir = []
+#	SourceDir 		 = ''
+#	CurrentSourceDir = []
 
-	BinaryDir 		 = ''
-	CurrentBinaryDir = []
+#	BinaryDir 		 = ''
+#	CurrentBinaryDir = []
 
 	platform    = None
 
@@ -72,33 +72,33 @@ class Makefile:
 		return _Env.get( name )
 
 	# getCurrentSourceDir
-	@staticmethod
-	def getCurrentSourceDir():
-		return Makefile.CurrentSourceDir[-1]
+#	@staticmethod
+#	def getCurrentSourceDir():
+#		return Makefile.CurrentSourceDir[-1]
 
 	# getSourceDir
-	@staticmethod
-	def getSourceDir():
-		return Makefile.SourceDir
+#	@staticmethod
+#	def getSourceDir():
+#		return Makefile.SourceDir
 
 	# getCurrentBinaryDir
-	@staticmethod
-	def getCurrentBinaryDir():
-		return Makefile.CurrentBinaryDir[-1]
+#	@staticmethod
+#	def getCurrentBinaryDir():
+#		return Makefile.CurrentBinaryDir[-1]
 
 	# getBinaryDir
-	@staticmethod
-	def getBinaryDir():
-		return Makefile.BinaryDir
+#	@staticmethod
+#	def getBinaryDir():
+#		return Makefile.BinaryDir
 
 	# setPaths
-	@staticmethod
-	def setPaths( source, binary ):
-		Makefile.SourceDir = source
-		Makefile.CurrentSourceDir.append( source )
+#	@staticmethod
+#	def setPaths( source, binary ):
+#		Makefile.SourceDir = source
+#		Makefile.CurrentSourceDir.append( source )
 
-		Makefile.BinaryDir = binary
-		Makefile.CurrentBinaryDir.append( binary )
+#		Makefile.BinaryDir = binary
+#		Makefile.CurrentBinaryDir.append( binary )
 
 	# createProject
 	@staticmethod
@@ -116,7 +116,7 @@ class Makefile:
 			raise Exception( 'Unknown target platform {0}'.format( platform ) )
 
 		_Project = Makefile.createProject( cls, name, platform, importer, _Generator )
-		_Generator.initialize( Makefile, Makefile.SourceDir, Makefile.BinaryDir, _Project )
+		_Generator.initialize( Makefile, _Project )
 
 	# substituteVars
 	@staticmethod

@@ -37,6 +37,7 @@ from yap import Executable
 #from yap import ExternalPackage
 from yap import Folder
 from yap import Platform
+from yap import Path
 
 # parseUnknownArguments
 def parseUnknownArguments( args ):
@@ -96,11 +97,14 @@ if __name__ == "__main__":
 		print 'Error: unknown platform', args.platform
 		exit(1)
 
+	# Push path scope
+	Path.PathScope.push( os.path.abspath( args.source ), os.path.abspath( args.output ) )
+
 	# Generate project
 	Makefile.platform = platforms[args.platform]()
 	Makefile.set( 'PLATFORM', args.platform )
 	Makefile.set( 'ARCH', args.arch )
-	Makefile.setPaths( os.path.abspath( args.source ), os.path.abspath( args.output ) )
+#	Makefile.setPaths( os.path.abspath( args.source ), os.path.abspath( args.output ) )
 	Makefile.initialize( Project, args.name, args.platform, (lambda fileName: execfile( fileName )) )
 	Makefile.getProject().define( 'DC_PLATFORM_' + args.platform.upper() )
 	Makefile.getProject().define( 'DC_PLATFORM=' + args.platform )
@@ -142,12 +146,16 @@ if __name__ == "__main__":
 	# Project
 	def Project( externals = None ):
 		if externals:
-			headers     = os.path.abspath( os.path.join( Makefile.getSourceDir(), externals, 'include' ) )
-			libraries   = os.path.abspath( os.path.join( Makefile.getSourceDir(), externals, 'lib', args.platform ) )
-			project.headerSearchPaths( headers )
-			project.librarySearchPaths( libraries )
-			Makefile.platform.add_header_search_paths( headers )
-			Makefile.platform.add_library_search_paths( libraries )
+			project.add_headers_search_paths(os.path.join(externals, 'include'))
+			project.add_headers_search_paths(os.path.join(externals, 'lib', args.platform))
+		#	Makefile.platform.add_header_search_paths(os.path.join(externals, 'include'))
+		#	Makefile.platform
+		#	headers     = os.path.abspath( os.path.join( Makefile.getSourceDir(), externals, 'include' ) )
+		#	libraries   = os.path.abspath( os.path.join( Makefile.getSourceDir(), externals, 'lib', args.platform ) )
+		#	project.headerSearchPaths( headers )
+		#	project.librarySearchPaths( libraries )
+		#	Makefile.platform.add_header_search_paths( headers )
+		#	Makefile.platform.add_library_search_paths( libraries )
 
 	# Folders
 	def Folders( path ):
@@ -169,6 +177,6 @@ if __name__ == "__main__":
 
 		return [File( path ) for path in Folder.glob( os.path.join( Makefile.getCurrentSourceDir(), path ) ) if os.path.isfile( path )]
 
-	execfile( Makefile.SourceDir + '/Makefile.py' )
+	execfile( Path.PathScope.current.source + '/Makefile.py' )
 
 	Makefile.generate()

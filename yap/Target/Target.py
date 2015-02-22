@@ -28,8 +28,8 @@ import os
 
 from Library    import LinkWith
 from Folder     import Folder
-from Path       import Path
 from ..Makefile import Makefile
+from ..Path     import Path, PathScope
 
 # class Target
 class Target:
@@ -51,11 +51,12 @@ class Target:
 		self._linkWith      = []
 		self._paths         = []
 		self.type           = linkTo
+		self._pathScope     = PathScope.current
 
-		self._rootProjectDir    = Makefile.getBinaryDir()
-		self._rootSourceDir     = Makefile.getSourceDir()
-		self._currentSourceDir  = Makefile.getCurrentSourceDir()
-		self._currentBinaryDir  = Makefile.getCurrentBinaryDir()
+	#	self._rootProjectDir    = Makefile.getBinaryDir()
+	#	self._rootSourceDir     = Makefile.getSourceDir()
+	#	self._currentSourceDir  = Makefile.getCurrentSourceDir()
+	#	self._currentBinaryDir  = Makefile.getCurrentBinaryDir()
 
 		# Register this target
 		if self.project:
@@ -97,6 +98,7 @@ class Target:
 		elif linkTo == Target.SharedLibrary:
 			self.sharedLibrary()
 
+	'''
 	# projectPath
 	@property
 	def projectPath( self ):
@@ -111,6 +113,7 @@ class Target:
 	@property
 	def rootProjectDir( self ):
 		return self._rootProjectDir
+	'''
 
 	# project
 	@property
@@ -124,11 +127,11 @@ class Target:
 
 	# toFullPath
 	def toFullPath( self, path ):
-		return os.path.join( self.sourcePath, Makefile.substituteVars( path ) ).replace( '\\', '/' )
+		return os.path.join( self._pathScope.source, Makefile.substituteVars( path ) ).replace( '\\', '/' )
 
 	# toSourcePath
 	def toSourcePath( self, path ):
-		return os.path.relpath( path, self.sourcePath ).replace( '\\', '/' )
+		return os.path.relpath( path, self._pathScope.source ).replace( '\\', '/' )
 
 	# define
 	def define( self, *list ):
@@ -169,16 +172,16 @@ class Target:
 		return allLinked
 
 	# include
-	def include( self, *list ):
-		[self._paths.append( Path( self._rootSourceDir, self._currentBinaryDir, self._currentSourceDir, Path.Headers, self.toFullPath( path ) ) ) for path in list]
+	def include( self, *paths ):
+		[self._paths.append( Path( Path.Headers, self.toFullPath( path ) ) ) for path in paths]
 
-	# librarySearchPaths
-	def librarySearchPaths( self, *list ):
-		[self._paths.append( Path( self._rootSourceDir, self._currentBinaryDir, self._currentSourceDir, Path.Libraries, self.toFullPath( path ) ) ) for path in list]
+	# add_library_search_paths
+	def add_library_search_paths( self, *paths ):
+		[self._paths.append( Path( Path.Libraries, self.toFullPath( path ) ) ) for path in paths]
 
-	# headerSearchPaths
-	def headerSearchPaths( self, *list ):
-		[self._paths.append( Path( self._rootSourceDir, self._currentBinaryDir, self._currentSourceDir, Path.Headers, self.toFullPath( path ) ) ) for path in list]
+	# add_headers_search_paths
+	def add_headers_search_paths( self, *paths ):
+		[self._paths.append( Path( Path.Headers, self.toFullPath( path ) ) ) for path in paths]
 
 	# assets
 	def assets( self, *list ):

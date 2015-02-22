@@ -27,8 +27,8 @@
 import os
 import sys
 
-from ..Makefile  import Makefile
-from Target      import Target
+from ..Path import PathScope
+from Target import Target
 
 sys.path.insert( 1, os.path.join( sys.path[0], '..' ) )
 
@@ -51,6 +51,13 @@ class Project( Target ):
 	# target
 	def target( self, *list ):
 		for item in list:
+			scope = PathScope.current
+
+			PathScope.push(source=os.path.join(scope.source, item), project=os.path.join(scope.project, item + '.dir'))
+			self.importer(os.path.join(scope.source, item, 'Makefile.py'))
+			PathScope.pop()
+
+			'''
 			current = Makefile.getCurrentSourceDir()
 			binary  = Makefile.getCurrentBinaryDir()
 
@@ -61,6 +68,7 @@ class Project( Target ):
 
 			Makefile.CurrentBinaryDir.pop()
 			Makefile.CurrentSourceDir.pop()
+			'''
 
 	# registerTarget
 	def registerTarget( self, target ):
