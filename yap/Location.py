@@ -24,25 +24,6 @@
 
 import os
 
-# Location
-class Location:
-	External = 'external'
-	Local    = 'local'
-
-	def __init__(self, **entries):
-		self.__dict__.update(entries)
-
-	@property
-	def local(self): return self.location == LibraryLocation.Local
-
-	@property
-	def external(self): return self.location == LibraryLocation.External
-
-	@property
-	def framework(self): return self.external and self.filename.endswith('.framework')
-
-import os
-
 class classproperty(object):
 	def __init__(self, getter):
 		self.getter= getter

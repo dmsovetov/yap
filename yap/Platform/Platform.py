@@ -29,7 +29,7 @@ import os
 from collections import namedtuple
 from FindLibrary import FindLibrary
 from ..Makefile  import Makefile
-from ..Location  import Location, Path
+from ..Location  import Path
 
 # class Platform
 class Platform:
@@ -102,7 +102,7 @@ class Platform:
 		for header in headers:
 			for filename in self.header_file_names(name, header):
 				path = Platform.exists(filename, self.headers)
-				if path: locations.append(Location(location=Location.External, filename=filename, path=Path(Path.Headers, path)))
+				if path: locations.append(namedtuple('Location', 'filename, path')(filename=filename, path=Path(Path.Headers, path)))
 
 		return locations
 
@@ -113,7 +113,7 @@ class Platform:
 		for library in libraries:
 			for filename in self.library_file_names(library):
 				path = Platform.exists(filename, self.libraries)
-				if path: locations.append(Location(location=Location.External, filename=filename, path=Path(Path.Libraries, path)))
+				if path: locations.append(namedtuple('Location', 'filename, path')(filename=filename, path=Path(Path.Libraries, path)))
 
 		return locations
 

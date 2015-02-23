@@ -28,7 +28,6 @@ import os
 
 from collections import namedtuple
 from Folder     import Folder
-#from ..Library  import Library
 from ..Makefile import Makefile
 from ..Location import Path, PathScope
 

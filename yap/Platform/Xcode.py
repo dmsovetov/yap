@@ -44,6 +44,7 @@ class Xcode(Unix):
 			library = self._aliases[library]
 
 		# Find a framework by name
+		name       = library
 		library    = library + '.framework'
 		frameworks = os.path.join( self._sdk, 'System/Library/Frameworks' )
 		path       = Unix.exists(library, [frameworks])
@@ -51,7 +52,7 @@ class Xcode(Unix):
 		if not path:
 			return None
 
-		return namedtuple('Framework', 'type, name, path')(type='framework', name=library, path=frameworks)
+		return namedtuple('Framework', 'type, name, path')(type='framework', name=name, path=frameworks)
 
 	# add_library_alias
 	def add_library_alias(self, identifier, alias):

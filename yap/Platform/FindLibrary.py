@@ -24,10 +24,10 @@
 #
 #################################################################################
 
+'''
 import os
 
-from ..Location import Location, Path
-#from ..Library  import Library
+from ..Location import Path
 
 # class FindLibrary
 class FindLibrary:
@@ -37,3 +37,4 @@ class FindLibrary:
 		self._headers   = headers
 		self._libraries = libraries
 		self._defines   = defines
+'''

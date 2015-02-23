@@ -101,28 +101,6 @@ class Generator:
 
 		return callback.result
 
-	# processEachTargetInclude
-	def processEachTargetInclude( self, target, processor ):
-		# callback
-		def callback( path ):
-			callback.result += processor( path )
-
-		callback.result = ''
-		self.forEachTargetInclude( target, callback )
-
-		return callback.result
-
-	# processEachTargetDefine
-	def processEachTargetDefine( self, target, processor ):
-		# callback
-		def callback( define ):
-			callback.result += processor( target, define )
-
-		callback.result = ''
-		self.forEachTargetDefine( target, callback )
-
-		return callback.result
-
 	# processEachTargetCommand
 	def processEachTargetCommand( self, target, processor ):
 		# callback
@@ -233,28 +211,6 @@ class Generator:
 
 		return result
 
-	# forEachTargetInclude
-	def forEachTargetInclude( self, target, callback ):
-		path = self.getPathForTarget( target )
-
-		# Project include paths
-		if target != self.sourceProject:
-			self.forEachTargetInclude( self.sourceProject, callback )
-
-		# Target
-		for path in target.filterPaths( lambda path: path.isheaders ):
-			callback( path )
-
-	# forEachTargetDefine
-	def forEachTargetDefine( self, target, callback ):
-		# Project defines
-		if target != self.sourceProject:
-			self.forEachTargetDefine( self.sourceProject, callback )
-
-		# Target
-		for define in target.defines:
-			callback( define )
-
 	# forEachCommand
 	def forEachCommand( self, target, callback ):
 		for cmd in target.commands:
@@ -293,31 +249,38 @@ class Generator:
 
 		return libraries + dependencies
 
-	# listLibraryPaths
-	def listLibraryPaths( self, target ):
+	# list_library_paths
+	def list_library_paths(self, target):
 		# List all target's library paths
-		paths = [path.path for path in target.filterPaths( lambda path: path.islibraries )]
+		libraries = [library for library in target.filterLibraries(lambda library: library.type == 'external')]
+		paths     = []
 
-		# List path for project
-		project = [path.path for path in target.project.filterPaths( lambda path: path.islibraries )]
+		for library in libraries:
+			paths = paths + [location.path.full for location in library.locations if location.path.islibraries]
 
 		# List paths for all dependencies
 		dependencies = []
 
-		for library in target.filterLibraries():
-			target = self.findTargetByName(library.name)
+		for library in target.filterLibraries(lambda library: library.type == 'local'):
+			dependencies = dependencies + self.list_library_paths(self.findTargetByName(library.name))
 
-			if target:
-				dependencies = dependencies + self.listLibraryPaths( target )
+		return list(set(paths + dependencies))
 
-		return list( set( paths + dependencies + project ) )
+	# list_header_paths
+	def list_header_paths(self, target):
+		# Target include paths
+		paths = [path.full for path in target.filterPaths(lambda path: path.isheaders)]
 
-	# listHeaderPaths
-	def listHeaderPaths( self, target ):
-		# List all target's header paths
-		paths = [path.path for path in target.filterPaths( lambda path: path.isheaders )]
+		# List all target's library paths
+		libraries = [library for library in target.filterLibraries(lambda library: library.type == 'external')]
 
-		# List paths for project
-		project = [path.path for path in target.project.filterPaths( lambda path: path.isheaders )]
+		for library in libraries:
+			paths = paths + [location.path.full for location in library.locations if location.path.isheaders]
 
-		return list( set( paths + project ) )
+		return list(set(paths))
+
+	# list_defines
+	def list_defines(self, target):
+		project   = self.list_defines(target.project) if target.project else []
+		libraries = ['HAVE_' + library.name.upper() for library in self.list_libraries(target)]
+		return list(set(project + target.defines + libraries))

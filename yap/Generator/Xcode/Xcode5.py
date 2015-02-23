@@ -248,7 +248,7 @@ class Xcode5( Generator ):
 				assert library.name in self.projects.keys()
 				pbx.addProjectLibrary( self.projects[library.name]['pbx'] )
 			elif library.type == 'framework':
-				pbx.addFramework(os.path.join(library.path, library.name))
+				pbx.addFramework(os.path.join(library.path, library.name + '.framework'))
 			elif library.type == 'external':
 				for location in [location for location in library.locations if location.path.islibraries]:
 					pbx.addLibrary(os.path.join(location.path.full, location.filename))
@@ -278,10 +278,6 @@ class Xcode5( Generator ):
 
 	# generateConfiguration
 	def generateConfiguration( self, target, name ):
-		# generatePaths
-		def generatePaths( path ):
-			return ' ' + path.full + ' '
-
 		# generateLibrarySearchPaths
 		def generateLibrarySearchPaths( library ):
 			return ' ' + library.libs + ' ' if library.type == 'external' else None
@@ -290,19 +286,18 @@ class Xcode5( Generator ):
 		def generateDefines( target, define ):
 			return ' ' + define + ' '
 
-		paths   = self.processEachTargetInclude( target, generatePaths ).strip().split( ' ' )
-		defines = self.processEachTargetDefine( target, generateDefines ).strip().split( ' ' )
+		headers = self.list_header_paths(target)
+		defines = self.list_defines(target)
+	#	defines = self.processEachTargetDefine( target, generateDefines ).strip().split( ' ' )
 		libs    = []
-		paths   = set( paths )
-		paths   = list( paths )
 
 		if target.shouldLinkLibraries:
-			libs = self.listLibraryPaths( target )
+			libs = self.list_library_paths( target )
 
 		libs.append( '$(inherited)' )
-		paths.append( '$(inherited)' )
+		headers.append( '$(inherited)' )
 
-		return { 'PRODUCT_NAME': '"$(TARGET_NAME)"', 'HEADER_SEARCH_PATHS': paths, 'LIBRARY_SEARCH_PATHS': libs, 'GCC_PREPROCESSOR_DEFINITIONS': defines }
+		return { 'PRODUCT_NAME': '"$(TARGET_NAME)"', 'HEADER_SEARCH_PATHS': headers, 'LIBRARY_SEARCH_PATHS': libs, 'GCC_PREPROCESSOR_DEFINITIONS': defines }
 
 	CodegenCommand = """
 {output}: {input}
