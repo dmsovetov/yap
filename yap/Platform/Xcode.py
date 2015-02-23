@@ -22,29 +22,45 @@
 # SOFTWARE.
 #
 
-# class Library
-class Library:
-	Local    = 'local'
-	External = 'external'
+import os
 
+from collections    import namedtuple
+from Unix           import Unix
+#from ..Library      import Library
+
+# class Xcode
+class Xcode(Unix):
 	# ctor
-	def __init__(self, type, name, locations = []):
-		self._type      = type
-		self._name      = name
-		self._locations = locations
+	def __init__(self, sdk):
+		Unix.__init__(self)
 
-	# name
-	@property
-	def name(self): return self._name
+		self._sdk       = sdk
+		self._aliases   = {}
 
-	# local
-	@property
-	def local(self): return self._type == Library.Local
+	# _find_library_by_name
+	def _find_library_by_name(self, library):
+		# Do an alias lookup
+		if library in self._aliases.keys():
+			library = self._aliases[library]
 
-	# external
-	@property
-	def external(self): return self._type == Library.External
+		# Find a framework by name
+		library    = library + '.framework'
+		frameworks = os.path.join( self._sdk, 'System/Library/Frameworks' )
+		path       = Unix.exists(library, [frameworks])
 
-	# locations
-	@property
-	def locations(self): return self._locations
+		if not path:
+			return None
+
+		return namedtuple('Framework', 'type, name, path')(type='framework', name=library, path=frameworks)
+
+	# add_library_alias
+	def add_library_alias(self, identifier, alias):
+		self._aliases[identifier] = alias
+
+	# library_file_names
+	def library_file_names(self, name):
+		return [name + '.framework'] + Unix.library_file_names(self, name)
+
+	# header_file_names
+	def header_file_names(self, name, filename):
+		return [name + '.framework/Headers/' + os.path.basename(filename)] + Unix.header_file_names(self, name, filename)
