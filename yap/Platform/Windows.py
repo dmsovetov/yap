@@ -51,4 +51,4 @@ class Windows( Platform ):
 
 	# library_file_names
 	def library_file_names(self, name):
-		return [name + '.lib', 'lib' + name + '.a']
+		return [name + '.lib', 'lib' + name + '.lib']

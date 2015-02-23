@@ -49,30 +49,31 @@ class Windows( Generator ):
 		# Generate projects
 		for target in self.sourceProject.filterTargets():
 			project = self._generateProject( target )
-			project.serialize( os.path.join( self.binaryDir, target.name + '.dir', target.name + '.vcxproj' ) )
+			project.serialize( os.path.join( self.projectpath, target.name + '.dir', target.name + '.vcxproj' ) )
 			self._projects[target.name] = project
 
 		# Set project dependencies
 		for target in self.sourceProject.filterTargets():
 			project = self._projects[target.name]
 
-			for lib in self.listLibraries( target ):
+			for lib in self.list_libraries( target ):
 				if lib.name in self._projects.keys():
 					project.addDependency( self._projects[lib.name] )
 
-		self._solution.serialize( os.path.join( self.binaryDir, self.sourceProject.name + '.sln' ) )
+		self._solution.serialize( os.path.join( self.projectpath, self.sourceProject.name + '.sln' ) )
 
 	# _generateLibrariesForTarget
 	def _generateLibrariesForTarget( self, target ):
 		result = []
 
-		for library in self.listLibraries( target ):
-			name = library.name + '.lib' if library.name.find( '.lib' ) == -1 else library.name
-
-			if self.findTargetByName( library.name ):
-				name = os.path.join( self.binaryDir, '$(Configuration)', name )
-
-			result.append( name )
+		for library in self.list_libraries( target ):
+			if library.type == 'local':
+				result.append(os.path.join(self.projectpath, '$(Configuration)', library.name + '.lib'))
+			elif library.type == 'external':
+				for location in [location for location in library.locations if location.path.islibraries]:
+					result.append(os.path.join(location.path.full, location.filename))
+			else:
+				print 'Error: unknown library type', library.type
 
 		return result
 
@@ -84,10 +85,11 @@ class Windows( Generator ):
 		# Filter files
 		sourceFiles     = [file for file in target.filterSourceFiles( lambda file: file.ext in Windows.SourceFiles )]
 		headerFiles     = [file for file in target.filterSourceFiles( lambda file: file.ext in Windows.HeaderFiles )]
-		headers         = self.listHeaderPaths( target )
+		headers         = self.list_header_paths( target )
 		link            = self._generateLibrariesForTarget( target )
-		libraries       = [path.pathRelativeToProject for path in target.filterPaths( lambda path: path.isLibraries )]
-		localLibraries  = self.listLibraryPaths( target )
+		libraries       = [path.pathRelativeToProject for path in target.filterPaths( lambda path: path.islibraries )]
+		localLibraries  = self.list_library_paths( target )
+		defines         = self.list_defines(target)
 
 		# Add project source files
 		project.addSourceFiles( [file.projectPath for file in sourceFiles] )
@@ -105,7 +107,7 @@ class Windows( Generator ):
 				    Optimization                    = 'Disabled',
 				    MultiProcessorCompilation       = True,
 				    MinimalRebuild                  = False,
-				    PreprocessorDefinitions         = ';'.join( target.project.defines + target.defines + ['WIN32', '_DEBUG', '%(PreprocessorDefinitions)'] ),
+				    PreprocessorDefinitions         = ';'.join( defines + ['WIN32', '_DEBUG', '%(PreprocessorDefinitions)'] ),
 				    AdditionalIncludeDirectories    = ';'.join( headers )
 				),
 			    Link = dict(
@@ -123,7 +125,7 @@ class Windows( Generator ):
 			        MinimalRebuild                  = False,
 			        FunctionLevelLinking            = True,
 			        IntrinsicFunctions              = True,
-			        PreprocessorDefinitions         = ';'.join( target.project.defines + target.defines + ['WIN32', 'NDEBUG', '%(PreprocessorDefinitions)'] ),
+			        PreprocessorDefinitions         = ';'.join( defines + ['WIN32', 'NDEBUG', '%(PreprocessorDefinitions)'] ),
 			        AdditionalIncludeDirectories    = ';'.join( headers )
 			    ),
 		        Link = dict(
