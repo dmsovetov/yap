@@ -169,10 +169,12 @@ if __name__ == "__main__":
 		return [File( path ) for path in Folder.glob( os.path.join( Makefile.getCurrentSourceDir(), path ) ) if os.path.isfile( path )]
 
 	# Module
-	def Module(path, link):
-		source      = Location.PathScope.current.source
-		modules     = os.path.join(source, path)
-		name, ext   = os.path.splitext(os.path.basename(link))
+	def Module(url, makefile = None, folder = None):
+		name, ext   = os.path.splitext(os.path.basename(url))
+		modules     = Location.PathScope.current.source
+
+		if folder:
+			modules = os.path.join(modules, folder)
 
 		# Create modules folder
 		if not os.path.exists(modules):
@@ -181,10 +183,13 @@ if __name__ == "__main__":
 		# Checkout module
 		if not os.path.exists(os.path.join(modules, name)):
 			if ext == '.git':
-				os.system('cd {0} && git clone {1}'.format(modules, link))
+				os.system('cd {0} && git clone {1}'.format(modules, url))
 
 		# Include it to project
-		Include(os.path.join(modules, name))
+		if makefile:
+			Include(os.path.join(modules, name, makefile))
+		else:
+			Include(os.path.join(modules, name))
 
 	execfile( Location.PathScope.current.source + '/Makefile.py' )
 
