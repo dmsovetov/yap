@@ -53,7 +53,6 @@ class Xcode5( Generator ):
 
 			self.addTargetSources( target.name, target, pbx )
 			self.addTargetLibraries( target.name, target, pbx )
-			self.addTargetFrameworks( target.name, target, pbx )
 			self.addTargetCommands( target.name, target, pbx )
 			self.saveProject( project['project'], target )
 
@@ -105,7 +104,7 @@ class Xcode5( Generator ):
 	# generateWorkspace
 	def generateWorkspace( self ):
 		# Create the workspace folder
-		workspace = os.path.join( self.binaryDir, self.sourceProject.name + '.xcworkspace' )
+		workspace = os.path.join( self.projectpath, self.sourceProject.name + '.xcworkspace' )
 
 		# Create folder
 		if not os.path.exists( workspace ):
@@ -116,7 +115,7 @@ class Xcode5( Generator ):
 
 		for name, project in self.projects.items():
 			folder    = self.getPathForTarget( project['target'] )
-			path      = os.path.relpath( os.path.join( folder, name + '.xcodeproj' ), self.binaryDir )
+			path      = os.path.relpath( os.path.join( folder, name + '.xcodeproj' ), self.projectpath )
 			projects += "<FileRef location='group:{0}'/>\n".format( path )
 
 		# Dump workspace to file
@@ -238,34 +237,22 @@ class Xcode5( Generator ):
 		# Add source files to target
 		addSourceFile.target = pbx
 		self.forEachTargetSource( target, addSourceFile )
-
-	# addTargetFrameworks
-	def addTargetFrameworks( self, name, target, pbx ):
-		if not target.shouldLinkLibraries:
-			return
-
-		# addFramework
-		def addFramework( target, name, library ):
-			if name.endswith( '.framework' ) and not os.path.isabs( name ):
-				name = os.path.join( self.sourceDir, name )
-
-			addFramework.target.addFramework( name )
-
-		# Add global frameworks
-		addFramework.target = pbx
-		self.forEachTargetFramework( target, addFramework )
 		
 	# addTargetLibraries
 	def addTargetLibraries( self, name, target, pbx ):
 		if not target.shouldLinkLibraries:
 			return
 
-		# Add linked libraries
-		for library in self.listLibraries( target, lambda lib: lib.library ):
-			if library.name in self.projects.keys():
+		for library in self.list_libraries(target):
+			if library.local:
+				assert library.name in self.projects.keys()
 				pbx.addProjectLibrary( self.projects[library.name]['pbx'] )
 			else:
-				pbx.addLibrary( 'lib' + library.name + '.a' if library.name.find( '.a' ) == -1 else library.name )
+				for location in [location for location in library.locations if location.path.islibraries]:
+					if location.filename.endswith('.framework'):
+						pbx.addFramework(os.path.join(location.path.full, location.filename))
+					else:
+						pbx.addLibrary(os.path.join(location.path.full, location.filename))
 
 	# compileCommand
 	def compileCommand( self, target, cmd ):
@@ -292,7 +279,7 @@ class Xcode5( Generator ):
 	def generateConfiguration( self, target, name ):
 		# generatePaths
 		def generatePaths( path ):
-			return ' ' + path.pathRelativeToProject + ' '
+			return ' ' + path.full + ' '
 
 		# generateLibrarySearchPaths
 		def generateLibrarySearchPaths( library ):

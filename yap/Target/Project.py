@@ -27,8 +27,8 @@
 import os
 import sys
 
-from ..Path import PathScope
-from Target import Target
+from ..Location import PathScope
+from Target     import Target
 
 sys.path.insert( 1, os.path.join( sys.path[0], '..' ) )
 
@@ -48,6 +48,16 @@ class Project( Target ):
 		self.outputLibPath	= None
 		self.outputExePath	= None
 
+	# headerSearchPaths
+	@property
+	def headerSearchPaths(self):
+		return [item.full for item in self.filterPaths(lambda path: path.isheaders)]
+
+	# librarySearchPaths
+	@property
+	def librarySearchPaths(self):
+		return [item.full for item in self.filterPaths(lambda path: path.islibraries)]
+
 	# target
 	def target( self, *list ):
 		for item in list:
@@ -57,18 +67,6 @@ class Project( Target ):
 			self.importer(os.path.join(scope.source, item, 'Makefile.py'))
 			PathScope.pop()
 
-			'''
-			current = Makefile.getCurrentSourceDir()
-			binary  = Makefile.getCurrentBinaryDir()
-
-			Makefile.CurrentSourceDir.append( os.path.join( current, item ) )
-			Makefile.CurrentBinaryDir.append( os.path.join( binary, item + '.dir' ) )
-
-			self.importer( os.path.join( current, item, 'Makefile.py' ) )
-
-			Makefile.CurrentBinaryDir.pop()
-			Makefile.CurrentSourceDir.pop()
-			'''
 
 	# registerTarget
 	def registerTarget( self, target ):

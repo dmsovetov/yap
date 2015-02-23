@@ -26,10 +26,10 @@
 
 import os
 
-from Library    import LinkWith
 from Folder     import Folder
+from ..Library  import Library
 from ..Makefile import Makefile
-from ..Path     import Path, PathScope
+from ..Location import Path, PathScope
 
 # class Target
 class Target:
@@ -42,7 +42,7 @@ class Target:
 	def __init__( self, name, sources = None, paths = None, defines = None, linkTo = None, link = None ):
 		self.message( 'Configure ' + name + '...' )
 
-		self._project       = Makefile.getProject()
+		self._project       = Makefile.project
 		self.name           = name
 		self._defines       = []
 		self._root          = Folder( self )
@@ -52,11 +52,6 @@ class Target:
 		self._paths         = []
 		self.type           = linkTo
 		self._pathScope     = PathScope.current
-
-	#	self._rootProjectDir    = Makefile.getBinaryDir()
-	#	self._rootSourceDir     = Makefile.getSourceDir()
-	#	self._currentSourceDir  = Makefile.getCurrentSourceDir()
-	#	self._currentBinaryDir  = Makefile.getCurrentBinaryDir()
 
 		# Register this target
 		if self.project:
@@ -98,24 +93,15 @@ class Target:
 		elif linkTo == Target.SharedLibrary:
 			self.sharedLibrary()
 
-	'''
-	# projectPath
+	# projectpath
 	@property
-	def projectPath( self ):
-		return (self.project.generator.getPathForTarget( self ) if self.project else self._currentBinaryDir).replace( '\\', '/' )
-	'''
+	def projectpath(self):
+		return (self.project.generator.getPathForTarget(self) if self.project else self._currentBinaryDir).replace( '\\', '/' )
 
 	# sourcePath
 	@property
 	def sourcePath( self ):
 		return self._pathScope.source
-
-	'''
-	# rootProjectDir
-	@property
-	def rootProjectDir( self ):
-		return self._rootProjectDir
-	'''
 
 	# project
 	@property
@@ -149,27 +135,18 @@ class Target:
 
 	# link
 	def link( self, *list ):
-		[self._linkWith.append( LinkWith( LinkWith.Library, item ) ) for item in list]
+		[self._linkWith.append( Library(type=Library.Local, name=item) ) for item in list]
 
 	# linkExternal
 	def linkExternal( self, *list ):
 		allLinked = True
 
-		for lib in list:
-			if not lib:
+		for location in list:
+			if not location:
 				allLinked = False
 				continue
 
-			self.define( 'HAVE_' + lib.name.upper() )
-			self.define( *lib.defines )
-
-			if lib.isFramework:
-				[self._linkWith.append( LinkWith( LinkWith.Framework, name ) ) for name in lib.linkTo]
-				self._paths = self._paths + lib.frameworkSearchPaths
-				continue
-
-			self.link( *lib.linkTo )
-			self._paths = self._paths + lib.headersSearchPaths + lib.librarySearchPaths
+			self._linkWith.append(location)
 
 		return allLinked
 

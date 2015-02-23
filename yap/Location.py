@@ -22,6 +22,27 @@
 # SOFTWARE.
 #
 
+import os
+
+# Location
+class Location:
+	External = 'external'
+	Local    = 'local'
+
+	def __init__(self, **entries):
+		self.__dict__.update(entries)
+
+	@property
+	def local(self): return self.location == LibraryLocation.Local
+
+	@property
+	def external(self): return self.location == LibraryLocation.External
+
+	@property
+	def framework(self): return self.external and self.filename.endswith('.framework')
+
+import os
+
 class classproperty(object):
 	def __init__(self, getter):
 		self.getter= getter
@@ -69,6 +90,8 @@ class Path:
 
 	# ctor
 	def __init__( self, type, path ):
+		assert isinstance(path, str)
+
 		self._scope = PathScope.current
 		self._path  = path
 		self._type  = type
@@ -83,25 +106,25 @@ class Path:
 	def path( self ):
 		return self._path
 
+	# full
+	@property
+	def full(self):
+		return os.path.normpath(os.path.join(self._scope.source, self.path))
+
 	# relativeToProject
 	@property
 	def pathRelativeToProject( self ):
-		if self.path.startswith( self._sourceDir ):
-			return Folder.relativeTo( self.path, self._targetProjectDir )
+		if self.path.startswith( self._scope.source ):
+			return Folder.relativeTo( self.path, self._scope.project )
 
 		return self.path
 
-	# isHeaders
+	# isheaders
 	@property
-	def isHeaders( self ):
+	def isheaders( self ):
 		return self._type == Path.Headers
 
-	# isLibraries
+	# islibraries
 	@property
-	def isLibraries( self ):
+	def islibraries( self ):
 		return self._type == Path.Libraries
-
-	# isFrameworks
-	@property
-	def isFrameworks( self ):
-		return self._type == Path.Frameworks

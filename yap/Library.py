@@ -22,32 +22,29 @@
 # SOFTWARE.
 #
 
-# class LinkWith
-class LinkWith:
-	Library     = 'library'
-	Framework   = 'framework'
+# class Library
+class Library:
+	Local    = 'local'
+	External = 'external'
 
 	# ctor
-	def __init__( self, type, name ):
-		self._type  = type
-		self._name  = name
-
-	# framework
-	@property
-	def framework( self ):
-		return self._type == LinkWith.Framework
-
-	# library
-	@property
-	def library( self ):
-		return self._type == LinkWith.Library
-
-	# type
-	@property
-	def type( self ):
-		return self._type
+	def __init__(self, type, name, locations = []):
+		self._type      = type
+		self._name      = name
+		self._locations = locations
 
 	# name
 	@property
-	def name( self ):
-		return self._name
+	def name(self): return self._name
+
+	# local
+	@property
+	def local(self): return self._type == Library.Local
+
+	# external
+	@property
+	def external(self): return self._type == Library.External
+
+	# locations
+	@property
+	def locations(self): return self._locations

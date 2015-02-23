@@ -33,11 +33,9 @@ from yap import Generator
 from yap import Makefile
 from yap import StaticLibrary
 from yap import Executable
-#from yap import ExternalLibrary
-#from yap import ExternalPackage
 from yap import Folder
 from yap import Platform
-from yap import Path
+from yap import Location
 
 # parseUnknownArguments
 def parseUnknownArguments( args ):
@@ -49,10 +47,10 @@ def parseUnknownArguments( args ):
 		name  = items[0][2:].upper()
 
 		if len( items ) == 1:
-			Makefile.getProject().define( 'DC_' + name + '_ENABLED' )
+			Makefile.project.define( 'DC_' + name + '_ENABLED' )
 		else:
-			Makefile.getProject().define( 'DC_' + name + '=' + items[1] )
-			Makefile.getProject().define( 'DC_' + name + '_' + items[1].upper() )
+			Makefile.project.define( 'DC_' + name + '=' + items[1] )
+			Makefile.project.define( 'DC_' + name + '_' + items[1].upper() )
 			Makefile.set( name, items[1] )
 
 # Entry point
@@ -92,44 +90,43 @@ if __name__ == "__main__":
 		args.platform = aliases[args.platform]
 
 	# Platforms
-	platforms = dict( Windows = Platform.Windows, MacOS = Platform.MacOS )
+	platforms = dict( Windows = Platform.Windows, MacOS = Platform.MacOS, iOS = Platform.iOS )
 	if not args.platform in platforms.keys():
 		print 'Error: unknown platform', args.platform
 		exit(1)
 
 	# Push path scope
-	Path.PathScope.push( os.path.abspath( args.source ), os.path.abspath( args.output ) )
+	Location.PathScope.push( os.path.abspath( args.source ), os.path.abspath( args.output ) )
 
 	# Generate project
 	Makefile.platform = platforms[args.platform]()
 	Makefile.set( 'PLATFORM', args.platform )
 	Makefile.set( 'ARCH', args.arch )
-#	Makefile.setPaths( os.path.abspath( args.source ), os.path.abspath( args.output ) )
 	Makefile.initialize( Project, args.name, args.platform, (lambda fileName: execfile( fileName )) )
-	Makefile.getProject().define( 'DC_PLATFORM_' + args.platform.upper() )
-	Makefile.getProject().define( 'DC_PLATFORM=' + args.platform )
+	Makefile.project.define( 'DC_PLATFORM_' + args.platform.upper() )
+	Makefile.project.define( 'DC_PLATFORM=' + args.platform )
 
 	# Parse unknown arguments
 	parseUnknownArguments( unknown )
 
 	# Build config
 	platform	    = args.platform
-	project         = Makefile.getProject()
+	project         = Makefile.project
 
 	# Include
 	def Include( *list ):
 		for path in list:
-			Makefile.getProject().target( path )
+			Makefile.project.target( path )
 
 	# Library
 	def Library( name, required = False ):
-		library = Makefile.platform.find_library( name )
+		locations = Makefile.platform.find_library( name )
 
-		if not library and required:
+		if not locations and required:
 			print 'Error:', name, 'is required'
 			exit(1)
 
-		return library
+		return locations
 
 	# Has
 	def Has( name ):
@@ -147,15 +144,7 @@ if __name__ == "__main__":
 	def Project( externals = None ):
 		if externals:
 			project.add_headers_search_paths(os.path.join(externals, 'include'))
-			project.add_headers_search_paths(os.path.join(externals, 'lib', args.platform))
-		#	Makefile.platform.add_header_search_paths(os.path.join(externals, 'include'))
-		#	Makefile.platform
-		#	headers     = os.path.abspath( os.path.join( Makefile.getSourceDir(), externals, 'include' ) )
-		#	libraries   = os.path.abspath( os.path.join( Makefile.getSourceDir(), externals, 'lib', args.platform ) )
-		#	project.headerSearchPaths( headers )
-		#	project.librarySearchPaths( libraries )
-		#	Makefile.platform.add_header_search_paths( headers )
-		#	Makefile.platform.add_library_search_paths( libraries )
+			project.add_library_search_paths(os.path.join(externals, 'lib', args.platform))
 
 	# Folders
 	def Folders( path ):
@@ -177,6 +166,6 @@ if __name__ == "__main__":
 
 		return [File( path ) for path in Folder.glob( os.path.join( Makefile.getCurrentSourceDir(), path ) ) if os.path.isfile( path )]
 
-	execfile( Path.PathScope.current.source + '/Makefile.py' )
+	execfile( Location.PathScope.current.source + '/Makefile.py' )
 
 	Makefile.generate()

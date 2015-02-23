@@ -22,7 +22,7 @@
 # SOFTWARE.
 #
 
-import Platform, Path
+import Platform, Location
 
 from Makefile   import Makefile
 from Target     import Project

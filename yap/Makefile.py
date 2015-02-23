@@ -45,19 +45,14 @@ class Makefile:
 		'HTML5':    HTML5,
 	}
 
-#	SourceDir 		 = ''
-#	CurrentSourceDir = []
-
-#	BinaryDir 		 = ''
-#	CurrentBinaryDir = []
-
 	platform    = None
+	project     = None
 
 	# getProject
-	@staticmethod
-	def getProject():
-		global _Project
-		return _Project
+#	@staticmethod
+#	def getProject():
+#		global _Project
+#		return _Project
 
 	# set
 	@staticmethod
@@ -71,35 +66,6 @@ class Makefile:
 		global _Env
 		return _Env.get( name )
 
-	# getCurrentSourceDir
-#	@staticmethod
-#	def getCurrentSourceDir():
-#		return Makefile.CurrentSourceDir[-1]
-
-	# getSourceDir
-#	@staticmethod
-#	def getSourceDir():
-#		return Makefile.SourceDir
-
-	# getCurrentBinaryDir
-#	@staticmethod
-#	def getCurrentBinaryDir():
-#		return Makefile.CurrentBinaryDir[-1]
-
-	# getBinaryDir
-#	@staticmethod
-#	def getBinaryDir():
-#		return Makefile.BinaryDir
-
-	# setPaths
-#	@staticmethod
-#	def setPaths( source, binary ):
-#		Makefile.SourceDir = source
-#		Makefile.CurrentSourceDir.append( source )
-
-#		Makefile.BinaryDir = binary
-#		Makefile.CurrentBinaryDir.append( binary )
-
 	# createProject
 	@staticmethod
 	def createProject( cls, name, platform, importer, generator ):
@@ -108,15 +74,15 @@ class Makefile:
 	# initialize
 	@staticmethod
 	def initialize( cls, name, platform, importer ):
-		global _Project, _Generator
+		global _Generator
 
 		if platform in Makefile.Generators.keys():
 			_Generator = Makefile.Generators[platform]()
 		else:
 			raise Exception( 'Unknown target platform {0}'.format( platform ) )
 
-		_Project = Makefile.createProject( cls, name, platform, importer, _Generator )
-		_Generator.initialize( Makefile, _Project )
+		Makefile.project = Makefile.createProject( cls, name, platform, importer, _Generator )
+		_Generator.initialize( Makefile, Makefile.project )
 
 	# substituteVars
 	@staticmethod
@@ -135,5 +101,5 @@ class Makefile:
 		_Generator.generate()
 
 _Env       = Env.Env()
-_Project   = None
+#_Project   = None
 _Generator = None

@@ -26,30 +26,13 @@
 
 import os
 
+from ..Location import Location, Path
+from ..Library  import Library
+
 # class FindLibrary
 class FindLibrary:
 	# ctor
-	def __init__( self, headers = [], libraries = [], defines = []):
+	def __init__(self, headers = [], libraries = [], defines = []):
 		self._headers   = headers
 		self._libraries = libraries
 		self._defines   = defines
-
-	# exists
-	@staticmethod
-	def exists( filename, paths ):
-		for path in paths:
-			if os.path.exists( os.path.join( path, filename ) ):
-				return path
-
-		return None
-
-	# find
-	def find( self, platform ):
-		# Locate header search path
-		for header in self._headers:
-			FindLibrary.exists( header, platform.headers )
-
-		# Locate library search path
-		for library in self._libraries:
-			for filename in platform.library_file_names( library ):
-				FindLibrary.exists( filename, platform.libraries )

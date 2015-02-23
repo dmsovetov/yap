@@ -41,9 +41,9 @@ class iOS( Platform ):
 		self.add_library_search_paths( '/usr/local/include', os.path.join( sdk, 'System/Library/Frameworks' ) )
 
 		# Register libraries
-		self.register_library('OpenAL',  headers=['OpenAL/al.h', 'OpenAL/alc.h'],                           libraries=['OpenAL'])
-		self.register_library('OpenGL',  headers=['OpenGLES/gl.h' 'OpenGLES/OpenGL.h', 'OpenGLES/glext.h'], libraries=['OpenGLES', 'QuartzCore'], defines = ['OPENGL_ES'])
-		self.register_library('GLUT',    headers=['GLUT/GLUT.h'],                                           libraries=['GLUT'])
+		self.register_library('OpenAL',  headers=['OpenAL/al.h', 'OpenAL/alc.h'],               libraries=['OpenAL'])
+		self.register_library('OpenGL',  headers=['ES2/gl.h', 'ES2/OpenGL.h', 'ES2/glext.h'],   libraries=['OpenGLES', 'QuartzCore'], defines = ['OPENGL_ES'])
+		self.register_library('GLUT',    headers=['GLUT/GLUT.h'],                               libraries=['GLUT'])
 
 	# userPaths
 	@property

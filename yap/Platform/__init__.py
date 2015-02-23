@@ -24,5 +24,7 @@
 #
 #################################################################################
 
-from Windows import Windows
-from MacOS   import MacOS
+from Windows        import Windows
+from MacOS          import MacOS
+from iOS            import iOS
+from FindLibrary    import Location

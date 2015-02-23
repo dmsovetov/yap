@@ -24,20 +24,25 @@
 #
 #################################################################################
 
-import os
-import string
+import os, string
+
+from ..Location import PathScope
 
 class Generator:
 	# ctor
 	def __init__( self ):
 		self.sourceProject = None
-		self.binaryDir     = None
-		self.sourceDir     = None
+		self._pathScope    = PathScope.current
 		self.makefile      = None
+
+	# projectpath
+	@property
+	def projectpath(self):
+		return self._pathScope.project
 
 	# getPathForTarget
 	def getPathForTarget( self, target ):
-		return os.path.join( self.binaryDir, target.name + '.dir' )
+		return os.path.join( self.projectpath, target.name + '.dir' )
 
 	# initialize
 	def initialize( self, makefile, project ):
@@ -47,8 +52,8 @@ class Generator:
 	# generate
 	def generate( self ):
 		# Create project folder
-		if not os.path.exists( self.binaryDir ):
-			os.makedirs( self.binaryDir )
+		if not os.path.exists( self.projectpath ):
+			os.makedirs( self.projectpath )
 
 		self.forEachTarget( self.generateTarget )
 
@@ -211,19 +216,6 @@ class Generator:
 			if target:
 				self.forEachTargetLibrary( target, callback )
 
-	# forEachTargetFramework
-	def forEachTargetFramework( self, target, callback ):
-		# Run a callback for all target's frameworks
-		for framework in target.filterLibraries( lambda lib: lib.framework ):
-			callback( target, framework.name, None )
-
-		# Run a callback for all dependencies
-		for library in target.filterLibraries():
-			target = self.findTargetByName( library.name )
-
-			if target:
-				self.forEachTargetFramework( target, callback )
-
 	# findTargetByName
 	def findTargetByName( self, name ):
 		for target in self.sourceProject._targets:
@@ -250,7 +242,7 @@ class Generator:
 			self.forEachTargetInclude( self.sourceProject, callback )
 
 		# Target
-		for path in target.filterPaths( lambda path: path.isHeaders ):
+		for path in target.filterPaths( lambda path: path.isheaders ):
 			callback( path )
 
 	# forEachTargetDefine
@@ -285,35 +277,35 @@ class Generator:
 
 	###
 
-	# listLibraries
-	def listLibraries( self, target, filter = None ):
+	# list_libraries
+	def list_libraries(self, target, filter = None):
 		# List all target's libraries
-		libraries = target.filterLibraries( filter )
+		libraries = target.filterLibraries(filter)
 
 		# List libraries for all dependencies
 		dependencies = []
 
 		for library in libraries:
-			target = self.findTargetByName( library.name )
+			target = self.findTargetByName(library.name)
 
 			if target:
-				dependencies = dependencies + self.listLibraries( target, filter )
+				dependencies = dependencies + self.list_libraries(target, filter)
 
-		return list( set( libraries + dependencies ) )
+		return list(set(libraries + dependencies))
 
 	# listLibraryPaths
 	def listLibraryPaths( self, target ):
 		# List all target's library paths
-		paths = [path.path for path in target.filterPaths( lambda path: path.isLibraries )]
+		paths = [path.path for path in target.filterPaths( lambda path: path.islibraries )]
 
 		# List path for project
-		project = [path.path for path in target.project.filterPaths( lambda path: path.isLibraries )]
+		project = [path.path for path in target.project.filterPaths( lambda path: path.islibraries )]
 
 		# List paths for all dependencies
 		dependencies = []
 
 		for library in target.filterLibraries():
-			target = self.findTargetByName( library.name )
+			target = self.findTargetByName(library.name)
 
 			if target:
 				dependencies = dependencies + self.listLibraryPaths( target )
@@ -323,9 +315,9 @@ class Generator:
 	# listHeaderPaths
 	def listHeaderPaths( self, target ):
 		# List all target's header paths
-		paths = [path.path for path in target.filterPaths( lambda path: path.isHeaders )]
+		paths = [path.path for path in target.filterPaths( lambda path: path.isheaders )]
 
 		# List paths for project
-		project = [path.path for path in target.project.filterPaths( lambda path: path.isHeaders )]
+		project = [path.path for path in target.project.filterPaths( lambda path: path.isheaders )]
 
 		return list( set( paths + project ) )

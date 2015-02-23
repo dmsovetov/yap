@@ -41,7 +41,7 @@ class File:
 	@property
 	def projectPath( self ):
 		assert os.path.exists( self.fullPath )
-		return os.path.relpath( self.fullPath, self._target.projectPath)
+		return os.path.relpath( self.fullPath, self._target.projectpath)
 
 	# fullPath
 	@property

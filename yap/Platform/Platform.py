@@ -24,7 +24,12 @@
 #
 #################################################################################
 
+import os
+
 from FindLibrary import FindLibrary
+from ..Makefile  import Makefile
+from ..Location  import Location, Path
+from ..Library   import Library
 
 # class Platform
 class Platform:
@@ -47,23 +52,28 @@ class Platform:
 	# headers
 	@property
 	def headers(self):
-		return self._headerSearchPaths + self.userPaths
+		return Makefile.project.headerSearchPaths + self._headerSearchPaths + self.userPaths
 
 	# libraries
 	@property
 	def libraries(self):
-		return self._librarySearchPaths + self.userPaths
+		return Makefile.project.librarySearchPaths + self._librarySearchPaths + self.userPaths
 
 	# find_library
 	def find_library(self, name):
 		if name in self._libraries.keys():
-			return self._libraries[name].find( self )
+			return self._find_library(name, self._libraries[name])
+		#	return self._libraries[name].find(name, self)
 
 		return None
 
 	# library_file_names
 	def library_file_names(self, name):
 		return [name]
+
+	# header_file_names
+	def header_file_names(self, name, filename):
+		return [filename]
 
 	# add_header_search_paths
 	def add_header_search_paths(self, *paths):
@@ -76,3 +86,48 @@ class Platform:
 	# register_library
 	def register_library(self, name, headers = [], libraries = [], defines = []):
 		self._libraries[name] = FindLibrary(headers=headers, libraries=libraries, defines=defines)
+
+	# exists
+	@staticmethod
+	def exists(filename, paths):
+		for path in paths:
+			if os.path.exists(os.path.join(path, filename)):
+				return path
+
+		return None
+
+	# _find_headers
+	def _find_headers(self, name, headers):
+		locations = []
+
+		for header in headers:
+			for filename in self.header_file_names(name, header):
+				path = Platform.exists(filename, self.headers)
+				if path: locations.append(Location(location=Location.External, filename=filename, path=Path(Path.Headers, path)))
+
+		return locations
+
+	# _find_libraries
+	def _find_libraries(self, name, libraries):
+		locations = []
+
+		for library in libraries:
+			for filename in self.library_file_names(library):
+				path = Platform.exists(filename, self.libraries)
+				if path: locations.append(Location(location=Location.External, filename=filename, path=Path(Path.Libraries, path)))
+
+		return locations
+
+	# _find_library
+	def _find_library(self, name, library):
+		# Locate library
+		librarySearchPath = self._find_libraries(name, library._libraries)
+		if not librarySearchPath:
+			return None
+
+		# Locate headers
+		headerSearchPath = self._find_headers(name, library._headers)
+		if not headerSearchPath:
+			return None
+
+		return Library(type=Library.External, name=name, locations=headerSearchPath + librarySearchPath)
