@@ -1,4 +1,3 @@
-#################################################################################
 #
 # The MIT License (MIT)
 #
@@ -22,33 +21,29 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
-#################################################################################
 
 import os
 
-from Unix import Unix
+from Platform import Platform
 
-# class MacOS
-class MacOS(Unix):
+# class Unix
+class Unix(Platform):
 	# ctor
 	def __init__(self):
-		Unix.__init__(self)
+		Platform.__init__(self)
 
-		# Add system search paths
-		sdk = '/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk/'
+		self.add_header_search_paths( '/usr/local/include' )
+		self.add_library_search_paths( '/usr/local/lib' )
 
-		self.add_header_search_paths( os.path.join( sdk, 'System/Library/Frameworks' ) )
-		self.add_library_search_paths( os.path.join( sdk, 'System/Library/Frameworks' ) )
-
-		# Register libraries
-		self.register_library('OpenAL',  headers=['OpenAL/al.h', 'OpenAL/alc.h'],                       libraries=['OpenAL'])
-		self.register_library('OpenGL',  headers=['OpenGL/gl.h', 'OpenGL/OpenGL.h', 'OpenGL/glext.h'],  libraries=['OpenGL', 'QuartzCore'])
-		self.register_library('GLUT',    headers=['GLUT/GLUT.h'],                                       libraries=['GLUT'])
+	# userpaths
+	@property
+	def userpaths(self):
+		return os.environ['PATH'].split( ':' )
 
 	# library_file_names
 	def library_file_names(self, name):
-		return [name + '.framework'] + Unix.library_file_names(self, name)
+		return ['lib' + name + '.a', 'lib' + name + '.dylib']
 
 	# header_file_names
 	def header_file_names(self, name, filename):
-		return [name + '.framework/Headers/' + os.path.basename(filename)] + Unix.header_file_names(self, name, filename)
+		return [filename]

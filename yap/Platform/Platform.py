@@ -44,26 +44,25 @@ class Platform:
 		self.register_library('yaml',    headers=['yaml/yaml.h'],                               libraries=['yaml'])
 		self.register_library('embree2', headers=['embree2/rtcore.h', 'embree2/rtcore_ray.h'],  libraries=['embree', 'sys', 'simd', 'embree_sse41', 'embree_sse42'])
 
-	# userPaths
+	# userpaths
 	@property
-	def userPaths(self):
+	def userpaths(self):
 		return []
 
 	# headers
 	@property
 	def headers(self):
-		return Makefile.project.headerSearchPaths + self._headerSearchPaths + self.userPaths
+		return Makefile.project.headerSearchPaths + self._headerSearchPaths + self.userpaths
 
 	# libraries
 	@property
 	def libraries(self):
-		return Makefile.project.librarySearchPaths + self._librarySearchPaths + self.userPaths
+		return Makefile.project.librarySearchPaths + self._librarySearchPaths + self.userpaths
 
 	# find_library
 	def find_library(self, name):
 		if name in self._libraries.keys():
 			return self._find_library(name, self._libraries[name])
-		#	return self._libraries[name].find(name, self)
 
 		return None
 

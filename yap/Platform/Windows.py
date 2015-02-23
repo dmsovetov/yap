@@ -44,9 +44,9 @@ class Windows( Platform ):
 		self.register_library('OpenGL',  headers=['gl/gl.h'],                       libraries=['opengl32'])
 		self.register_library('GLUT',    headers=['glut/glut.h'],                   libraries=['glut32'])
 
-	# userPaths
+	# userpaths
 	@property
-	def userPaths(self):
+	def userpaths(self):
 		return os.environ['PATH'].split( ';' )
 
 	# library_file_names
