@@ -76,6 +76,28 @@ class ResourceBuildPhase( BuildPhase ):
 	def __init__( self, target ):
 		BuildPhase.__init__( self, 'PBXResourcesBuildPhase', target, 'Resources' )
 
+# class CopyFilesPhase
+class CopyFilesPhase( BuildPhase ):
+	# ctor
+	def __init__( self, target ):
+		BuildPhase.__init__( self, 'PBXCopyFilesBuildPhase', target, 'CopyFiles' )
+
+	# compile
+	def compile( self ):
+		return Template( CopyFilesPhase.Root ).compile( { 'id': self.id, 'isa': self.isa, 'files': self.files.compileList() } )
+
+	# Root
+	Root = """
+		{id} /* {target} */ = {
+			isa = {isa};
+			buildActionMask = 2147483647;
+			files = (
+{files}
+			);
+			dstSubfolderSpec = 6;
+		};
+"""
+
 # class ShellScriptPhase
 class ShellScriptPhase( BuildPhase ):
 	# ctor

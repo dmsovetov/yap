@@ -43,6 +43,7 @@ class Target( Resource ):
 		self.configurationList  = self.objects.createConfigurationList( self, configurations, defaultConfiguration )
 		self.sourcePhase        = self.objects.createSourceBuildPhase( self )
 		self.frameworkPhase     = self.objects.createFrameworkPhase( self )
+		self.copyFilesPhase     = self.objects.createCopyFilesPhase( self )
 		self.dependencies       = ObjectList( 'PBXTargetDependency' )
 		self.phases             = ObjectList( 'PBXBuildPhases' )
 
@@ -70,6 +71,7 @@ class Target( Resource ):
 	def addBuildPhases( self ):
 		self.phases.add( self.sourcePhase )
 		self.phases.add( self.frameworkPhase )
+		self.phases.add( self.copyFilesPhase )
 
 	# getSourceTypeForExtension
 	def getSourceTypeForExtension( self, ext ):
@@ -107,11 +109,18 @@ class Target( Resource ):
 		# Create file reference for library
 		file = self.objects.project.addLibrary( name )
 
+		# Create build file
+		buildfile = self.objects.createBuildFile( self, file )
+
 		# Add to a link phase
-		self.frameworkPhase.add( self.objects.createBuildFile( self, file ) )
+		self.frameworkPhase.add( buildfile )
 
 		# Add library search path
 		self.configurationList.forEach( lambda c: c.addSetting( 'LIBRARY_SEARCH_PATHS', os.path.dirname( name ) ) )
+
+		# Add copy files phase
+		if name.endswith( '.dylib' ):
+			self.copyFilesPhase.add( buildfile )
 
 	# addFramework
 	def addFramework( self, name ):

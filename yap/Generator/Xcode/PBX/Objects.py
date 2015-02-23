@@ -84,6 +84,12 @@ class Objects:
 		self.buildPhases.add( result )
 		return result
 
+	# createCopyFilesPhase
+	def createCopyFilesPhase( self, target ):
+		result = BuildPhases.CopyFilesPhase( target )
+		self.buildPhases.add( result )
+		return result
+
 	# createResourcePhase
 	def createResourcePhase( self, target ):
 		result = BuildPhases.ResourceBuildPhase( target )
