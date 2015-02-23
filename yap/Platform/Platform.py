@@ -27,7 +27,6 @@
 import os
 
 from collections import namedtuple
-from FindLibrary import FindLibrary
 from ..Makefile  import Makefile
 from ..Location  import Path
 
@@ -83,8 +82,8 @@ class Platform:
 		[self._librarySearchPaths.append(path) for path in paths]
 
 	# register_library
-	def register_library(self, identifier, name = None, headers = [], libraries = [], defines = []):
-		self._libraries[identifier] = FindLibrary(name=name if name else identifier, headers=headers, libraries=libraries, defines=defines)
+	def register_library(self, identifier, name = None, headers = [], libraries = []):
+		self._libraries[identifier] = namedtuple('FindLibrary', 'name, headers, libraries')(name=name if name else identifier, headers=headers, libraries=libraries)
 
 	# exists
 	@staticmethod
@@ -120,16 +119,16 @@ class Platform:
 	# _find_library_by_items
 	def _find_library_by_items(self, library):
 		# Locate library
-		librarySearchPath = self._find_libraries(library._name, library._libraries)
+		librarySearchPath = self._find_libraries(library.name, library.libraries)
 		if not librarySearchPath:
 			return None
 
 		# Locate headers
-		headerSearchPath = self._find_headers(library._name, library._headers)
+		headerSearchPath = self._find_headers(library.name, library.headers)
 		if not headerSearchPath:
 			return None
 
-		return namedtuple('ExternalLibrary', 'type, name, locations')(type='external', name=library._name, locations=headerSearchPath + librarySearchPath)
+		return namedtuple('ExternalLibrary', 'type, name, locations')(type='external', name=library.name, locations=headerSearchPath + librarySearchPath)
 
 	# _find_library_by_name
 	def _find_library_by_name(self, library):
