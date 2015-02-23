@@ -141,10 +141,12 @@ if __name__ == "__main__":
 		Makefile.set( name.upper(), value )
 
 	# Project
-	def Project( externals = None ):
+	def Project( externals = None, paths = None ):
 		if externals:
 			project.add_headers_search_paths(os.path.join(externals, 'include'))
 			project.add_library_search_paths(os.path.join(externals, 'lib', args.platform))
+		if paths:
+			project.add_headers_search_paths(paths)
 
 	# Folders
 	def Folders( path ):
@@ -165,6 +167,24 @@ if __name__ == "__main__":
 				self.path = path
 
 		return [File( path ) for path in Folder.glob( os.path.join( Makefile.getCurrentSourceDir(), path ) ) if os.path.isfile( path )]
+
+	# Module
+	def Module(path, link):
+		source      = Location.PathScope.current.source
+		modules     = os.path.join(source, path)
+		name, ext   = os.path.splitext(os.path.basename(link))
+
+		# Create modules folder
+		if not os.path.exists(modules):
+			os.makedirs(modules)
+
+		# Checkout module
+		if not os.path.exists(os.path.join(modules, name)):
+			if ext == '.git':
+				os.system('cd {0} && git clone {1}'.format(modules, link))
+
+		# Include it to project
+		Include(os.path.join(modules, name))
 
 	execfile( Location.PathScope.current.source + '/Makefile.py' )
 

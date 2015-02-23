@@ -268,6 +268,9 @@ class Generator:
 
 	# list_header_paths
 	def list_header_paths(self, target):
+		# Project includes
+		project = [path.full for path in target.project.filterPaths(lambda path: path.isheaders)] if target.project else []
+
 		# Target include paths
 		paths = [path.full for path in target.filterPaths(lambda path: path.isheaders)]
 
@@ -277,7 +280,7 @@ class Generator:
 		for library in libraries:
 			paths = paths + [location.path.full for location in library.locations if location.path.isheaders]
 
-		return list(set(paths))
+		return list(set(project + paths))
 
 	# list_defines
 	def list_defines(self, target):
