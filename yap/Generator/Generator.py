@@ -291,7 +291,7 @@ class Generator:
 			if target:
 				dependencies = dependencies + self.list_libraries(target, filter)
 
-		return list(set(libraries + dependencies))
+		return libraries + dependencies
 
 	# listLibraryPaths
 	def listLibraryPaths( self, target ):

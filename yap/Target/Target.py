@@ -26,8 +26,9 @@
 
 import os
 
+from collections import namedtuple
 from Folder     import Folder
-from ..Library  import Library
+#from ..Library  import Library
 from ..Makefile import Makefile
 from ..Location import Path, PathScope
 
@@ -135,7 +136,7 @@ class Target:
 
 	# link
 	def link( self, *list ):
-		[self._linkWith.append( Library(type=Library.Local, name=item) ) for item in list]
+		[self._linkWith.append(namedtuple('LocalLibrary', 'type, name')(type='local', name=item)) for item in list]
 
 	# linkExternal
 	def linkExternal( self, *list ):

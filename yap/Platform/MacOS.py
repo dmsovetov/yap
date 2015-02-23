@@ -24,31 +24,12 @@
 #
 #################################################################################
 
-import os
+#import os
 
-from Unix import Unix
+from Xcode import Xcode
 
 # class MacOS
-class MacOS(Unix):
+class MacOS(Xcode):
 	# ctor
 	def __init__(self):
-		Unix.__init__(self)
-
-		# Add system search paths
-		sdk = '/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk/'
-
-		self.add_header_search_paths( os.path.join( sdk, 'System/Library/Frameworks' ) )
-		self.add_library_search_paths( os.path.join( sdk, 'System/Library/Frameworks' ) )
-
-		# Register libraries
-		self.register_library('OpenAL',  headers=['OpenAL/al.h', 'OpenAL/alc.h'],                       libraries=['OpenAL'])
-		self.register_library('OpenGL',  headers=['OpenGL/gl.h', 'OpenGL/OpenGL.h', 'OpenGL/glext.h'],  libraries=['OpenGL', 'QuartzCore'])
-		self.register_library('GLUT',    headers=['GLUT/GLUT.h'],                                       libraries=['GLUT'])
-
-	# library_file_names
-	def library_file_names(self, name):
-		return [name + '.framework'] + Unix.library_file_names(self, name)
-
-	# header_file_names
-	def header_file_names(self, name, filename):
-		return [name + '.framework/Headers/' + os.path.basename(filename)] + Unix.header_file_names(self, name, filename)
+		Xcode.__init__(self, '/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk/')

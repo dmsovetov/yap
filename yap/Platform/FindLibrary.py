@@ -27,12 +27,13 @@
 import os
 
 from ..Location import Location, Path
-from ..Library  import Library
+#from ..Library  import Library
 
 # class FindLibrary
 class FindLibrary:
 	# ctor
-	def __init__(self, headers = [], libraries = [], defines = []):
+	def __init__(self, name, headers = [], libraries = [], defines = []):
+		self._name      = name
 		self._headers   = headers
 		self._libraries = libraries
 		self._defines   = defines

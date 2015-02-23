@@ -244,15 +244,16 @@ class Xcode5( Generator ):
 			return
 
 		for library in self.list_libraries(target):
-			if library.local:
+			if library.type == 'local':
 				assert library.name in self.projects.keys()
 				pbx.addProjectLibrary( self.projects[library.name]['pbx'] )
-			else:
+			elif library.type == 'framework':
+				pbx.addFramework(os.path.join(library.path, library.name))
+			elif library.type == 'external':
 				for location in [location for location in library.locations if location.path.islibraries]:
-					if location.filename.endswith('.framework'):
-						pbx.addFramework(os.path.join(location.path.full, location.filename))
-					else:
-						pbx.addLibrary(os.path.join(location.path.full, location.filename))
+					pbx.addLibrary(os.path.join(location.path.full, location.filename))
+			else:
+				print 'Error: unknown library type', library.type
 
 	# compileCommand
 	def compileCommand( self, target, cmd ):

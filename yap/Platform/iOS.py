@@ -24,31 +24,13 @@
 #
 #################################################################################
 
-import os
+#import os
 
-from Unix import Unix
+from Xcode import Xcode
 
 # class iOS
-class iOS(Unix):
+class iOS(Xcode):
 	# ctor
 	def __init__(self):
-		Unix.__init__(self)
-
-		# Add system search paths
-		sdk = '/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/'
-
-		self.add_header_search_paths( os.path.join( sdk, 'System/Library/Frameworks' ) )
-		self.add_library_search_paths( os.path.join( sdk, 'System/Library/Frameworks' ) )
-
-		# Register libraries
-		self.register_library('OpenAL',  headers=['OpenAL/al.h', 'OpenAL/alc.h'],               libraries=['OpenAL'])
-		self.register_library('OpenGL',  headers=['ES2/gl.h', 'ES2/OpenGL.h', 'ES2/glext.h'],   libraries=['OpenGLES', 'QuartzCore'], defines = ['OPENGL_ES'])
-		self.register_library('GLUT',    headers=['GLUT/GLUT.h'],                               libraries=['GLUT'])
-
-	# library_file_names
-	def library_file_names(self, name):
-		return [name + '.framework'] + Unix.library_file_names(self, name)
-
-	# header_file_names
-	def header_file_names(self, name, filename):
-		return [name + '.framework/Headers/' + os.path.basename(filename)] + Unix.header_file_names(self, name, filename)
+		Xcode.__init__(self, '/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/')
+		self.add_library_alias('OpenGL', 'OpenGLES')

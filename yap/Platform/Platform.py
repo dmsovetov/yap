@@ -26,10 +26,10 @@
 
 import os
 
+from collections import namedtuple
 from FindLibrary import FindLibrary
 from ..Makefile  import Makefile
 from ..Location  import Location, Path
-from ..Library   import Library
 
 # class Platform
 class Platform:
@@ -62,9 +62,9 @@ class Platform:
 	# find_library
 	def find_library(self, name):
 		if name in self._libraries.keys():
-			return self._find_library(name, self._libraries[name])
+			return self._find_library_by_items(self._libraries[name])
 
-		return None
+		return self._find_library_by_name(name)
 
 	# library_file_names
 	def library_file_names(self, name):
@@ -83,8 +83,8 @@ class Platform:
 		[self._librarySearchPaths.append(path) for path in paths]
 
 	# register_library
-	def register_library(self, name, headers = [], libraries = [], defines = []):
-		self._libraries[name] = FindLibrary(headers=headers, libraries=libraries, defines=defines)
+	def register_library(self, identifier, name = None, headers = [], libraries = [], defines = []):
+		self._libraries[identifier] = FindLibrary(name=name if name else identifier, headers=headers, libraries=libraries, defines=defines)
 
 	# exists
 	@staticmethod
@@ -117,16 +117,20 @@ class Platform:
 
 		return locations
 
-	# _find_library
-	def _find_library(self, name, library):
+	# _find_library_by_items
+	def _find_library_by_items(self, library):
 		# Locate library
-		librarySearchPath = self._find_libraries(name, library._libraries)
+		librarySearchPath = self._find_libraries(library._name, library._libraries)
 		if not librarySearchPath:
 			return None
 
 		# Locate headers
-		headerSearchPath = self._find_headers(name, library._headers)
+		headerSearchPath = self._find_headers(library._name, library._headers)
 		if not headerSearchPath:
 			return None
 
-		return Library(type=Library.External, name=name, locations=headerSearchPath + librarySearchPath)
+		return namedtuple('ExternalLibrary', 'type, name, locations')(type='external', name=library._name, locations=headerSearchPath + librarySearchPath)
+
+	# _find_library_by_name
+	def _find_library_by_name(self, library):
+		return None
