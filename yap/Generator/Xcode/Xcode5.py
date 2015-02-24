@@ -245,7 +245,10 @@ class Xcode5( Generator ):
 
 		for library in self.list_libraries(target):
 			if library.type == 'local':
-				assert library.name in self.projects.keys()
+				if not library.name in self.projects.keys():
+					print 'Error: unknown library', library.name
+					continue
+
 				pbx.addProjectLibrary( self.projects[library.name]['pbx'] )
 			elif library.type == 'framework':
 				pbx.addFramework(os.path.join(library.path, library.name + '.framework'))
@@ -297,7 +300,7 @@ class Xcode5( Generator ):
 		libs.append( '$(inherited)' )
 		headers.append( '$(inherited)' )
 
-		return { 'PRODUCT_NAME': '"$(TARGET_NAME)"', 'HEADER_SEARCH_PATHS': headers, 'LIBRARY_SEARCH_PATHS': libs, 'GCC_PREPROCESSOR_DEFINITIONS': defines }
+		return { 'PRODUCT_NAME': '"$(TARGET_NAME)"', 'HEADER_SEARCH_PATHS': headers, 'LIBRARY_SEARCH_PATHS': libs, 'GCC_PREPROCESSOR_DEFINITIONS': defines, 'GCC_OPTIMIZATION_LEVEL': 0 if name == 'Debug' else 's' }
 
 	CodegenCommand = """
 {output}: {input}

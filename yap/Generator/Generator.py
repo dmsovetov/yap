@@ -262,7 +262,13 @@ class Generator:
 		dependencies = []
 
 		for library in target.filterLibraries(lambda library: library.type == 'local'):
-			dependencies = dependencies + self.list_library_paths(self.findTargetByName(library.name))
+			libtarget = self.findTargetByName(library.name)
+
+			if not libtarget:
+				print 'Error: unknown library', library.name
+				continue
+
+			dependencies = dependencies + self.list_library_paths(libtarget)
 
 		return list(set(paths + dependencies))
 
