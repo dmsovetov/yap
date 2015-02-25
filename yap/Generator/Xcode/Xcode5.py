@@ -179,9 +179,14 @@ class Xcode5( Generator ):
 
 	# addResources
 	def addResources( self, target, pbx ):
-		icons  = os.path.join( target.sourcePath, target.resources, 'images', 'icons.'  + self.getPlatformId() )
-		launch = os.path.join( target.sourcePath, target.resources, 'images', 'launch.' + self.getPlatformId() )
-		assets = os.path.join( target.sourcePath, target.resources, 'assets', 'assets.dpk' )
+		path   = os.path.join( target.sourcePath, target.resources[0] )
+		icons  = os.path.join( path, 'images', 'icons.'  + self.getPlatformId() )
+		launch = os.path.join( path, 'images', 'launch.' + self.getPlatformId() )
+		assets = os.path.join( path, 'assets', 'assets.dpk' )
+
+		# Root
+		if os.path.exists( path ):
+			pbx.addFolder( path )
 
 		# Icons
 		if os.path.exists( icons ):
@@ -331,6 +336,8 @@ all: {depends}
 	<string>${PRODUCT_NAME}</string>
 	<key>FacebookAppID</key>
 	<string>{facebook.app.id}</string>
+	<key>NSPrincipalClass</key>
+	<string>NSApplication</string>
 </dict>
 </plist>
 """
