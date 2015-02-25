@@ -29,6 +29,8 @@ from ..Makefile import Makefile
 
 # class Folder
 class Folder:
+	IgnoreExtensions = [ '.nib', '.md', '.py', '.png', '.in', '.txt' ]
+
 	# ctor
 	def __init__( self, target, name = '', parent = None ):
 		self._name      = name
@@ -49,6 +51,11 @@ class Folder:
 	# addFileAtPath
 	def addFileAtPath( self, path ):
 		assert path.find( '\\' ) == -1
+
+		# Check extension filter
+		if self._should_skip_path(path):
+			return
+
 		self.resolve( path ).addFile( os.path.basename( path ) )
 
 	# addFilesFromDirectory
@@ -69,9 +76,15 @@ class Folder:
 
 		# Recursively add all nested folders
 		for folder in Folder.glob( path ):
-			if os.path.isdir( folder ):
-				# Continue recursive add
-				self.addFilesFromDirectoryRecursive( Folder.join( folder, '*' ) )
+			if not os.path.isdir(folder):
+				continue
+
+			# Check folder extension
+			if self._should_skip_path(folder):
+				continue
+
+			# Continue recursive add
+			self.addFilesFromDirectoryRecursive( Folder.join( folder, '*' ) )
 
 	# resolve
 	def resolve( self, path ):
@@ -94,6 +107,11 @@ class Folder:
 			result = result + folder.filterFiles( filter )
 
 		return result
+
+	# _should_skip_path
+	def _should_skip_path(self, path):
+		name, ext = os.path.splitext(path)
+		return ext in Folder.IgnoreExtensions
 
 	# relativeTo
 	@staticmethod
