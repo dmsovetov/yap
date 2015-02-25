@@ -156,7 +156,7 @@ if __name__ == "__main__":
 				self.name = os.path.basename( path )
 				self.path = path
 
-		return [Folder( path ) for path in glob.glob( os.path.join( Makefile.getCurrentSourceDir(), path ) ) if os.path.isdir( path )]
+		return [Folder( path ) for path in glob.glob( os.path.join( Location.PathScope.current.source, path ) ) if os.path.isdir( path )]
 
 	# Files
 	def Files( path ):
@@ -166,7 +166,7 @@ if __name__ == "__main__":
 				self.name = os.path.basename( path )
 				self.path = path
 
-		return [File( path ) for path in Folder.glob( os.path.join( Makefile.getCurrentSourceDir(), path ) ) if os.path.isfile( path )]
+		return [File( path ) for path in Folder.glob( os.path.join( Location.PathScope.current.source, path ) ) if os.path.isfile( path )]
 
 	# Module
 	def Module(url, makefile = None, folder = None, credentials = None):
