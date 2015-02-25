@@ -45,6 +45,7 @@ class Group( Resource ):
 	def resolveGroup( self, name ):
 		for group in self.children.items:
 			if group.name == name:
+				assert isinstance(group, Group)
 				return group
 
 		group = self.objects.createGroup( name, self )

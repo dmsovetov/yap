@@ -28,6 +28,7 @@ import os
 
 from Resource       import Resource
 from ObjectList     import ObjectList
+from Group          import Group
 from ...Template    import Template
 
 # class Target
@@ -88,6 +89,8 @@ class Target( Resource ):
 		for name in path.split( '/' ):
 			if len( name ):
 				group = group.resolveGroup( name )
+
+		assert isinstance(group, Group)
 
 		return group
 
