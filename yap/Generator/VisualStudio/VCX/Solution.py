@@ -54,9 +54,9 @@ class Solution:
 	# _compileProjects
 	def _compileProjects( self ):
 		result = ''
-		dependencies = ''
 
 		for project in self._projects:
+			dependencies = ''
 			for dep in project.dependencies:
 				dependencies += Template( Solution.Dependency ).compile( { 'uuid': dep.uid }, True )
 
