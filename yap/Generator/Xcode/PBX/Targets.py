@@ -308,6 +308,14 @@ class ApplicationBundle( Target ):
 		# Add file to a group
 		self.addResource( file, True )
 
+	# addFolder
+	def addFolder( self, name ):
+		# Create file reference for folder
+		file = self.objects.createFileReference( 'folder', name, '"<group>"' )
+
+		# Add file to a group
+		self.addResource( file, True )
+
 	# setIcon
 	def setAppIcon( self, name ):
 		self.configurationList.forEach( lambda c: c.set( 'ASSETCATALOG_COMPILER_APPICON_NAME', name ) )
