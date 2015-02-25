@@ -61,10 +61,14 @@ class Project( Target ):
 	# target
 	def target( self, *list ):
 		for item in list:
-			scope = PathScope.current
+			scope    = PathScope.current
+			makefile = os.path.join(scope.source, item, 'Makefile.py')
+
+			if not os.path.exists(makefile):
+				continue
 
 			PathScope.push(source=os.path.join(scope.source, item), project=os.path.join(scope.project, item + '.dir'))
-			self.importer(os.path.join(scope.source, item, 'Makefile.py'))
+			self.importer(makefile)
 			PathScope.pop()
 
 
