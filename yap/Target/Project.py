@@ -38,7 +38,7 @@ class Project( Target ):
 	def __init__( self, name, platform, importer, generator ):
 		Target.__init__( self, name )
 
-		self.message( 'Configuring build environment for ' + name + '...' )
+	#	self.message( 'Configuring build environment for ' + name + '...' )
 
 		self._targets 		= []
 		self.importer		= importer

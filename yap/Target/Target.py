@@ -33,14 +33,14 @@ from ..Location import Path, PathScope
 
 # class Target
 class Target:
-	Ident           = 0
+#	Ident           = 0
 	StaticLibrary   = 'static'
 	SharedLibrary   = 'shared'
 	Executable      = 'executable'
 
 	# ctor
 	def __init__( self, name, sources = None, paths = None, defines = None, linkTo = None, link = None ):
-		self.message( 'Configure ' + name + '...' )
+	#	self.message( 'Configure ' + name + '...' )
 
 		self._project       = Makefile.project
 		self.name           = name
@@ -83,7 +83,7 @@ class Target:
 				else:
 					self.dirs( source )
 
-		Target.Ident = Target.Ident + 1
+	#	Target.Ident = Target.Ident + 1
 
 		# Link to
 		if linkTo == Target.Executable:
@@ -180,26 +180,27 @@ class Target:
 
 	# sharedLibrary
 	def sharedLibrary( self ):
-		self.message( 'Configured as shared library' )
+	#	self.message( 'Configured as shared library' )
 
-		Target.Ident = Target.Ident - 1
+	#	Target.Ident = Target.Ident - 1
 		self.type    = Target.SharedLibrary
 
 	# staticLibrary
 	def staticLibrary( self ):
-		self.message( 'Configured as static library' )
+	#	self.message( 'Configured as static library' )
 
-		Target.Ident = Target.Ident - 1
+	#	Target.Ident = Target.Ident - 1
 		self.type    = Target.StaticLibrary
 
 	# executable
 	def executable( self, **params ):
-		self.message( 'Configured as executable' )
+	#	self.message( 'Configured as executable' )
 		self.params = params
 
-		Target.Ident = Target.Ident - 1
+	#	Target.Ident = Target.Ident - 1
 		self.type    = Target.Executable
 
+	'''
 	# message
 	@classmethod
 	def message( self, text ):
@@ -207,3 +208,4 @@ class Target:
 		for i in range( 0, Target.Ident * 4 ):
 			msg += ' '
 		print( msg + text )
+	'''
