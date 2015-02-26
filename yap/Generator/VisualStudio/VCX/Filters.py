@@ -24,7 +24,7 @@
 #
 #################################################################################
 
-import  ID
+import  ID, os
 import  xml.etree.ElementTree as Xml
 from    xml.dom import minidom
 from    Groups  import ItemGroup
@@ -60,6 +60,9 @@ class Filters:
 	def _addFolder( self, folder ):
 		if folder.sourcePath in self._folders.keys():
 			return
+
+		if folder.parent and folder.parent.name != '':
+			self._addFolder(folder.parent)
 
 		self._filters.addFilter( folder.sourcePath ).set( 'UniqueIdentifier', ID.generate() )
 		self._folders[folder.sourcePath] = folder
