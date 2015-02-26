@@ -39,13 +39,27 @@ class Folder:
 		self._files     = []
 		self._folders   = {}
 
+	# name
+	@property
+	def name(self):
+		return self._name
+
 	# sourcePath
 	@property
 	def sourcePath( self ):
 		return os.path.join( self._parent.sourcePath, self._name ) if self._parent else self._name
 
+	# parent
+	@property
+	def parent(self):
+		return self._parent
+
 	# addFile
 	def addFile( self, fileName ):
+		if self._find_file_by_name(fileName):
+			print 'Warning: duplicated file reference', fileName
+			return
+
 		self._files.append( File( self._target, self, fileName ) )
 
 	# addFileAtPath
@@ -112,6 +126,13 @@ class Folder:
 	def _should_skip_path(self, path):
 		name, ext = os.path.splitext(path)
 		return ext in Folder.IgnoreExtensions
+
+	# _find_file_by_name
+	def _find_file_by_name(self, name):
+		for file in self._files:
+			if file.fileName == name:
+				return file
+		return None
 
 	# relativeTo
 	@staticmethod
