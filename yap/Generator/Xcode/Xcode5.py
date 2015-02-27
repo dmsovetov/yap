@@ -73,7 +73,10 @@ class Xcode5( Generator ):
 
 		# findXcode
 		def findXcode():
-			value = subprocess.check_output( ['xcode-select', '-p'] )
+			try:
+				value = subprocess.check_output( ['xcode-select', '-p'] )
+			except:
+				return None
 
 			# Found
 			if value.find( '/Xcode.app/' ) != -1:
