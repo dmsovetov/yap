@@ -305,7 +305,21 @@ class Xcode5( Generator ):
 		libs.append( '$(inherited)' )
 		headers.append( '$(inherited)' )
 
-		return { 'PRODUCT_NAME': '"$(TARGET_NAME)"', 'HEADER_SEARCH_PATHS': headers, 'LIBRARY_SEARCH_PATHS': libs, 'GCC_PREPROCESSOR_DEFINITIONS': defines, 'GCC_OPTIMIZATION_LEVEL': 0 if name == 'Debug' else 's' }
+		std                     = self.makefile.get( 'STD' )
+		clangLanguageStarndard  = dict( cxx11 = '"c++0x"',  cxx98 = '"c++98"' )
+		clangLibrary            = dict( cxx11 = '"libc++"', cxx98 = '"libstdc++"' )
+
+		options = dict(
+			  PRODUCT_NAME                  = '"$(TARGET_NAME)"'
+			, HEADER_SEARCH_PATHS           = headers
+			, LIBRARY_SEARCH_PATHS          = libs
+			, GCC_PREPROCESSOR_DEFINITIONS  = defines
+			, GCC_OPTIMIZATION_LEVEL        = 0 if name == 'Debug' else 's'
+		    , CLANG_CXX_LANGUAGE_STANDARD   = clangLanguageStarndard[std] if std in clangLanguageStarndard.keys() else clangLanguageStarndard['cxx98']
+		    , CLANG_CXX_LIBRARY             = clangLibrary[std] if std in clangLibrary.keys() else clangLibrary['cxx98']
+		)
+
+		return options
 
 	CodegenCommand = """
 {output}: {input}

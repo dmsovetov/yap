@@ -65,6 +65,7 @@ if __name__ == "__main__":
 	parser.add_argument( "-o", "--output", default = 'projects', type = str, help = "Output path" )
 	parser.add_argument( "-n", "--name",   default = name,       type = str, help = "Workspace (solution) name" )
 	parser.add_argument( "-a", "--arch",   default = 'default',  type = str, help = "Target build architecture" )
+	parser.add_argument( "-x", "--std",    default = 'cxx98',    type = str, help = "C++ standard" )
 
 	args, unknown = parser.parse_known_args()
 
@@ -102,6 +103,7 @@ if __name__ == "__main__":
 	Makefile.platform = platforms[args.platform]()
 	Makefile.set( 'PLATFORM', args.platform )
 	Makefile.set( 'ARCH', args.arch )
+	Makefile.set( 'STD', args.std )
 	Makefile.initialize( Project, args.name, args.platform, (lambda fileName: execfile( fileName )) )
 	Makefile.project.define( 'DC_PLATFORM_' + args.platform.upper() )
 	Makefile.project.define( 'DC_PLATFORM=' + args.platform )
