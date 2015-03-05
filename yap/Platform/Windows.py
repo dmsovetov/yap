@@ -24,7 +24,7 @@
 #
 #################################################################################
 
-import os
+import os, glob
 
 from Platform import Platform
 
@@ -35,14 +35,44 @@ class Windows( Platform ):
 		Platform.__init__( self )
 
 		# Add system search paths
-		sdk = os.path.join( os.environ['ProgramFiles(x86)'], 'Microsoft SDKs/Windows/v7.0A/' )
-		self.add_header_search_paths( os.path.join( sdk, 'Include' ) )
-		self.add_library_search_paths( os.path.join( sdk, 'Lib' ) )
+		sdk = os.path.join( os.environ['ProgramFiles(x86)'], 'Microsoft SDKs/Windows' )
+
+		if os.path.exists(sdk):
+			for path in glob.glob(sdk + '/*'):
+				self.register_windows_sdk(path)
+
+		kits = os.path.join(os.environ['ProgramFiles(x86)'], 'Windows Kits')
+
+		if os.path.exists(kits):
+			for kit in glob.glob(kits + '/*'):
+				self.register_windows_kit(kit)
 
 		# Register libraries
 		self.register_library('OpenAL',  headers=['OpenAL/al.h', 'OpenAL/alc.h'],   libraries=['openal32'])
 		self.register_library('OpenGL',  headers=['gl/gl.h'],                       libraries=['opengl32'])
 		self.register_library('GLUT',    headers=['glut/glut.h'],                   libraries=['glut32'])
+
+    # register_windows_kit
+	def register_windows_kit(self, path):
+		headers = ['shared', 'um', 'WinRT']
+
+		for folder in headers:
+			header_path = os.path.join(path, 'Include', folder )
+			if os.path.exists(header_path):
+				self.add_header_search_paths(header_path)
+
+		self.add_library_search_paths(os.path.join(path, 'Lib/win8/um/x86'))
+
+	# register_windows_sdk
+	def register_windows_sdk(self, path):
+		header_path  = os.path.join(path, 'Include')
+		library_path = os.path.join(path, 'Lib')
+
+		if os.path.exists(header_path):
+			self.add_header_search_paths(header_path)
+
+		if os.path.exists(library_path):
+			self.add_library_search_paths(library_path)
 
 	# userpaths
 	@property
