@@ -43,10 +43,11 @@ class Project:
 	xmlns           = "http://schemas.microsoft.com/developer/msbuild/2003"
 
 	# ctor
-	def __init__( self, type, name, keyword, platform ):
+	def __init__( self, type, name, keyword, platform, toolset ):
 		self._xml           = Xml.Element( 'Project', attrib=dict( DefaultTargets = Project.DefaultTargets, ToolsVersion = Project.ToolsVersion, xmlns = Project.xmlns ) )
 		self._id            = ID.generate()
 		self._type          = type
+		self._toolset		= toolset
 		self._name          = name
 		self._keyword       = keyword
 		self._platform      = platform
@@ -139,7 +140,8 @@ class Project:
 			group.setProperties( dict(
 				ConfigurationType = self._type,
 			    UseDebugLibraries = True if cfg.name == 'Debug' else False,
-			    CharacterSet = 'MultiByte'
+			    CharacterSet = 'MultiByte',
+				PlatformToolset = self._toolset
 			) )
 
 		# Add import properties

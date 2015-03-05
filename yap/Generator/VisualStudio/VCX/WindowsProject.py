@@ -33,4 +33,4 @@ class WindowsProject( Project ):
 
 	# ctor
 	def __init__( self, type, name ):
-		Project.__init__( self, type, name, 'Win32Proj', 'Win32' )
+		Project.__init__( self, type, name, 'Win32Proj', 'Win32', 'v110' )
