@@ -75,11 +75,21 @@ class Platform:
 
 	# add_header_search_paths
 	def add_header_search_paths(self, *paths):
-		[self._headerSearchPaths.append(path) for path in paths]
+		for path in paths:
+			if not os.path.exists(path):
+				print 'Warning: header search path doesnt exist', path
+				continue
+
+			self._headerSearchPaths.append(path)
 
 	# add_library_search_paths
 	def add_library_search_paths(self, *paths):
-		[self._librarySearchPaths.append(path) for path in paths]
+		for path in paths:
+			if not os.path.exists(path):
+				print 'Warning: library search path doesnt exist', path
+				continue
+
+			self._librarySearchPaths.append(path)
 
 	# register_library
 	def register_library(self, identifier, name = None, headers = [], libraries = []):
