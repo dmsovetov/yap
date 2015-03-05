@@ -26,7 +26,7 @@
 #
 #################################################################################
 
-import argparse, os, glob
+import argparse, os, glob, subprocess
 
 from yap import Project
 from yap import Generator
@@ -48,6 +48,7 @@ def parseUnknownArguments( args ):
 
 		if len( items ) == 1:
 			Makefile.project.define( 'DC_' + name + '_ENABLED' )
+			Makefile.set( name, True )
 		else:
 			Makefile.project.define( 'DC_' + name + '=' + items[1] )
 			Makefile.project.define( 'DC_' + name + '_' + items[1].upper() )
@@ -193,7 +194,10 @@ if __name__ == "__main__":
 					index = url.find( '//' )
 					url   = url[:index + 2] + auth['username'] + ':' + auth['password'] + '@' + url[index + 2:]
 
-				os.system('git clone {0} {1}/{2}'.format(url, modules, name))
+				try:
+					subprocess.check_call( [ 'git', 'clone', url, modules + '/' + name ] )
+				except:
+					print 'Error: failed to checkout Git repository from', url
 
 		# Include it to project
 		if makefile:
