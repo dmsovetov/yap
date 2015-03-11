@@ -42,6 +42,7 @@ class Platform:
 		self.register_library('fbx',     headers=['fbxsdk.h'],                                  libraries=['fbxsdk'])
 		self.register_library('yaml',    headers=['yaml/yaml.h'],                               libraries=['yaml'])
 		self.register_library('embree2', headers=['embree2/rtcore.h', 'embree2/rtcore_ray.h'],  libraries=['embree', 'sys', 'simd', 'embree_sse41', 'embree_sse42'])
+		self.register_library('jsoncpp', headers=['json/json.h'],                               libraries=['jsoncpp'])
 
 	# userpaths
 	@property
