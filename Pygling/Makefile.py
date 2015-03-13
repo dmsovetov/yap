@@ -48,12 +48,6 @@ class Makefile:
 	platform    = None
 	project     = None
 
-	# getProject
-#	@staticmethod
-#	def getProject():
-#		global _Project
-#		return _Project
-
 	# set
 	@staticmethod
 	def set( name, value ):
@@ -102,5 +96,4 @@ class Makefile:
 		_Generator.generate()
 
 _Env       = Env.Env()
-#_Project   = None
 _Generator = None

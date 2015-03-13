@@ -24,11 +24,11 @@
 
 from setuptools import setup, find_packages
 
-setup(name='yap',
+setup(name='Pygling',
       version='0.5.7',
-      description='yap is a yet another project generator.',
-      url='https://github.com/dmsovetov/yap',
-      scripts=['bin/yap'],
+      description='Pygling is a yet another project generator.',
+      url='https://github.com/dmsovetov/Pygling',
+      scripts=['bin/pygling', 'bin/pygling.bat'],
       author='Dmitry Sovetov',
       author_email='dmsovetov@gmail.com',
       license='MIT',
