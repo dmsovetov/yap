@@ -24,7 +24,7 @@
 #
 #################################################################################
 
-import platform, os
+import platform, os, glob, shutil
 
 import Platform, Target, Globals, Builder
 
@@ -90,7 +90,49 @@ class Workspace:
 
 	# install
 	def install(self, platform):
-		pass
+		# Get list of platforms
+		platforms = self._platforms(platform)
+
+		# For each platform install products
+		for platform in platforms:
+			source   = self._substitute_variables(self._source, platform = platform)
+			output   = self._substitute_variables(self._output, platform = platform)
+			products = os.path.join(source, 'Release')
+			lib      = os.path.join(output, 'lib', platform)
+			bin      = os.path.join(output, 'bin', platform)
+
+			if not os.path.exists(products):
+				raise Exception('No products built for ' + platform + ' Release configuration')
+
+			# Build libraries list
+			libs = []
+			for ext in ['.a', '.lib']:
+				libs = libs + glob.glob(os.path.join(products, '*' + ext))
+
+			# Build executables list
+			bins = []
+			for ext in ['.exe', '.app']:
+				bins = bins + glob.glob(os.path.join(products, '*' + ext))
+			bins = bins + [path for path in glob.glob(os.path.join(products, '*' + ext)) if os.path.split(path)[1] == '']
+
+			# Install libraries
+			if len(libs):
+				if not os.path.exists(lib):
+					os.makedirs(lib)
+
+				for file in libs:
+					print 'Installing', os.path.basename(file)
+					shutil.copyfile(file, os.path.join(lib, os.path.basename(file)))
+
+			# Install binaries
+			if len(bins):
+				if not os.path.exists(bin):
+					os.makedirs(bin)
+
+				for file in bins:
+					print 'Installing', os.path.basename(file)
+					shutil.copyfile(file, os.path.join(bin, os.path.basename(file)))
+
 
 	# _create_makefile
 	def _create_makefile(self, platform):
