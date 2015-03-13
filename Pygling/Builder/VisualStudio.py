@@ -28,7 +28,7 @@ import os, glob, subprocess
 class VisualStudio:
 	# build
 	@staticmethod
-	def build(source, output, configuration):
+	def build(source, output):
 		vs = VisualStudio.tools()
 
 		if len(vs) == 0:

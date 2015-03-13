@@ -85,9 +85,8 @@ class Workspace:
 
 			config = self._args.configuration
 			source = self._substitute_variables(self._source, platform = platform, configuration = config)
-			output = self._substitute_variables(self._output, platform = platform, configuration = config)
 
-			Workspace.Builders[platform].build(source, output, config)
+			Workspace.Builders[platform].build(source, config)
 
 	# install
 	def install(self, platform):

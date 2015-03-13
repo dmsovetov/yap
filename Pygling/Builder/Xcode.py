@@ -28,7 +28,7 @@ import os, glob, subprocess
 class Xcode:
 	# build
 	@staticmethod
-	def build(source, output, configuration):
+	def build(source, configuration):
 		# Check source path exists.
 		if not os.path.exists(source):
 			raise Exception('Source folder does not exist: ' + source)
@@ -47,7 +47,7 @@ class Xcode:
 				raise Exception('There are no schemes in workspace ' + workspace)
 
 			for scheme in schemes:
-				os.system('xcodebuild -workspace {0} -scheme {1} -configuration {2} CONFIGURATION_BUILD_DIR={3}'.format(workspace, scheme, configuration, output))
+				os.system('xcodebuild -workspace {0} -scheme {1} -configuration {2} CONFIGURATION_BUILD_DIR={3}/{2}'.format(workspace, scheme, configuration, source))
 
 	# schemes
 	@staticmethod
