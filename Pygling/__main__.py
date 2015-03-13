@@ -51,7 +51,7 @@ class Pygling:
 		# Check action
 		args, unknown = parser.parse_known_args()
 
-		workspace = Pygling.Workspace(args.name, args.source, args.output, args, unknown)
+		workspace = Workspace(args.name, args.source, args.output, args, unknown)
 
 		if   args.action == 'configure':  workspace.configure(args.platform)
 		elif args.action == 'build':      workspace.build(args.platform)
