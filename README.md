@@ -1,2 +1,2 @@
 # Pygling
-Pygling is a yet another project generator written in Python.
+Pygling is a C++ workspace generator written in Python.
