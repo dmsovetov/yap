@@ -26,7 +26,7 @@
 #
 #################################################################################
 
-import argparse, os, glob, subprocess
+import argparse, os, glob, subprocess, platform
 
 from yap import Project
 from yap import Generator
@@ -54,6 +54,21 @@ def parseUnknownArguments( args ):
 			Makefile.project.define( 'DC_' + name + '_' + items[1].upper() )
 			Makefile.set( name, items[1] )
 
+# availablePlatforms
+def availablePlatforms():
+	platforms = dict(
+		Windows = ['Windows', 'Android']
+	,   Darwin  = ['MacOS', 'iOS', 'Android']
+	)
+
+	system = platform.system()
+
+	if not system in platforms.keys():
+		print 'Error: current platform is not supported', system
+		exit(1)
+
+	return platforms[system]
+
 # Entry point
 if __name__ == "__main__":
 	name = os.path.basename( os.getcwd() )
@@ -61,20 +76,22 @@ if __name__ == "__main__":
 	# Parse arguments
 	parser = argparse.ArgumentParser( description = 'Yet Another Project Generator', prefix_chars = '--', formatter_class = argparse.ArgumentDefaultsHelpFormatter )
 
-	parser.add_argument( "platform",                             type = str, help = "Target platform" )
-	parser.add_argument( "-s", "--source", default = '.',        type = str, help = "Project source path" )
-	parser.add_argument( "-o", "--output", default = 'projects', type = str, help = "Output path" )
-	parser.add_argument( "-n", "--name",   default = name,       type = str, help = "Workspace (solution) name" )
-	parser.add_argument( "-a", "--arch",   default = 'default',  type = str, help = "Target build architecture" )
-	parser.add_argument( "-x", "--std",    default = 'cxx98',    type = str, help = "C++ standard" )
+	parser.add_argument( "action",                                    type = str, help = "Action", choices = ["configure", "build", "install"] )
+	parser.add_argument( "-p", "--platform",    default = 'all',      type = str, help = "Target platform" )
+	parser.add_argument( "-s", "--source",      default = '.',        type = str, help = "Project source path" )
+	parser.add_argument( "-o", "--output",      default = 'projects', type = str, help = "Output path" )
+	parser.add_argument( "-n", "--name",        default = name,       type = str, help = "Workspace (solution) name" )
+	parser.add_argument( "-a", "--arch",        default = 'default',  type = str, help = "Target build architecture" )
+	parser.add_argument( "-x", "--std",         default = 'cxx98',    type = str, help = "C++ standard" )
 
+	# Check action
 	args, unknown = parser.parse_known_args()
 
-	if args.platform == 'install':
+	if args.action == 'install':
 		print 'Error: install is not implemented'
 		exit(1)
 
-	if args.platform == 'build':
+	if args.action == 'build':
 		print 'Error: build is not implemented'
 		exit(1)
 
@@ -91,9 +108,16 @@ if __name__ == "__main__":
 	if args.platform in aliases.keys():
 		args.platform = aliases[args.platform]
 
+	# Check whether current host platform is supported
+	available = availablePlatforms()
+
+	if args.platform != 'all' and not args.platform in available:
+		print 'Error: unsupported target platform', args.platform
+		exit(1)
+
 	# Platforms
 	platforms = dict( Windows = Platform.Windows, MacOS = Platform.MacOS, iOS = Platform.iOS )
-	if not args.platform in platforms.keys():
+	if args.platform != 'all' and not args.platform in platforms.keys():
 		print 'Error: unknown platform', args.platform
 		exit(1)
 
