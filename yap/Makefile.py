@@ -86,13 +86,14 @@ class Makefile:
 
 	# substituteVars
 	@staticmethod
-	def substituteVars( str ):
+	def substituteVars( input ):
 		global _Env
 
 		for k, v in _Env.vars.items():
-			str = str.replace( '$(' + k + ')', v )
+			if isinstance(v, str):
+				input = input.replace( '$(' + k + ')', v )
 
-		return str
+		return input
 
 	# generate
 	@staticmethod

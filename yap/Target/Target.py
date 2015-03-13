@@ -130,8 +130,12 @@ class Target:
 		[self._root.addFilesFromDirectory( self.toFullPath( path ) ) for path in list]
 
 	# files
-	def files( self, *list ):
-		[self._root.addFileAtPath( self.toSourcePath( self.toFullPath( path ) ) ) for path in list]
+	def files( self, *items ):
+		for item in items:
+			if isinstance(item, list):
+				self.files(*item)
+			else:
+				self._root.addFileAtPath( self.toSourcePath( self.toFullPath( item ) ) )
 
 	# link
 	def link( self, *list ):
