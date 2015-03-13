@@ -43,7 +43,7 @@ class Android( Generator ):
 	# generate
 	def generate( self ):
 		ndk = Make.Android()
-		ndk.initialize( self.makefile, self.sourceDir, self.binaryDir, self.sourceProject )
+		ndk.initialize( self.makefile, self.sourceProject )
 		ndk.generate()
 
 		print( 'Generating Android Eclipse project...' )

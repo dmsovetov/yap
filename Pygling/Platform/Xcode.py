@@ -26,7 +26,6 @@ import os
 
 from collections    import namedtuple
 from Unix           import Unix
-#from ..Library      import Library
 
 # class Xcode
 class Xcode(Unix):

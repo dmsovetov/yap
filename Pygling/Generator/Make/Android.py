@@ -49,8 +49,8 @@ class Android( Make ):
 		print( 'Generating Android NDK project...' )
 	
 		# JNI folder
-		if not os.path.exists( self.binaryDir + '/jni' ):
-			os.makedirs( self.binaryDir + '/jni' )
+		if not os.path.exists( self.projectpath + '/jni' ):
+			os.makedirs( self.projectpath + '/jni' )
 
 		# Generate targets
 		self.forEachTarget( self.generateTarget )
@@ -65,7 +65,7 @@ class Android( Make ):
 			return name + ' '
 
 		#Create folder
-		path 		= '{0}/jni/{1}.dir'.format( self.binaryDir, target.name )
+		path 		= '{0}/jni/{1}.dir'.format( self.projectpath, target.name )
 		fileName 	= os.path.join( path, 'Android.mk' )
 
 		if not os.path.exists( path ):

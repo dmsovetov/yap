@@ -40,6 +40,11 @@ class Generator:
 	def projectpath(self):
 		return self._pathScope.project
 
+	# sourcepath
+	@property
+	def sourcepath(self):
+		return self._pathScope.source
+
 	# getPathForTarget
 	def getPathForTarget( self, target ):
 		return os.path.join( self.projectpath, target.name + '.dir' )

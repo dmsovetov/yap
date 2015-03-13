@@ -60,6 +60,12 @@ class Makefile:
 		global _Env
 		return _Env.get( name )
 
+	# clear
+	@staticmethod
+	def clear():
+		global  _Env
+		_Env = Env.Env()
+
 	# createProject
 	@staticmethod
 	def createProject( cls, name, platform, importer, generator ):

@@ -25,6 +25,7 @@
 import Platform, Location
 
 from Makefile   import Makefile
+from Workspace  import Workspace
 from Target     import Project
 from Target     import Target
 from Target     import StaticLibrary

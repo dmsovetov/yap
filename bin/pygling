@@ -26,55 +26,14 @@
 #
 #################################################################################
 
-import argparse, os, glob, subprocess, platform
-
-from Pygling import Project
-from Pygling import Generator
-from Pygling import Makefile
-from Pygling import StaticLibrary
-from Pygling import Executable
-from Pygling import Folder
-from Pygling import Platform
-from Pygling import Location
-
-# parseUnknownArguments
-def parseUnknownArguments( args ):
-	for arg in args:
-		if not arg.startswith( '--' ):
-			continue
-
-		items = arg.split( '=' )
-		name  = items[0][2:].upper()
-
-		if len( items ) == 1 or items[1].lower() == 'yes':
-			Makefile.project.define( 'DC_' + name + '_ENABLED' )
-			Makefile.set( name, True )
-		else:
-			Makefile.project.define( 'DC_' + name + '=' + items[1] )
-			Makefile.project.define( 'DC_' + name + '_' + items[1].upper() )
-			Makefile.set( name, items[1] )
-
-# availablePlatforms
-def availablePlatforms():
-	platforms = dict(
-		Windows = ['Windows', 'Android']
-	,   Darwin  = ['MacOS', 'iOS', 'Android']
-	)
-
-	system = platform.system()
-
-	if not system in platforms.keys():
-		print 'Error: current platform is not supported', system
-		exit(1)
-
-	return platforms[system]
+import argparse, Pygling
 
 # Entry point
 if __name__ == "__main__":
 	name = os.path.basename( os.getcwd() )
 
 	# Parse arguments
-	parser = argparse.ArgumentParser( description = 'Yet Another Project Generator', prefix_chars = '--', formatter_class = argparse.ArgumentDefaultsHelpFormatter )
+	parser = argparse.ArgumentParser( description = 'Pygling C++ workspace generator.', prefix_chars = '--', formatter_class = argparse.ArgumentDefaultsHelpFormatter )
 
 	parser.add_argument( "action",                                    type = str, help = "Action", choices = ["configure", "build", "install"] )
 	parser.add_argument( "-p", "--platform",    default = 'all',      type = str, help = "Target platform" )
@@ -82,18 +41,10 @@ if __name__ == "__main__":
 	parser.add_argument( "-o", "--output",      default = 'projects', type = str, help = "Output path" )
 	parser.add_argument( "-n", "--name",        default = name,       type = str, help = "Workspace (solution) name" )
 	parser.add_argument( "-a", "--arch",        default = 'default',  type = str, help = "Target build architecture" )
-	parser.add_argument( "-x", "--std",         default = 'cxx98',    type = str, help = "C++ standard" )
+	parser.add_argument( "-x", "--std",         default = 'cxx98',    type = str, help = "C++ standard", choices = ['cxx99', 'cxx11'] )
 
 	# Check action
 	args, unknown = parser.parse_known_args()
-
-	if args.action == 'install':
-		print 'Error: install is not implemented'
-		exit(1)
-
-	if args.action == 'build':
-		print 'Error: build is not implemented'
-		exit(1)
 
 	if not os.path.exists( args.source ):
 		print 'Error: source directory {0} does not exist'.format( args.source )
@@ -103,132 +54,6 @@ if __name__ == "__main__":
 		print 'Error: no Makefile.py file found in directory', args.source
 		exit(1)
 
-	# Platform aliases
-	aliases = dict( macos = 'MacOS', windows = 'Windows', flash = 'Flash', android = 'Android', ios = 'iOS', html5 = 'HTML5' )
-	if args.platform in aliases.keys():
-		args.platform = aliases[args.platform]
-
-	# Check whether current host platform is supported
-	available = availablePlatforms()
-
-	if args.platform != 'all' and not args.platform in available:
-		print 'Error: unsupported target platform', args.platform
-		exit(1)
-
-	# Platforms
-	platforms = dict( Windows = Platform.Windows, MacOS = Platform.MacOS, iOS = Platform.iOS )
-	if args.platform != 'all' and not args.platform in platforms.keys():
-		print 'Error: unknown platform', args.platform
-		exit(1)
-
-	# Push path scope
-	Location.PathScope.push( os.path.abspath( args.source ), os.path.abspath( args.output ) )
-
-	# Generate project
-	Makefile.platform = platforms[args.platform]()
-	Makefile.set( 'PLATFORM', args.platform )
-	Makefile.set( 'ARCH', args.arch )
-	Makefile.set( 'STD', args.std )
-	Makefile.initialize( Project, args.name, args.platform, (lambda fileName: execfile( fileName )) )
-	Makefile.project.define( 'DC_PLATFORM_' + args.platform.upper() )
-	Makefile.project.define( 'DC_PLATFORM=' + args.platform )
-
-	# Parse unknown arguments
-	parseUnknownArguments( unknown )
-
-	# Build config
-	platform	    = args.platform
-	project         = Makefile.project
-
-	# Include
-	def Include( *list ):
-		for path in list:
-			Makefile.project.target( path )
-
-	# Library
-	def Library( name, required = False ):
-		locations = Makefile.platform.find_library( name )
-
-		if not locations and required:
-			print 'Error:', name, 'is required'
-			exit(1)
-
-		return locations
-
-	# Has
-	def Has( name ):
-		return Makefile.get( name.upper() ) != None
-
-	# Get
-	def Get( name ):
-		return Makefile.get( name.upper() )
-
-	# Set
-	def Set( name, value ):
-		Makefile.set( name.upper(), value )
-
-	# Project
-	def Project( externals = None, paths = None ):
-		if externals:
-			project.add_headers_search_paths(os.path.join(externals, 'include'))
-			project.add_library_search_paths(os.path.join(externals, 'lib', args.platform))
-		if paths:
-			project.add_headers_search_paths(paths)
-
-	# Folders
-	def Folders( path ):
-		# class Folder
-		class Folder:
-			def __init__( self, path ):
-				self.name = os.path.basename( path )
-				self.path = path
-
-		return [Folder( path ) for path in glob.glob( os.path.join( Location.PathScope.current.source, path ) ) if os.path.isdir( path )]
-
-	# Files
-	def Files( path ):
-		# class Folder
-		class File:
-			def __init__( self, path ):
-				self.name = os.path.basename( path )
-				self.path = path
-
-		return [File( path ) for path in Folder.glob( os.path.join( Location.PathScope.current.source, path ) ) if os.path.isfile( path )]
-
-	# Module
-	def Module(url, makefile = None, folder = None, credentials = None):
-		name, ext   = os.path.splitext(os.path.basename(url))
-		modules     = Location.PathScope.current.source
-		auth        = {}
-
-		if credentials:
-			execfile(os.path.join(modules, credentials), {}, auth)
-
-		if folder:
-			modules = os.path.join(modules, folder)
-
-		# Create modules folder
-		if not os.path.exists(modules):
-			os.makedirs(modules)
-
-		# Checkout module
-		if not os.path.exists(os.path.join(modules, name)):
-			if ext == '.git':
-				if credentials:
-					index = url.find( '//' )
-					url   = url[:index + 2] + auth['username'] + ':' + auth['password'] + '@' + url[index + 2:]
-
-				try:
-					subprocess.check_call( [ 'git', 'clone', url, modules + '/' + name ] )
-				except:
-					print 'Error: failed to checkout Git repository from', url
-
-		# Include it to project
-		if makefile:
-			Include(os.path.join(modules, name, makefile))
-		else:
-			Include(os.path.join(modules, name))
-
-	execfile( Location.PathScope.current.source + '/Makefile.py' )
-
-	Makefile.generate()
+	workspace = Pygling.Workspace(args.name, args.source, args.output, args, unknown)
+	if not workspace.configure(args.platform):
+		print 'Error: failed to configure workspace for', args.platform

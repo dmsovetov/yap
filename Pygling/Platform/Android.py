@@ -24,7 +24,10 @@
 #
 #################################################################################
 
-from Windows    import Windows
-from MacOS      import MacOS
-from iOS        import iOS
-from Android    import Android
+from Unix import Unix
+
+# class Android
+class Android(Unix):
+	# ctor
+	def __init__(self):
+		pass
