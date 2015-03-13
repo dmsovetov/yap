@@ -37,7 +37,7 @@ class Project( Resource ):
 	def __init__( self, name, settings ):
 		Resource.__init__( self, 'PBXProject', name )
 
-		self.organization       = 'YAP'
+		self.organization       = 'Pygling'
 		self.archiveVersion     = 1
 		self.objectVersion      = 46
 		self.objects            = Objects( self )

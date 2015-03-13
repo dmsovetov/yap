@@ -26,7 +26,7 @@
 
 import platform, os
 
-import Platform, Target, Globals
+import Platform, Target, Globals, Builder
 
 from Location import PathScope
 from Makefile import Makefile
@@ -38,6 +38,9 @@ class Workspace:
 
 	# Available platforms
 	Platforms = dict( Windows = Platform.Windows, MacOS = Platform.MacOS, iOS = Platform.iOS, Android = Platform.Android )
+
+	# Available builders
+	Builders = dict( MacOS = Builder.Xcode, iOS = Builder.Xcode )
 
 	# ctor
 	def __init__(self, name, source, output, args, params):
@@ -51,10 +54,6 @@ class Workspace:
 	def configure(self, platform):
 		# Get list of platforms
 		platforms = self._platforms(platform)
-
-		# Invalid platform specified
-		if not platforms:
-			return False
 
 		# Generate a workspace for each platform
 		for platform in platforms:
@@ -75,11 +74,20 @@ class Workspace:
 			# Pop path scope
 			PathScope.pop()
 
-		return True
-
 	# build
 	def build(self, platform):
-		pass
+		# Get list of platforms
+		platforms = self._platforms(platform)
+
+		for platform in platforms:
+			if not platform in Workspace.Builders.keys():
+				raise Exception('Do not known how to build for ' + platform)
+
+			config = self._args.configuration
+			source = self._substitute_variables(self._source, platform = platform, configuration = config)
+			output = self._substitute_variables(self._output, platform = platform, configuration = config)
+
+			Workspace.Builders[platform].build(source, output, config)
 
 	# install
 	def install(self, platform):
@@ -92,6 +100,7 @@ class Workspace:
 		Makefile.set( 'PLATFORM', platform )
 		Makefile.set( 'ARCH', self._args.arch )
 		Makefile.set( 'STD', self._args.std )
+		Makefile.set( 'DEVELOPMENT_TEAM', self._args.xcteam )
 		Makefile.initialize( Target.Project, self._name, platform, lambda fileName: execfile( fileName, Globals.create(Makefile, platform, Makefile.project) ) )
 		Makefile.project.define( 'DC_PLATFORM_' + platform.upper() )
 		Makefile.project.define( 'DC_PLATFORM=' + platform )
@@ -106,7 +115,7 @@ class Workspace:
 		available = Workspace.available_targets()
 
 		if platform != 'all' and not platform in available:
-			return None
+			raise Exception("Unknown target platform")
 
 		return available if platform == 'all' else [ platform ]
 
@@ -126,6 +135,12 @@ class Workspace:
 				Makefile.project.define( 'DC_' + name + '=' + items[1] )
 				Makefile.project.define( 'DC_' + name + '_' + items[1].upper() )
 				Makefile.set( name, items[1] )
+
+	# _substitute_variables
+	def _substitute_variables(self, str, **vars):
+		for k, v in vars.items():
+			str = str.replace( '[' + k + ']', v )
+		return str
 
 	# available_targets
 	@staticmethod

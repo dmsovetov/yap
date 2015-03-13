@@ -24,7 +24,7 @@
 #
 #################################################################################
 
-import os, shutil, plistlib, subprocess, glob, distutils.version
+import os, shutil, plistlib, subprocess, glob, distutils.version, getpass
 
 from ..Generator import Generator
 from PBX         import Project
@@ -127,10 +127,22 @@ class Xcode5( Generator ):
 	# saveProject
 	def saveProject( self, project, target ):
 		# Create project folder
-		folder = os.path.join( self.getPathForTarget( target ), target.name + '.xcodeproj' )
+		folder   = os.path.join( self.getPathForTarget( target ), target.name + '.xcodeproj' )
 
 		if not os.path.exists( folder ):
 			os.mkdir( folder )
+
+		# Create user data folder
+		userdata = os.path.join( folder, 'xcuserdata', getpass.getuser() + '.xcuserdatad', 'xcschemes' )
+
+		if not os.path.exists( userdata ):
+			os.makedirs( userdata )
+
+		userdata = os.path.join( userdata, target.name + '.xcscheme' )
+
+		# Dump scheme to file
+		productName = 'lib' + target.name + '.a' if target.type == 'static' else target.name + '.app'
+		Template( Xcode5.Scheme ).compileToFile( userdata, { 'id': project.id, 'name': target.name, 'product.name': productName } )
 
 		# Dump project to disk
 		file = open( os.path.join( folder, 'project.pbxproj' ), 'wt' )
@@ -299,7 +311,6 @@ class Xcode5( Generator ):
 
 		headers = self.list_header_paths(target)
 		defines = self.list_defines(target)
-	#	defines = self.processEachTargetDefine( target, generateDefines ).strip().split( ' ' )
 		libs    = []
 
 		if target.shouldLinkLibraries:
@@ -365,3 +376,29 @@ all: {depends}
 {projects}
 </Workspace>
 """
+
+	Scheme = """<?xml version="1.0" encoding="UTF-8"?>
+<Scheme
+   LastUpgradeVersion = "0610"
+   version = "1.3">
+   <BuildAction
+      parallelizeBuildables = "YES"
+      buildImplicitDependencies = "YES">
+      <BuildActionEntries>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+		        BuildableIdentifier = "primary"
+		        BlueprintIdentifier = "{id}"
+		        BuildableName = "{product.name}"
+		        BlueprintName = "{name}"
+		        ReferencedContainer = "container:{name}.xcodeproj">
+			</BuildableReference>
+         </BuildActionEntry>
+      </BuildActionEntries>
+   </BuildAction>
+</Scheme>"""

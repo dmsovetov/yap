@@ -26,7 +26,7 @@
 #
 #################################################################################
 
-import argparse, Pygling
+import os, argparse, Pygling
 
 # Entry point
 if __name__ == "__main__":
@@ -35,25 +35,21 @@ if __name__ == "__main__":
 	# Parse arguments
 	parser = argparse.ArgumentParser( description = 'Pygling C++ workspace generator.', prefix_chars = '--', formatter_class = argparse.ArgumentDefaultsHelpFormatter )
 
-	parser.add_argument( "action",                                    type = str, help = "Action", choices = ["configure", "build", "install"] )
-	parser.add_argument( "-p", "--platform",    default = 'all',      type = str, help = "Target platform" )
-	parser.add_argument( "-s", "--source",      default = '.',        type = str, help = "Project source path" )
-	parser.add_argument( "-o", "--output",      default = 'projects', type = str, help = "Output path" )
-	parser.add_argument( "-n", "--name",        default = name,       type = str, help = "Workspace (solution) name" )
-	parser.add_argument( "-a", "--arch",        default = 'default',  type = str, help = "Target build architecture" )
-	parser.add_argument( "-x", "--std",         default = 'cxx98',    type = str, help = "C++ standard", choices = ['cxx99', 'cxx11'] )
+	parser.add_argument( "action",                                          type = str, help = "Action", choices = ["configure", "build", "install"] )
+	parser.add_argument( "-p", "--platform",        default = 'all',        type = str, help = "Target platform" )
+	parser.add_argument( "-s", "--source",          default = '.',          type = str, help = "Project source path" )
+	parser.add_argument( "-o", "--output",          default = 'projects',   type = str, help = "Output path" )
+	parser.add_argument( "-n", "--name",            default = name,         type = str, help = "Workspace (solution) name" )
+	parser.add_argument( "-a", "--arch",            default = 'default',    type = str, help = "Target build architecture" )
+	parser.add_argument( "-x", "--std",             default = 'cxx98',      type = str, help = "C++ standard", choices = ['cxx99', 'cxx11'] )
+	parser.add_argument( "-c", "--configuration",   default = 'Release',    type = str, help = "Build configuration" )
+	parser.add_argument( "--xcteam",                                        type = str, help = "Xcode provisioning profile to be used" )
 
 	# Check action
 	args, unknown = parser.parse_known_args()
 
-	if not os.path.exists( args.source ):
-		print 'Error: source directory {0} does not exist'.format( args.source )
-		exit(1)
-
-	if not os.path.exists( os.path.join( args.source, 'Makefile.py' ) ):
-		print 'Error: no Makefile.py file found in directory', args.source
-		exit(1)
-
 	workspace = Pygling.Workspace(args.name, args.source, args.output, args, unknown)
-	if not workspace.configure(args.platform):
-		print 'Error: failed to configure workspace for', args.platform
+
+	if   args.action == 'configure':  workspace.configure(args.platform)
+	elif args.action == 'build':      workspace.build(args.platform)
+	elif args.action == 'install':    workspace.install(args.platform)
