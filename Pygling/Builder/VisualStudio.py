@@ -24,42 +24,31 @@
 
 import os, glob, subprocess
 
-# class Xcode
-class Xcode:
+# class VisualStudio
+class VisualStudio:
 	# build
 	@staticmethod
 	def build(source, output, configuration):
-		# Check source path exists.
-		if not os.path.exists(source):
-			raise Exception('Source folder does not exist: ' + source)
+		vs = VisualStudio.tools()
 
-		# Get all workspaces
-		workspaces = glob.glob(os.path.join(source, '*.xcworkspace'))
+		if len(vs) == 0:
+			raise Exception('No VisualStudio installation found')
 
-		if len(workspaces) == 0:
-			raise Exception('No workspaces found in folder ' + source)
+		commonTools = os.environ[vs[0]]
 
-		# Build all workspaces
-		for workspace in workspaces:
-			schemes = Xcode.schemes(workspace)
+		sln = VisualStudio.solutions(source)
+		if len(sln) == 0:
+			raise Exception('No solutions found at path ' + source)
 
-			if len(schemes) == 0:
-				raise Exception('There are no schemes in workspace ' + workspace)
+		for solution in sln:
+			os.system('call "{0}/VsDevCmd.bat" && devenv {1} /BUILD {2}'.format(commonTools, solution, configuration))
 
-			for scheme in schemes:
-				os.system('xcodebuild -workspace {0} -scheme {1} -configuration {2} CONFIGURATION_BUILD_DIR={3}'.format(workspace, scheme, configuration, output))
-
-	# schemes
+	# tools
 	@staticmethod
-	def schemes(workspace):
-		try:
-			result = subprocess.check_output(['xcodebuild', '-workspace', workspace, '-list'])
+	def tools():
+		return [k for k, v in os.environ.items() if k.startswith('VS') and k.endswith('COMNTOOLS')]
 
-			if result.find( 'There are no schemes in workspace' ) != -1:
-				return []
-
-			token  = 'Schemes:'
-			start  = result.find(token)
-			return [item.strip() for item in result[start + len(token):].split( '\n' ) if item != '']
-		except:
-			raise Exception('Failed to read workspace schemes')
+	# solutions
+	@staticmethod
+	def solutions(path):
+		return glob.glob(os.path.join(path, '*.sln'))

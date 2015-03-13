@@ -40,7 +40,7 @@ class Workspace:
 	Platforms = dict( Windows = Platform.Windows, MacOS = Platform.MacOS, iOS = Platform.iOS, Android = Platform.Android )
 
 	# Available builders
-	Builders = dict( MacOS = Builder.Xcode, iOS = Builder.Xcode )
+	Builders = dict( MacOS = Builder.Xcode, iOS = Builder.Xcode, Windows = Builder.VisualStudio )
 
 	# ctor
 	def __init__(self, name, source, output, args, params):

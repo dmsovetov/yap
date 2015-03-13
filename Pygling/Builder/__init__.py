@@ -23,3 +23,4 @@
 #
 
 from Xcode import Xcode
+from VisualStudio import VisualStudio
