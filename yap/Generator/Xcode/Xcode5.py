@@ -316,6 +316,7 @@ class Xcode5( Generator ):
 			  PRODUCT_NAME                  = '"$(TARGET_NAME)"'
 			, HEADER_SEARCH_PATHS           = headers
 			, LIBRARY_SEARCH_PATHS          = libs
+		    , DEBUG_INFORMATION_FORMAT      = 'dwarf' if name == 'Debug' else 'dwarf-with-dsym'
 			, GCC_PREPROCESSOR_DEFINITIONS  = defines
 			, GCC_OPTIMIZATION_LEVEL        = 0 if name == 'Debug' else 's'
 		    , CLANG_CXX_LANGUAGE_STANDARD   = clangLanguageStarndard[std] if std in clangLanguageStarndard.keys() else clangLanguageStarndard['cxx98']
