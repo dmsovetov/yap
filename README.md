@@ -1,2 +1,2 @@
-# yap
-yap is a yet another project generator written in Python.
+# Pygling
+Pygling is a yet another project generator written in Python.
