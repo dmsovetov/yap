@@ -107,6 +107,10 @@ class Windows( Generator ):
 				    Optimization                    = 'Disabled',
 				    MultiProcessorCompilation       = True,
 				    MinimalRebuild                  = False,
+				    DebugInformationFormat          = 'ProgramDatabase',
+				    InlineFunctionExpansion         = 'Disabled',
+				    IntrinsicFunctions              = True,
+				    FloatingPointModel              = 'Fast',
 				    PreprocessorDefinitions         = ';'.join( defines + ['WIN32', '_DEBUG', '%(PreprocessorDefinitions)'] ),
 				    AdditionalIncludeDirectories    = ';'.join( headers )
 				),
