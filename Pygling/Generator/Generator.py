@@ -240,7 +240,7 @@ class Generator:
 
 	# list_source_files
 	def list_source_files(self, target, filter = None):
-		return [file.projectPath for file in target.filterSourceFiles(filter)]
+		return [file.projectPath.replace( '\\', '/' ) for file in target.filterSourceFiles(filter)]
 
 	# list_libraries
 	def list_libraries(self, target, filter = None):
