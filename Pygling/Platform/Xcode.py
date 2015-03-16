@@ -22,7 +22,7 @@
 # SOFTWARE.
 #
 
-import os, subprocess
+import os, subprocess, distutils.version, glob
 
 from collections    import namedtuple
 from Unix           import Unix
@@ -70,39 +70,40 @@ class Xcode(Unix):
 	def list_sdks(platform):
 		# parseProperty
 		def parseProperty( path, key ):
-			return subprocess.check_output( '/usr/libexec/PlistBuddy -c "Print :{1}" "{0}"'.format( path, key ), shell=True ).strip()
+			try:
+				return subprocess.check_output( '/usr/libexec/PlistBuddy -c "Print :{1}" "{0}"'.format( path, key ), shell=True ).strip()
+			except:
+				print 'Error: failed to parse property from', path
+				return None
+
+		# read_app_version
+		def read_app_version(path):
+			return parseProperty(os.path.join(path, 'Contents/Info.plist'), 'CFBundleShortVersionString')
 
 		# findXcode
 		def findXcode():
 			try:
-				value = subprocess.check_output( ['xcode-select', '-p'] )
+				value = subprocess.check_output( ['xcode-select', '-p'] ).strip()
 			except:
+				print 'Error: xcode-select failed'
 				return None
 
-			# Found
-			if value.find( '/Xcode.app/' ) != -1:
-				return value.strip()
+			return value
 
-			# List applications
-			apps = [path for path in glob.glob( '/Applications/Xcode*.app' ) if os.path.exists( os.path.join( path, 'Contents/MacOS/Xcode' ) )]
-			if len( apps ) == 0:
-				return None
-
-			return max( apps, key=lambda item: distutils.version.LooseVersion( parseProperty( os.path.join( item, '/Contents/Info.plist' ), 'CFBundleShortVersionString' ) ) )
-
-		xcode  = findXcode()
-		result = []
-		path   = '{0}/Platforms/{1}.platform/Developer/SDKs/'.format( xcode, platform )
+		xcode       = findXcode()
+		result      = []
+		path        = '{0}/Platforms/{1}.platform/Developer/SDKs/'.format( xcode, platform )
+		XcodeSDK    = namedtuple('XcodeSDK', 'path, name')
 
 		# No SDK path found
-		if not os.path.exists( path ):
+		if not os.path.exists(path):
 			print 'Warning: no {0} SDK found, Xcode path {1}, SDK path {2}'.format( platform, xcode, path )
-			return [ platform ]
+			return [ XcodeSDK(path=path, name=platform) ]
 
 		# List SDKs
 		for sdk in os.listdir( path ):
 			pathToSdk = os.path.join(path, sdk)
 			sdkName   = parseProperty( os.path.join( pathToSdk, 'SDKSettings.plist' ), 'CanonicalName' )
-			result.append( namedtuple('XcodeSDK', 'path, name')(path=pathToSdk, name=sdkName) )
+			result.append( XcodeSDK(path=pathToSdk, name=sdkName) )
 
 		return result
