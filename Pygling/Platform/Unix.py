@@ -42,7 +42,7 @@ class Unix(Platform):
 
 	# library_file_names
 	def library_file_names(self, name):
-		return ['lib' + name + '.a', 'lib' + name + '.dylib']
+		return ['lib' + name + '.a', 'lib' + name + '.dylib', 'lib' + name + '.so']
 
 	# header_file_names
 	def header_file_names(self, name, filename):
