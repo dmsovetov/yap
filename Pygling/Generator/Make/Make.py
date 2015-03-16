@@ -239,6 +239,10 @@ class Make( Generator ):
 	def list_cflags(self, target):
 		return ['-D' + define for define in self.list_defines(target)] + ['-I' + include for include in self.list_header_paths(target)]
 
+	# list_link_flags
+	def list_link_flags(self, target, filter = None):
+		return ['-l' + lib.name for lib in self.list_libraries(target, filter)]
+
 	############################### TEMPLATES
 
 	Makefile = """
