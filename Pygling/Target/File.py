@@ -37,7 +37,7 @@ class File:
 	def sourcePath( self ):
 		return os.path.join( self._folder.sourcePath, self._fileName )
 
-	# binaryPath
+	# projectPath
 	@property
 	def projectPath( self ):
 		assert os.path.exists( self.fullPath )

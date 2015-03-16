@@ -87,8 +87,8 @@ class Generator:
 	# processEachTargetSource
 	def processEachTargetSource( self, target, filter, processor ):
 		# callback
-		def callback( filePath, baseName, ext ):
-			callback.result += processor( target, filePath, baseName, ext )
+		def callback( file ):
+			callback.result += processor( file )
 
 		callback.result = ''
 		self.forEachTargetSource( target, callback, filter )
@@ -237,6 +237,10 @@ class Generator:
 		iterator( target.groups )
 
 	###
+
+	# list_source_files
+	def list_source_files(self, target, filter = None):
+		return [file.projectPath for file in target.filterSourceFiles(filter)]
 
 	# list_libraries
 	def list_libraries(self, target, filter = None):

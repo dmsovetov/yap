@@ -38,7 +38,7 @@ class Android( Generator ):
 
 	# getPathForTarget
 	def getPathForTarget( self, target ):
-		return self.binaryDir + '/jni/' + target.name + '.dir'
+		return self.projectpath + '/jni/' + target.name + '.dir'
 
 	# generate
 	def generate( self ):
@@ -52,9 +52,9 @@ class Android( Generator ):
 		def generateJavaSourceLinks( name, target ):
 			result = ''
 
-			for package in target.javaPackages:
-				name    = os.path.basename( package )
-				result += Template( Android.JavaSource ).compile( { 'name': name, 'path': package } )
+		#	for package in target.javaPackages:
+		#		name    = os.path.basename( package )
+		#		result += Template( Android.JavaSource ).compile( { 'name': name, 'path': package } )
 
 			return result
 
@@ -62,8 +62,8 @@ class Android( Generator ):
 		def generateJavaSourcesClassPaths( name, target ):
 			result = ''
 
-			for package in target.javaPackages:
-				result += '<classpathentry kind="src" path="{0}"/>'.format( os.path.basename( package ) )
+		#	for package in target.javaPackages:
+		#		result += '<classpathentry kind="src" path="{0}"/>'.format( os.path.basename( package ) )
 
 			return result
 
@@ -74,9 +74,9 @@ class Android( Generator ):
 		activity  = '.StartupActivity'
 		sources   = self.processEachTarget( generateJavaSourceLinks )
 		classes   = self.processEachTarget( generateJavaSourcesClassPaths )
-		src       = os.path.join( self.binaryDir, 'src' )
-		gen       = os.path.join( self.binaryDir, 'gen' )
-		resvalues = os.path.join( self.binaryDir, 'res/values' )
+		src       = os.path.join( self.projectpath, 'src' )
+		gen       = os.path.join( self.projectpath, 'gen' )
+		resvalues = os.path.join( self.projectpath, 'res/values' )
 
 		# Create folders
 		if not os.path.exists( src ):       os.makedirs( src )
@@ -84,10 +84,10 @@ class Android( Generator ):
 		if not os.path.exists( resvalues ): os.makedirs( resvalues )
 
 		# Icons
-		self.addIcons( self.sourceProject.targets['Player'] )
+	#	self.addIcons( self.sourceProject.targets['Player'] )
 
 		# Assets
-		self.addAssets( self.sourceProject.targets['Player'] )
+	#	self.addAssets( self.sourceProject.targets['Player'] )
 
 		# Strings
 		Template( Android.Strings ).compileToFile( os.path.join( resvalues, 'strings.xml' ), { 'name': appname } )
@@ -96,20 +96,20 @@ class Android( Generator ):
 		Template( Android.Styles ).compileToFile( os.path.join( resvalues, 'styles.xml' ) )
 
 		# Manifest
-		Template( Android.Manifest ).compileToFile( os.path.join( self.binaryDir, 'AndroidManifest.xml' ),
+		Template( Android.Manifest ).compileToFile( os.path.join( self.projectpath, 'AndroidManifest.xml' ),
 		                                            { 'package': package, 'min.sdk': minsdk, 'target.sdk': targetsdk, 'activity': activity, 'name': appname } )
 
 		# Classpath
-		Template( Android.Classpath ).compileToFile( os.path.join( self.binaryDir, '.classpath' ), { 'java.sources': classes } )
+		Template( Android.Classpath ).compileToFile( os.path.join( self.projectpath, '.classpath' ), { 'java.sources': classes } )
 
 		# Properties
-		Template( Android.Properties ).compileToFile( os.path.join( self.binaryDir, 'project.properties' ), { 'target.sdk': targetsdk } )
+		Template( Android.Properties ).compileToFile( os.path.join( self.projectpath, 'project.properties' ), { 'target.sdk': targetsdk } )
 
 		# Project
-		Template( Android.Project ).compileToFile( os.path.join( self.binaryDir, '.project' ), { 'name': appname, 'java.sources': sources } )
+		Template( Android.Project ).compileToFile( os.path.join( self.projectpath, '.project' ), { 'name': appname, 'java.sources': sources } )
 
 		# C Project
-		Template( Android.CProject ).compileToFile( os.path.join( self.binaryDir, '.cproject' ), { 'name': appname } )
+		Template( Android.CProject ).compileToFile( os.path.join( self.projectpath, '.cproject' ), { 'name': appname } )
 
 	# addIcons
 	def addIcons( self, target ):

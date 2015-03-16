@@ -189,12 +189,12 @@ class Workspace:
 		platforms = dict(
 			Windows = [
 				'Windows'
-		#	,   'Android'
+			,   'Android'
 			]
 		,   Darwin  = [
 				'MacOS'
 			,   'iOS'
-		#	,   'Android'
+			,   'Android'
 			]
 		)
 

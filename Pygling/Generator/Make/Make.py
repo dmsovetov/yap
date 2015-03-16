@@ -235,6 +235,10 @@ class Make( Generator ):
 
 		return string.replace( os.path.relpath( path, base ), '\\', '/' )
 
+	# list_cflags
+	def list_cflags(self, target):
+		return ['-D' + define for define in self.list_defines(target)] + ['-I' + include for include in self.list_header_paths(target)]
+
 	############################### TEMPLATES
 
 	Makefile = """
