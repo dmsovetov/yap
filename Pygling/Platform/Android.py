@@ -30,4 +30,4 @@ from Unix import Unix
 class Android(Unix):
 	# ctor
 	def __init__(self):
-		pass
+		Unix.__init__(self)
