@@ -32,6 +32,10 @@ from ..Location  import Path
 
 # class Platform
 class Platform:
+	ExternalLibrary = namedtuple('ExternalLibrary', 'type, name, locations')
+	Location        = namedtuple('Location', 'filename, path')
+	FindLibrary     = namedtuple('FindLibrary', 'name, headers, libraries')
+
 	# ctor
 	def __init__( self ):
 		self._headerSearchPaths  = []
@@ -95,7 +99,7 @@ class Platform:
 
 	# register_library
 	def register_library(self, identifier, name = None, headers = [], libraries = []):
-		self._libraries[identifier] = namedtuple('FindLibrary', 'name, headers, libraries')(name=name if name else identifier, headers=headers, libraries=libraries)
+		self._libraries[identifier] = Platform.FindLibrary(name=name if name else identifier, headers=headers, libraries=libraries)
 
 	# exists
 	@staticmethod
@@ -113,7 +117,7 @@ class Platform:
 		for header in headers:
 			for filename in self.header_file_names(name, header):
 				path = Platform.exists(filename, self.headers)
-				if path: locations.append(namedtuple('Location', 'filename, path')(filename=filename, path=Path(Path.Headers, path)))
+				if path: locations.append(Platform.Location(filename=filename, path=Path(Path.Headers, path)))
 
 		return locations
 
@@ -124,7 +128,7 @@ class Platform:
 		for library in libraries:
 			for filename in self.library_file_names(library):
 				path = Platform.exists(filename, self.libraries)
-				if path: locations.append(namedtuple('Location', 'filename, path')(filename=filename, path=Path(Path.Libraries, path)))
+				if path: locations.append(Platform.Location(filename=filename, path=Path(Path.Libraries, path)))
 
 		return locations
 
@@ -140,7 +144,7 @@ class Platform:
 		if not headerSearchPath:
 			return None
 
-		return namedtuple('ExternalLibrary', 'type, name, locations')(type='external', name=library.name, locations=headerSearchPath + librarySearchPath)
+		return Platform.ExternalLibrary(type='external', name=library.name, locations=headerSearchPath + librarySearchPath)
 
 	# _find_library_by_name
 	def _find_library_by_name(self, library):
