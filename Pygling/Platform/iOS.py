@@ -24,13 +24,11 @@
 #
 #################################################################################
 
-#import os
-
 from Xcode import Xcode
 
 # class iOS
 class iOS(Xcode):
 	# ctor
 	def __init__(self):
-		Xcode.__init__(self, '/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/')
+		Xcode.__init__(self, Xcode.list_sdks('iPhoneOS')[0].path)
 		self.add_library_alias('OpenGL', 'OpenGLES')

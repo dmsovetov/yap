@@ -47,7 +47,7 @@ class MacOS( Xcode5 ):
 	# getProjectSettings
 	def getProjectSettings( self ):
 		if not self.makefile.get( 'SDK' ):
-			self.makefile.set( 'SDK', Xcode5.listAvailableSDKs( 'MacOSX' )[0] )
+			self.makefile.set( 'SDK', self.makefile.platform.list_sdks( 'MacOSX' )[0].name )
 
 		if not self.makefile.get( 'ARCH' ) or self.makefile.get( 'ARCH' ) == 'default':
 			self.makefile.set( 'ARCH', 'i386' )

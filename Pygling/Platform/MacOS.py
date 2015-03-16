@@ -30,4 +30,4 @@ from Xcode import Xcode
 class MacOS(Xcode):
 	# ctor
 	def __init__(self):
-		Xcode.__init__(self, '/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk/')
+		Xcode.__init__(self, Xcode.list_sdks('MacOSX')[0].path )

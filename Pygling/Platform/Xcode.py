@@ -22,7 +22,7 @@
 # SOFTWARE.
 #
 
-import os
+import os, subprocess
 
 from collections    import namedtuple
 from Unix           import Unix
@@ -64,3 +64,45 @@ class Xcode(Unix):
 	# header_file_names
 	def header_file_names(self, name, filename):
 		return [name + '.framework/Headers/' + os.path.basename(filename)] + Unix.header_file_names(self, name, filename)
+
+	# list_sdks
+	@staticmethod
+	def list_sdks(platform):
+		# parseProperty
+		def parseProperty( path, key ):
+			return subprocess.check_output( '/usr/libexec/PlistBuddy -c "Print :{1}" "{0}"'.format( path, key ), shell=True ).strip()
+
+		# findXcode
+		def findXcode():
+			try:
+				value = subprocess.check_output( ['xcode-select', '-p'] )
+			except:
+				return None
+
+			# Found
+			if value.find( '/Xcode.app/' ) != -1:
+				return value.strip()
+
+			# List applications
+			apps = [path for path in glob.glob( '/Applications/Xcode*.app' ) if os.path.exists( os.path.join( path, 'Contents/MacOS/Xcode' ) )]
+			if len( apps ) == 0:
+				return None
+
+			return max( apps, key=lambda item: distutils.version.LooseVersion( parseProperty( os.path.join( item, '/Contents/Info.plist' ), 'CFBundleShortVersionString' ) ) )
+
+		xcode  = findXcode()
+		result = []
+		path   = '{0}/Platforms/{1}.platform/Developer/SDKs/'.format( xcode, platform )
+
+		# No SDK path found
+		if not os.path.exists( path ):
+			print 'Warning: no {0} SDK found, Xcode path {1}, SDK path {2}'.format( platform, xcode, path )
+			return [ platform ]
+
+		# List SDKs
+		for sdk in os.listdir( path ):
+			pathToSdk = os.path.join(path, sdk)
+			sdkName   = parseProperty( os.path.join( pathToSdk, 'SDKSettings.plist' ), 'CanonicalName' )
+			result.append( namedtuple('XcodeSDK', 'path, name')(path=pathToSdk, name=sdkName) )
+
+		return result

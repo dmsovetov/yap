@@ -47,7 +47,7 @@ class iOS( Xcode5 ):
 	# getProjectSettings
 	def getProjectSettings( self ):
 		if not self.makefile.get( 'SDK' ):
-			self.makefile.set( 'SDK', Xcode5.listAvailableSDKs( 'iPhoneOS' )[0] )
+			self.makefile.set( 'SDK', self.makefile.platform.list_sdks( 'iPhoneOS' )[0].name )
 
 		return {
 			'Debug': {
