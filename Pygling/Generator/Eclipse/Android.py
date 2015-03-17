@@ -162,7 +162,7 @@ class Android( Generator ):
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
     <uses-permission android:name="com.android.vending.BILLING" />
 
-    <application android:allowBackup="true" android:icon="@drawable/icon" android:label="@string/AppName" android:theme="@style/AppDefaultTheme" >
+    <application android:allowBackup="true" android:label="@string/AppName" android:theme="@style/AppDefaultTheme" >
 		<activity android:name="{activity}" android:label="@string/AppName" android:configChanges="orientation|keyboardHidden" android:screenOrientation="landscape">
             <meta-data android:name="android.app.lib_name" android:value="{name}" />
 			<intent-filter>
