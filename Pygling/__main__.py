@@ -46,6 +46,8 @@ class Pygling:
 		parser.add_argument( "-a", "--arch",            default = 'default',    type = str, help = "Target build architecture" )
 		parser.add_argument( "-x", "--std",             default = 'cxx98',      type = str, help = "C++ standard", choices = ['cxx99', 'cxx11'] )
 		parser.add_argument( "-c", "--configuration",   default = 'Release',    type = str, help = "Build configuration" )
+		parser.add_argument( "--package",										type = str, help = "Application package identifier" )
+		parser.add_argument( "--platformSdk",									type = str, help = "Platform SDK identifier" )
 		parser.add_argument( "--xcteam",                                        type = str, help = "Xcode provisioning profile to be used" )
 
 		# Check action

@@ -33,15 +33,12 @@ from ..Location import Path, PathScope
 
 # class Target
 class Target:
-#	Ident           = 0
 	StaticLibrary   = 'static'
 	SharedLibrary   = 'shared'
 	Executable      = 'executable'
 
 	# ctor
 	def __init__( self, name, sources = None, paths = None, defines = None, linkTo = None, link = None ):
-	#	self.message( 'Configure ' + name + '...' )
-
 		self._project       = Makefile.project
 		self.name           = name
 		self._defines       = []
@@ -82,8 +79,6 @@ class Target:
 					self.files( source )
 				else:
 					self.dirs( source )
-
-	#	Target.Ident = Target.Ident + 1
 
 		# Link to
 		if linkTo == Target.Executable:
@@ -178,38 +173,23 @@ class Target:
 	def filterLibraries( self, filter = None ):
 		return [library for library in self._linkWith if filter == None or filter( library )]
 
+	# filterFolders
+	def filterFolders(self, filter = None):
+		return self._root.filterFolders(filter)
+
 	# filterPaths
 	def filterPaths( self, filter = None ):
 		return [path for path in self._paths if filter == None or filter( path )]
 
 	# sharedLibrary
 	def sharedLibrary( self ):
-	#	self.message( 'Configured as shared library' )
-
-	#	Target.Ident = Target.Ident - 1
 		self.type    = Target.SharedLibrary
 
 	# staticLibrary
 	def staticLibrary( self ):
-	#	self.message( 'Configured as static library' )
-
-	#	Target.Ident = Target.Ident - 1
 		self.type    = Target.StaticLibrary
 
 	# executable
 	def executable( self, **params ):
-	#	self.message( 'Configured as executable' )
-		self.params = params
-
-	#	Target.Ident = Target.Ident - 1
-		self.type    = Target.Executable
-
-	'''
-	# message
-	@classmethod
-	def message( self, text ):
-		msg = ''
-		for i in range( 0, Target.Ident * 4 ):
-			msg += ' '
-		print( msg + text )
-	'''
+		self.params	= params
+		self.type 	= Target.Executable

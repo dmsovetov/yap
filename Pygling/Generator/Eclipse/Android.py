@@ -52,9 +52,9 @@ class Android( Generator ):
 		def generateJavaSourceLinks( name, target ):
 			result = ''
 
-		#	for package in target.javaPackages:
-		#		name    = os.path.basename( package )
-		#		result += Template( Android.JavaSource ).compile( { 'name': name, 'path': package } )
+			for folder in target.filterFolders(lambda folder: folder.name == 'java'):
+				result += Template( Android.JavaSource ).compile({'name': folder.name, 'path': folder.full_path})
+
 
 			return result
 
@@ -62,15 +62,15 @@ class Android( Generator ):
 		def generateJavaSourcesClassPaths( name, target ):
 			result = ''
 
-		#	for package in target.javaPackages:
-		#		result += '<classpathentry kind="src" path="{0}"/>'.format( os.path.basename( package ) )
+			for folder in target.filterFolders(lambda folder: folder.name == 'java'):
+				result += '<classpathentry kind="src" path="{0}"/>'.format(os.path.basename(folder.full_path))
 
 			return result
 
-		minsdk    = 9
-		targetsdk = 17
+		minsdk    = self.makefile.get('PLATFORM_SDK')
+		targetsdk = self.makefile.get('PLATFORM_SDK')
 		appname   = 'Player'
-		package   = 'com.yam'
+		package   = self.makefile.get('PACKAGE')
 		activity  = '.StartupActivity'
 		sources   = self.processEachTarget( generateJavaSourceLinks )
 		classes   = self.processEachTarget( generateJavaSourcesClassPaths )
@@ -120,7 +120,7 @@ class Android( Generator ):
 
 		for icon in glob.glob( icons ):
 			name, ext = os.path.splitext( os.path.basename( icon ) )
-			dst       = os.path.join( self.binaryDir, 'res/drawable-' + name )
+			dst       = os.path.join( self.projectpath, 'res/drawable-' + name )
 
 			# Remove previous folder
 			if os.path.exists( dst ):
@@ -139,7 +139,7 @@ class Android( Generator ):
 		assets = os.path.join( target.sourcePath, target.resources, 'assets' )
 
 		if os.path.exists( assets ):
-			dst       = os.path.join( self.binaryDir, 'assets' )
+			dst       = os.path.join( self.projectpath, 'assets' )
 
 			# Remove previous folder
 			if os.path.exists( dst ):

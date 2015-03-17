@@ -49,6 +49,11 @@ class Folder:
 	def sourcePath( self ):
 		return os.path.join( self._parent.sourcePath, self._name ) if self._parent else self._name
 
+	# full_path
+	@property
+	def full_path(self):
+		return os.path.join(self._target.sourcePath, self.sourcePath).replace('\\', '/')
+
 	# parent
 	@property
 	def parent(self):
@@ -119,6 +124,15 @@ class Folder:
 
 		for name, folder in self._folders.items():
 			result = result + folder.filterFiles( filter )
+
+		return result
+
+	# filterFolders
+	def filterFolders(self, filter):
+		result = [folder for name, folder in self._folders.items() if filter == None or filter(folder)]
+
+		for name, folder in self._folders.items():
+			result = result + folder.filterFolders(filter)
 
 		return result
 

@@ -63,8 +63,6 @@ class Workspace:
 			# Create makefile
 			self._create_makefile(platform)
 
-			print platform, PathScope.current.source, PathScope.current.project
-
 			# Read workspace
 			execfile( PathScope.current.source + '/Makefile.py', Globals.create(Makefile, platform, Makefile.project) )
 
@@ -142,6 +140,8 @@ class Workspace:
 		Makefile.set( 'ARCH', self._args.arch )
 		Makefile.set( 'STD', self._args.std )
 		Makefile.set( 'DEVELOPMENT_TEAM', self._args.xcteam )
+		Makefile.set( 'PACKAGE', self._args.package )
+		Makefile.set( 'PLATFORM_SDK', self._args.platformSdk )
 		Makefile.initialize( Target.Project, self._name, platform, lambda fileName: execfile( fileName, Globals.create(Makefile, platform, Makefile.project) ) )
 		Makefile.project.define( 'DC_PLATFORM_' + platform.upper() )
 		Makefile.project.define( 'DC_PLATFORM=' + platform )
