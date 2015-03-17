@@ -67,9 +67,12 @@ class Android( Generator ):
 
 			return result
 
+		executables = self.sourceProject.filterTargets(lambda target: target.type == 'executable')
+		entryPoint  = executables[0]
+
 		minsdk    = self.makefile.get('PLATFORM_SDK')
 		targetsdk = self.makefile.get('PLATFORM_SDK')
-		appname   = 'Player'
+		appname   = entryPoint.name
 		package   = self.makefile.get('PACKAGE')
 		activity  = '.StartupActivity'
 		sources   = self.processEachTarget( generateJavaSourceLinks )
@@ -90,7 +93,7 @@ class Android( Generator ):
 	#	self.addAssets( self.sourceProject.targets['Player'] )
 
 		# Strings
-		Template( Android.Strings ).compileToFile( os.path.join( resvalues, 'strings.xml' ), { 'name': appname } )
+		Template( Android.Strings ).compileToFile( os.path.join( resvalues, 'strings.xml' ), { 'bundle.name': appname } )
 
 		# Styles
 		Template( Android.Styles ).compileToFile( os.path.join( resvalues, 'styles.xml' ) )
