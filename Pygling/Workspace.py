@@ -146,6 +146,25 @@ class Workspace:
 		Makefile.project.define( 'DC_PLATFORM_' + platform.upper() )
 		Makefile.project.define( 'DC_PLATFORM=' + platform )
 
+		self._parse_parameters()
+
+	# _parse_parameters
+	def _parse_parameters(self):
+		for arg in self._params:
+			if not arg.startswith( '--' ):
+				continue
+
+			items = arg.split( '=' )
+			name  = items[0][2:].upper()
+
+			if len( items ) == 1 or items[1].lower() == 'yes':
+				Makefile.project.define( 'DC_' + name + '_ENABLED' )
+				Makefile.set( name, True )
+			else:
+				Makefile.project.define( 'DC_' + name + '=' + items[1] )
+				Makefile.project.define( 'DC_' + name + '_' + items[1].upper() )
+				Makefile.set( name, items[1] )
+
 	# _platforms
 	def _platforms(self, platform):
 		# Resolve alias
