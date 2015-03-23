@@ -62,7 +62,8 @@ def create(makefile, platform, project):
 			project.add_headers_search_paths(os.path.join(externals, 'include'))
 			project.add_library_search_paths(os.path.join(externals, 'lib', platform))
 		if paths:
-			project.add_headers_search_paths(paths)
+			for path in paths:
+				project.add_headers_search_paths(path)
 
 	# StaticLibrary
 	def StaticLibrary(name, sources=None, paths=None, defines=None, link=None):
