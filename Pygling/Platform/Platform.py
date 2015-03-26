@@ -48,6 +48,7 @@ class Platform:
 		self.register_library('embree2', headers=['embree2/rtcore.h', 'embree2/rtcore_ray.h'],  libraries=['embree', 'sys', 'simd', 'embree_sse41', 'embree_sse42'])
 		self.register_library('jsoncpp', headers=['json/json.h'],                               libraries=['jsoncpp'])
 		self.register_library('gtest',   headers=['gtest/gtest.h'],                             libraries=['gtest'])
+		self.register_library('pthread', headers=['pthread.h'],									libraries=['pthread'])
 
 	# userpaths
 	@property
@@ -65,9 +66,13 @@ class Platform:
 		return Makefile.project.librarySearchPaths + self._librarySearchPaths + self.userpaths
 
 	# find_library
-	def find_library(self, name):
+	def find_library(self, name, required):
 		if name in self._libraries.keys():
-			return self._find_library_by_items(self._libraries[name])
+			library = self._find_library_by_items(self._libraries[name])
+			return library if library or not required else self._find_library_by_name(name)
+
+		if not required:
+			return None
 
 		return self._find_library_by_name(name)
 
@@ -137,11 +142,13 @@ class Platform:
 		# Locate library
 		librarySearchPath = self._find_libraries(library.name, library.libraries)
 		if not librarySearchPath:
+			print 'Warning: no libraries found for ' + library.name
 			return None
 
 		# Locate headers
 		headerSearchPath = self._find_headers(library.name, library.headers)
 		if not headerSearchPath:
+			print 'Warning: no headers found for ' + library.name
 			return None
 
 		return Platform.ExternalLibrary(type='external', name=library.name, locations=headerSearchPath + librarySearchPath)

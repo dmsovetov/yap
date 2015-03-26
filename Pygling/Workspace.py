@@ -217,11 +217,15 @@ class Workspace:
 			,   'Android'
             ,	'Linux'	# temp
 			]
+		,	Linux = [
+				'Linux'
+			]
 		)
 
 		system = platform.system()
 
 		if not system in platforms.keys():
+			raise Exception('Unknown host platform: ' + system)
 			return None
 
 		return platforms[system]

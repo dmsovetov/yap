@@ -32,8 +32,16 @@ class Unix(Platform):
 	def __init__(self):
 		Platform.__init__(self)
 
-		self.add_header_search_paths( '/usr/local/include' )
-		self.add_library_search_paths( '/usr/local/lib' )
+		headers = ['/usr/local/include', '/usr/include']
+		libs	= ['/usr/local/lib', '/usr/lib', '/lib/i386-linux-gnu']
+
+		for path in headers:
+			if os.path.exists(path):
+				self.add_header_search_paths(path)
+
+		for path in libs:
+			if os.path.exists(path):
+				self.add_library_search_paths(path)
 
 	# userpaths
 	@property
@@ -47,3 +55,7 @@ class Unix(Platform):
 	# header_file_names
 	def header_file_names(self, name, filename):
 		return [filename]
+
+	# _find_library_by_name
+	def _find_library_by_name(self, library):
+		return Unix.ExternalLibrary(type='external', name=library, locations=[])

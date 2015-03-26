@@ -31,7 +31,3 @@ class Android(Unix):
 	# ctor
 	def __init__(self):
 		Unix.__init__(self)
-
-	# _find_library_by_name
-	def _find_library_by_name(self, library):
-		return Unix.ExternalLibrary(type='external', name=library, locations=[])

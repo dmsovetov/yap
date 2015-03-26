@@ -36,7 +36,7 @@ def create(makefile, platform, project):
 
 	# Library
 	def Library( name, required = False ):
-		locations = makefile.platform.find_library( name )
+		locations = makefile.platform.find_library(name, required)
 
 		if not locations and required:
 			print 'Error:', name, 'is required'

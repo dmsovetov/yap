@@ -230,7 +230,7 @@ class Make( Generator ):
 
     # list_cflags
     def list_cflags(self, target):
-        return ['-D' + define for define in self.list_defines(target)] + self.prepend_to('-I', self.list_header_paths(target))
+        return ['-std=c++11'] + ['-D' + define for define in self.list_defines(target)] + self.prepend_to('-I', self.list_header_paths(target))
 
     # list_link_flags
     def list_link_flags(self, target, filter = None):
