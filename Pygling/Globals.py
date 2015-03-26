@@ -137,6 +137,7 @@ def create(makefile, platform, project):
 	,   iOS             = True if platform == 'iOS'     else False
 	,   Windows         = True if platform == 'Windows' else False
 	,   Android         = True if platform == 'Android' else False
+	, 	Linux			= True if platform == 'Linux'	else False
 
 		# Global functions
 	,	Include         = Include

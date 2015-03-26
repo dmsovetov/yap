@@ -32,7 +32,6 @@ from ..Template import Template
 # class Android
 class Android( Make ):
 	TargetType  = dict(static='BUILD_STATIC_LIBRARY', shared='BUILD_SHARED_LIBRARY', executable='BUILD_SHARED_LIBRARY')
-	Separator   = ' \\\n\t\t\t\t\t\t'
 
 	# constructor
 	def __init__( self ):
@@ -70,8 +69,8 @@ class Android( Make ):
 
 		locals_libs     = ' '.join([library.name for library in self.list_libraries(target, lambda lib: lib.type == 'local')])
 		shared_libs     = ' '.join(self.list_link_flags(target, lambda lib: lib.type == 'external'))
-		sources         = Android.Separator.join(self.list_source_files(target, lambda file: file.ext in ['.c', '.cpp']))
-		flags           = Android.Separator.join(self.list_cflags(target))
+		sources         = Make.Separator.join(self.list_source_files(target, lambda file: file.ext in ['.c', '.cpp']))
+		flags           = Make.Separator.join(self.list_cflags(target))
 		shared          = ''
 		commandRules    = ''
 		commands        = ''

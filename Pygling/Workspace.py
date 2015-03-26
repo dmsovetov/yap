@@ -34,10 +34,10 @@ from Makefile import Makefile
 # class Workspace
 class Workspace:
 	# Target platform aliases
-	Aliases = dict( macos = 'MacOS', windows = 'Windows', flash = 'Flash', android = 'Android', ios = 'iOS', html5 = 'HTML5' )
+	Aliases = dict( macos = 'MacOS', windows = 'Windows', flash = 'Flash', android = 'Android', ios = 'iOS', html5 = 'HTML5', linux = 'Linux' )
 
 	# Available platforms
-	Platforms = dict( Windows = Platform.Windows, MacOS = Platform.MacOS, iOS = Platform.iOS, Android = Platform.Android )
+	Platforms = dict( Windows = Platform.Windows, MacOS = Platform.MacOS, iOS = Platform.iOS, Android = Platform.Android, Linux = Platform.Unix )
 
 	# Available builders
 	Builders = dict( MacOS = Builder.Xcode, iOS = Builder.Xcode, Windows = Builder.VisualStudio )
@@ -209,6 +209,7 @@ class Workspace:
 			Windows = [
 				'Windows'
 			,   'Android'
+			,	'Linux'	# temp
 			]
 		,   Darwin  = [
 				'MacOS'

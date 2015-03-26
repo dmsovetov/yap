@@ -28,6 +28,7 @@
 from Generator.Eclipse.Android      import Android
 from Generator.Make.HTML5           import HTML5
 from Generator.Make.Flash           import Flash
+from Generator.Make.Make			import Make
 from Generator.VisualStudio.Windows import Windows
 from Generator.Xcode                import iOS
 from Generator.Xcode                import MacOS
@@ -43,6 +44,7 @@ class Makefile:
 	    'Windows':  Windows,
 	    'Flash':    Flash,
 		'HTML5':    HTML5,
+		'Linux':	Make
 	}
 
 	platform    = None
