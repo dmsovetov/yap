@@ -215,6 +215,7 @@ class Workspace:
 				'MacOS'
 			,   'iOS'
 			,   'Android'
+            ,	'Linux'	# temp
 			]
 		)
 
