@@ -69,6 +69,7 @@ class Android( Generator ):
 
 		executables = self.sourceProject.filterTargets(lambda target: target.type == 'executable')
 		entryPoint  = executables[0]
+		manifests	= entryPoint.filterSourceFiles(lambda file: file.fileName == 'AndroidManifest.xml')
 
 		minsdk    = self.makefile.get('PLATFORM_SDK')
 		targetsdk = self.makefile.get('PLATFORM_SDK')
@@ -99,8 +100,12 @@ class Android( Generator ):
 		Template( Android.Styles ).compileToFile( os.path.join( resvalues, 'styles.xml' ) )
 
 		# Manifest
-		Template( Android.Manifest ).compileToFile( os.path.join( self.projectpath, 'AndroidManifest.xml' ),
+		if len(manifests) == 0:
+			Template( Android.Manifest ).compileToFile( os.path.join( self.projectpath, 'AndroidManifest.xml' ),
 		                                            { 'package': package, 'min.sdk': minsdk, 'target.sdk': targetsdk, 'activity': activity, 'name': appname } )
+		else:
+			print 'Using Android manifest file from:', manifests[0].sourcePath
+			shutil.copyfile(manifests[0].fullPath, os.path.join(self.projectpath, 'AndroidManifest.xml'))
 
 		# Classpath
 		Template( Android.Classpath ).compileToFile( os.path.join( self.projectpath, '.classpath' ), { 'java.sources': classes } )
