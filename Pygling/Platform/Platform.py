@@ -24,7 +24,7 @@
 #
 #################################################################################
 
-import os
+import os, glob
 
 from collections import namedtuple
 from ..Makefile  import Makefile
@@ -49,6 +49,8 @@ class Platform:
 		self.register_library('jsoncpp', headers=['json/json.h'],                               libraries=['jsoncpp'])
 		self.register_library('gtest',   headers=['gtest/gtest.h'],                             libraries=['gtest'])
 		self.register_library('pthread', headers=['pthread.h'],									libraries=['pthread'])
+		self.register_library('mongoc',  headers=['mongoc.h'],                                  libraries=['mongoc'])
+		self.register_library('bson',    headers=['bcon.h'],                                    libraries=['bson'])
 
 	# userpaths
 	@property
@@ -58,12 +60,12 @@ class Platform:
 	# headers
 	@property
 	def headers(self):
-		return Makefile.project.headerSearchPaths + self._headerSearchPaths + self.userpaths
+		return Makefile.project.headerSearchPaths + self._headerSearchPaths
 
 	# libraries
 	@property
 	def libraries(self):
-		return Makefile.project.librarySearchPaths + self._librarySearchPaths + self.userpaths
+		return Makefile.project.librarySearchPaths + self._librarySearchPaths
 
 	# find_library
 	def find_library(self, name, required):
@@ -108,12 +110,26 @@ class Platform:
 
 	# exists
 	@staticmethod
-	def exists(filename, paths):
+	def exists(filename, paths, recursive):
+		nested = []
+
 		for path in paths:
+		#	print 'Searching', filename, 'at', path
+
+			nested = nested + Platform.dirs(path)
+
 			if os.path.exists(os.path.join(path, filename)):
 				return path
 
+		if len(nested) != 0 and recursive:
+			return Platform.exists(filename, nested, recursive)
+
 		return None
+
+	# dirs
+	@staticmethod
+	def dirs(path):
+		return [fullPath for fullPath in glob.glob(os.path.join(path, '*')) if os.path.isdir(fullPath)]
 
 	# _find_headers
 	def _find_headers(self, name, headers):
@@ -121,8 +137,9 @@ class Platform:
 
 		for header in headers:
 			for filename in self.header_file_names(name, header):
-				path = Platform.exists(filename, self.headers)
-				if path: locations.append(Platform.Location(filename=filename, path=Path(Path.Headers, path)))
+				path = Platform.exists(filename, self.headers, True)
+				if path:
+					locations.append(Platform.Location(filename=filename, path=Path(Path.Headers, path)))
 
 		return locations
 
@@ -132,7 +149,7 @@ class Platform:
 
 		for library in libraries:
 			for filename in self.library_file_names(library):
-				path = Platform.exists(filename, self.libraries)
+				path = Platform.exists(filename, self.libraries, False)
 				if path: locations.append(Platform.Location(filename=filename, path=Path(Path.Libraries, path)))
 
 		return locations
