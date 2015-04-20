@@ -36,9 +36,9 @@ class Windows( Generator ):
 	HeaderFiles = ['.h', '.hpp']
 
 	# constructor
-	def __init__( self ):
+	def __init__( self, platform ):
 		Generator.__init__( self )
-		self._solution = Solution()
+		self._solution = Solution( platform.latest_toolset() )
 		self._projects = {}
 
 	# generate

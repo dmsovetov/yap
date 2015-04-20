@@ -34,7 +34,7 @@ class Make( Generator ):
     Separator   = ' \\\n                        '
 
     # ctor
-    def __init__( self ):
+    def __init__( self, platform ):
         Generator.__init__( self )
 
         self.extensions  = { 'shared': 'so', 'static': 'a', 'executable': '' }

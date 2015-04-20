@@ -31,7 +31,7 @@ from ..Template  import Template
 # class Flash
 class Flash( Make ):
 	# constructor
-	def __init__( self ):
+	def __init__( self, platform ):
 		Make.__init__( self )
 		self.extensions = { 'shared': 'swc', 'static': 'a', 'executable': 'swf' }
 

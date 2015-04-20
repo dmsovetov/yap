@@ -79,7 +79,7 @@ class Makefile:
 		global _Generator
 
 		if platform in Makefile.Generators.keys():
-			_Generator = Makefile.Generators[platform]()
+			_Generator = Makefile.Generators[platform]( Makefile.platform )
 		else:
 			raise Exception( 'Unknown target platform {0}'.format( platform ) )
 

@@ -33,7 +33,7 @@ from ..          import Make
 # class Android
 class Android( Generator ):
 	# ctor
-	def __init__( self ):
+	def __init__( self, platform ):
 		Generator.__init__( self )
 
 	# getPathForTarget

@@ -31,13 +31,14 @@ from WindowsProject import WindowsProject
 # class Solution
 class Solution:
 	# ctor
-	def __init__( self ):
+	def __init__( self, toolset ):
 		self._id       = ID.generate()
 		self._projects = []
+		self._toolset  = toolset
 
 	# addProject
 	def addProject( self, type, name ):
-		project = WindowsProject( type, name )
+		project = WindowsProject( type, name, self._toolset )
 		self._projects.append( project )
 		return project
 

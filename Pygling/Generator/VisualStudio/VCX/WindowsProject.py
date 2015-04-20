@@ -32,5 +32,5 @@ class WindowsProject( Project ):
 	Executable      = 'Application'
 
 	# ctor
-	def __init__( self, type, name ):
-		Project.__init__( self, type, name, 'Win32Proj', 'Win32', 'v100' )
+	def __init__( self, type, name, toolset ):
+		Project.__init__( self, type, name, 'Win32Proj', 'Win32', toolset )

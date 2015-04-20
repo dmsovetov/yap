@@ -32,7 +32,7 @@ from ..Template import Template
 # class MacOS
 class MacOS( Xcode5 ):
 	# ctor
-	def __init__( self ):
+	def __init__( self, platform ):
 		Xcode5.__init__( self )
 
 	# getPlatformId

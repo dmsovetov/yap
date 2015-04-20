@@ -29,7 +29,7 @@ from Make import Make
 # class HTML5
 class HTML5( Make ):
 	# constructor
-	def __init__( self ):
+	def __init__( self, platform ):
 		Make.__init__( self )
 
 		self.extensions = { 'shared': 'so', 'static': 'a', 'executable': 'html' }

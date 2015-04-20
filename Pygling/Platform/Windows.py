@@ -75,6 +75,12 @@ class Windows( Platform ):
 		if os.path.exists(library_path):
 			self.add_library_search_paths(library_path)
 
+	# latest_toolset
+	def latest_toolset(self):
+		commonTools = [key for key in os.environ.keys() if key.endswith('COMNTOOLS')]
+		toolSets	= [tools.replace( 'COMNTOOLS', '' ).replace('VS', 'v') for tools in commonTools]
+		return toolSets[-1]
+
 	# userpaths
 	@property
 	def userpaths(self):
