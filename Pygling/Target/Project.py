@@ -41,12 +41,22 @@ class Project( Target ):
 	#	self.message( 'Configuring build environment for ' + name + '...' )
 
 		self._targets 		= []
+		self._externals		= None
 		self.importer		= importer
 		self.platform       = platform
 		self.generator      = generator
 		self.toolsPath 		= None
 		self.outputLibPath	= None
 		self.outputExePath	= None
+
+	# externals
+	@property
+	def externals(self):
+		return self._externals
+
+	@externals.setter
+	def externals(self, value):
+		self._externals = value
 
 	# headerSearchPaths
 	@property

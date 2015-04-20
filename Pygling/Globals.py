@@ -59,6 +59,7 @@ def create(makefile, platform, project):
 	# Project
 	def Project( externals = None, paths = None, define = None ):
 		if externals:
+			project.externals = externals
 			project.add_headers_search_paths(os.path.join(externals, 'include'))
 			project.add_library_search_paths(os.path.join(externals, 'lib', platform))
 		if paths:

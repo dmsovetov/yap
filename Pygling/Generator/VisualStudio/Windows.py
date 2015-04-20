@@ -71,7 +71,11 @@ class Windows( Generator ):
 				result.append(os.path.join(self.projectpath, '$(Configuration)', library.name + '.lib'))
 			elif library.type == 'external':
 				for location in [location for location in library.locations if location.path.islibraries]:
-					result.append(os.path.join(location.path.full, location.filename))
+					externals = os.path.normpath(os.path.join(self.sourcepath, self.sourceProject.externals))
+					if location.path.full.startswith(externals):
+						result.append(os.path.join(location.path.full, '$(PlatformToolsetVersion)', '$(Configuration)', location.filename))
+					else:
+						result.append(os.path.join(location.path.full, location.filename))
 			else:
 				print 'Error: unknown library type', library.type
 
