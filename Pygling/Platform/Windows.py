@@ -75,6 +75,18 @@ class Windows( Platform ):
 		if os.path.exists(library_path):
 			self.add_library_search_paths(library_path)
 
+	# toolset
+	def toolset(self, sdk):
+		if sdk == None:
+			return self.latest_toolset()
+
+		toolsets = dict(vs2010='v100', vs2012='v110', vs2013='v120')
+
+		if sdk in toolsets.keys():
+			return toolsets[sdk]
+
+		return self.latest_toolset()
+
 	# latest_toolset
 	def latest_toolset(self):
 		commonTools = [key for key in os.environ.keys() if key.endswith('COMNTOOLS')]

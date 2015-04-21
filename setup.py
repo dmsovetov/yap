@@ -25,7 +25,7 @@
 from setuptools import setup, find_packages
 
 setup(name='pygling',
-      version='0.8.12',
+      version='0.8.13',
       description='Pygling is a C++ workspace generator written in Python.',
       url='https://github.com/dmsovetov/Pygling',
       author='Dmitry Sovetov',

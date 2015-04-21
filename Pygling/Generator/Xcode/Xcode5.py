@@ -24,7 +24,7 @@
 #
 #################################################################################
 
-import os, shutil, plistlib, subprocess, glob, getpass
+import os, shutil, getpass
 
 from ..Generator import Generator
 from PBX         import Project

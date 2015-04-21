@@ -38,13 +38,17 @@ class Windows( Generator ):
 	# constructor
 	def __init__( self, platform ):
 		Generator.__init__( self )
-		self._solution = Solution( platform.latest_toolset() )
+		self._solution = None
 		self._projects = {}
 
 	# generate
 	def generate( self ):
 		print( 'Generating Win32 project...' )
 		Generator.generate( self )
+
+		# Create solution
+		toolset = self.makefile.platform.toolset(self.makefile.get('PLATFORM_SDK'))
+		self._solution = Solution(toolset)
 
 		# Generate projects
 		for target in self.sourceProject.filterTargets():
