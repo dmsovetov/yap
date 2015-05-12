@@ -68,6 +68,11 @@ class Android( Generator ):
 			return result
 
 		executables = self.sourceProject.filterTargets(lambda target: target.type == 'executable')
+
+		if len(executables) == 0:
+			print 'Warning: workspace does not contain any executables, the Eclipse project wont be generated'
+			return
+
 		entryPoint  = executables[0]
 		manifests	= entryPoint.filterSourceFiles(lambda file: file.fileName == 'AndroidManifest.xml')
 
