@@ -243,7 +243,12 @@ class Make( Generator ):
     def list_local_libs_paths(self, target):
         result = []
         for lib in self.list_libraries(target, lambda lib: lib.type == 'local' ):
-            result.append(self.getPathForTarget(self.sourceProject.findTarget(lib.name)))
+            local = self.sourceProject.findTarget(lib.name)
+            if local == None:
+                print 'Error: unknown local library', lib.name
+                continue
+
+            result.append(self.getPathForTarget(local))
         return list(set(result))
 
     ############################### TEMPLATES

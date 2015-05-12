@@ -34,8 +34,8 @@ class Android( Make ):
 	TargetType  = dict(static='BUILD_STATIC_LIBRARY', shared='BUILD_SHARED_LIBRARY', executable='BUILD_SHARED_LIBRARY')
 
 	# constructor
-	def __init__( self ):
-		Make.__init__( self )
+	def __init__( self, platform ):
+		Make.__init__( self, platform )
 
 	# getPathForTarget
 	def getPathForTarget( self, target ):

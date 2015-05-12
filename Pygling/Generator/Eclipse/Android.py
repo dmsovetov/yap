@@ -42,7 +42,7 @@ class Android( Generator ):
 
 	# generate
 	def generate( self ):
-		ndk = Make.Android()
+		ndk = Make.Android( self.makefile.platform )
 		ndk.initialize( self.makefile, self.sourceProject )
 		ndk.generate()
 

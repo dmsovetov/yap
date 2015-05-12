@@ -134,6 +134,7 @@ class Target:
 
 	# link
 	def link( self, *list ):
+		assert not None in list
 		[self._linkWith.append(namedtuple('LocalLibrary', 'type, name')(type='local', name=item)) for item in list]
 
 	# linkExternal
@@ -141,7 +142,7 @@ class Target:
 		allLinked = True
 
 		for location in list:
-			if not location:
+			if not location or not location.name:
 				allLinked = False
 				continue
 
