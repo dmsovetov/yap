@@ -7,7 +7,7 @@ prefix = { 'gzip': 'ft', 'cid': 'type1', 'lzw': 'ft' }
 
 for folder in Folders( 'src/*' ):
 	if not folder.name in ['tools', 'base', 'bzip2', 'cache', 'winfonts']:
-		fileName = (prefix[folder.name] if folder.name in prefix.keys() else '') + folder.name + '.c'
+		fileName = (prefix[folder.name] if folder.name in list(prefix.keys()) else '') + folder.name + '.c'
 		freetype.files( folder.path + '/' + fileName )
 
 # Platform specific settings

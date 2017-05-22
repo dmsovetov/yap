@@ -24,8 +24,8 @@
 #
 #################################################################################
 
-from Windows    import Windows
-from MacOS      import MacOS
-from iOS        import iOS
-from Android    import Android
-from Unix		import Unix
+from .Windows    import Windows
+from .MacOS      import MacOS
+from .iOS        import iOS
+from .Android    import Android
+from .Unix		import Unix

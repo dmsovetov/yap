@@ -180,7 +180,7 @@ class Make( Generator ):
         if target.type in self.extensions:
             return self.extensions[target.type]
 
-        print "Make::getExtensionForTarget : unknown target type '{0}'".format( target.type )
+        print("Make::getExtensionForTarget : unknown target type '{0}'".format( target.type ))
         return ''
 
     # getLinkerForTarget
@@ -192,7 +192,7 @@ class Make( Generator ):
         else:
             return '$(AR) rs $(PRODUCT) $(LINK_FLAGS) $(CXX_OBJ)'
 
-        print "Make::getLinkerForTarget : unknown target type '{0}'".format( target.type )
+        print("Make::getLinkerForTarget : unknown target type '{0}'".format( target.type ))
         return ''
 
     # getLibrariesForTarget
@@ -245,7 +245,7 @@ class Make( Generator ):
         for lib in self.list_libraries(target, lambda lib: lib.type == 'local' ):
             local = self.sourceProject.findTarget(lib.name)
             if local == None:
-                print 'Error: unknown local library', lib.name
+                print('Error: unknown local library', lib.name)
                 continue
 
             result.append(self.getPathForTarget(local))

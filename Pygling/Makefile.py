@@ -25,15 +25,15 @@
 #################################################################################
 
 
-from Generator.Eclipse.Android      import Android
-from Generator.Make.HTML5           import HTML5
-from Generator.Make.Flash           import Flash
-from Generator.Make.Make			import Make
-from Generator.VisualStudio.Windows import Windows
-from Generator.Xcode                import iOS
-from Generator.Xcode                import MacOS
+from .Generator.Eclipse.Android      import Android
+from .Generator.Make.HTML5           import HTML5
+from .Generator.Make.Flash           import Flash
+from .Generator.Make.Make			import Make
+from .Generator.VisualStudio.Windows import Windows
+from .Generator.Xcode                import iOS
+from .Generator.Xcode                import MacOS
 
-import Env
+from . import Env
 
 # class Makefile
 class Makefile:
@@ -78,7 +78,7 @@ class Makefile:
 	def initialize( cls, name, platform, importer ):
 		global _Generator
 
-		if platform in Makefile.Generators.keys():
+		if platform in list(Makefile.Generators.keys()):
 			_Generator = Makefile.Generators[platform]( Makefile.platform )
 		else:
 			raise Exception( 'Unknown target platform {0}'.format( platform ) )
@@ -91,7 +91,7 @@ class Makefile:
 	def substituteVars( input ):
 		global _Env
 
-		for k, v in _Env.vars.items():
+		for k, v in list(_Env.vars.items()):
 			if isinstance(v, str):
 				input = input.replace( '$(' + k + ')', v )
 

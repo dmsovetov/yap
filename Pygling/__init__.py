@@ -22,12 +22,12 @@
 # SOFTWARE.
 #
 
-import Platform, Location
+from . import Platform, Location
 
-from Makefile   import Makefile
-from Workspace  import Workspace
-from Target     import Project
-from Target     import Target
-from Target     import StaticLibrary
-from Target     import Executable
-from Target     import Folder
+from .Makefile   import Makefile
+from .Workspace  import Workspace
+from .Target     import Project
+from .Target     import Target
+from .Target     import StaticLibrary
+from .Target     import Executable
+from .Target     import Folder

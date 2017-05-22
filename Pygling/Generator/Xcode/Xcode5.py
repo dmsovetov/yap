@@ -27,7 +27,7 @@
 import os, shutil, getpass
 
 from ..Generator import Generator
-from PBX         import Project
+from .PBX         import Project
 from ..Template  import Template
 
 # class Xcode5
@@ -47,7 +47,7 @@ class Xcode5( Generator ):
 		self.forEachTarget( self.createProjects )
 
 		# Setup projects
-		for name, project in self.projects.items():
+		for name, project in list(self.projects.items()):
 			target = project['target']
 			pbx    = project['pbx']
 
@@ -76,7 +76,7 @@ class Xcode5( Generator ):
 		# Generate project list
 		projects = ''
 
-		for name, project in self.projects.items():
+		for name, project in list(self.projects.items()):
 			folder    = self.getPathForTarget( project['target'] )
 			path      = os.path.relpath( os.path.join( folder, name + '.xcodeproj' ), self.projectpath )
 			projects += "<FileRef location='group:{0}'/>\n".format( path )
@@ -225,8 +225,8 @@ class Xcode5( Generator ):
 
 		for library in self.list_libraries(target):
 			if library.type == 'local':
-				if not library.name in self.projects.keys():
-					print 'Error: unknown library', library.name
+				if not library.name in list(self.projects.keys()):
+					print('Error: unknown library', library.name)
 					continue
 
 				pbx.addProjectLibrary( self.projects[library.name]['pbx'] )
@@ -236,7 +236,7 @@ class Xcode5( Generator ):
 				for location in [location for location in library.locations if location.path.islibraries]:
 					pbx.addLibrary(os.path.join(location.path.full, location.filename))
 			else:
-				print 'Error: unknown library type', library.type
+				print('Error: unknown library type', library.type)
 
 	# compileCommand
 	def compileCommand( self, target, cmd ):
@@ -290,8 +290,8 @@ class Xcode5( Generator ):
 		    , DEBUG_INFORMATION_FORMAT      = 'dwarf' if name == 'Debug' else 'dwarf-with-dsym'
 			, GCC_PREPROCESSOR_DEFINITIONS  = defines
 			, GCC_OPTIMIZATION_LEVEL        = 0 if name == 'Debug' else 's'
-		    , CLANG_CXX_LANGUAGE_STANDARD   = clangLanguageStarndard[std] if std in clangLanguageStarndard.keys() else clangLanguageStarndard['cxx98']
-		    , CLANG_CXX_LIBRARY             = clangLibrary[std] if std in clangLibrary.keys() else clangLibrary['cxx98']
+		    , CLANG_CXX_LANGUAGE_STANDARD   = clangLanguageStarndard[std] if std in list(clangLanguageStarndard.keys()) else clangLanguageStarndard['cxx98']
+		    , CLANG_CXX_LIBRARY             = clangLibrary[std] if std in list(clangLibrary.keys()) else clangLibrary['cxx98']
 		)
 
 		return options

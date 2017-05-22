@@ -26,9 +26,9 @@
 
 import os
 
-from Resource       import Resource
-from ObjectList     import ObjectList
-from Group          import Group
+from .Resource       import Resource
+from .ObjectList     import ObjectList
+from .Group          import Group
 from ...Template    import Template
 
 # class Target
@@ -77,7 +77,7 @@ class Target( Resource ):
 	# getSourceTypeForExtension
 	def getSourceTypeForExtension( self, ext ):
 		types = { '.xcassets': 'folder.assetcatalog', '.h': 'sourcecode.c.h', '.c': 'sourcecode.c.c', '.cpp': 'sourcecode.cpp.cpp', '.mm': 'sourcecode.cpp.objcpp', '.plist': 'text.plist' }
-		if ext in types.keys():
+		if ext in list(types.keys()):
 			return types[ext]
 
 		return 'sourcecode'

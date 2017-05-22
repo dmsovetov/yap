@@ -26,13 +26,13 @@
 
 import os
 
-import BuildPhases, Files, Targets
+from . import BuildPhases, Files, Targets
 
 from ...Template        import Template
-from ObjectList         import ObjectList
-from Group              import Group
-from BuildConfiguration import BuildConfiguration
-from ConfigurationList  import ConfigurationList
+from .ObjectList         import ObjectList
+from .Group              import Group
+from .BuildConfiguration import BuildConfiguration
+from .ConfigurationList  import ConfigurationList
 
 # class Objects
 class Objects:
@@ -152,7 +152,7 @@ class Objects:
 	def createConfigurationList( self, target, configurations, default ):
 		result = ConfigurationList( default, target )
 
-		for k, v in configurations.items():
+		for k, v in list(configurations.items()):
 			result.add( self.createConfiguration( k, v ) )
 
 		self.configurationLists.add( result )

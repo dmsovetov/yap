@@ -69,7 +69,7 @@ class Platform:
 
 	# find_library
 	def find_library(self, name, required):
-		if name in self._libraries.keys():
+		if name in list(self._libraries.keys()):
 			library = self._find_library_by_items(self._libraries[name])
 			return library if library or not required else self._find_library_by_name(name)
 
@@ -90,7 +90,7 @@ class Platform:
 	def add_header_search_paths(self, *paths):
 		for path in paths:
 			if not os.path.exists(path):
-				print 'Warning: header search path doesnt exist', path
+				print('Warning: header search path doesnt exist', path)
 				continue
 
 			self._headerSearchPaths.append(path)
@@ -99,7 +99,7 @@ class Platform:
 	def add_library_search_paths(self, *paths):
 		for path in paths:
 			if not os.path.exists(path):
-				print 'Warning: library search path doesnt exist', path
+				print('Warning: library search path doesnt exist', path)
 				continue
 
 			self._librarySearchPaths.append(path)
@@ -159,13 +159,13 @@ class Platform:
 		# Locate library
 		librarySearchPath = self._find_libraries(library.name, library.libraries)
 		if not librarySearchPath:
-			print 'Warning: no libraries found for ' + library.name
+			print('Warning: no libraries found for ' + library.name)
 			return None
 
 		# Locate headers
 		headerSearchPath = self._find_headers(library.name, library.headers)
 		if not headerSearchPath:
-			print 'Warning: no headers found for ' + library.name
+			print('Warning: no headers found for ' + library.name)
 			return None
 
 		return Platform.ExternalLibrary(type='external', name=library.name, locations=headerSearchPath + librarySearchPath)

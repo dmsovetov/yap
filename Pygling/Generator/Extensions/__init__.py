@@ -24,5 +24,5 @@
 #
 #################################################################################
 
-from RTTI   import RTTI
-from Qt     import Qt
+from .RTTI   import RTTI
+from .Qt     import Qt

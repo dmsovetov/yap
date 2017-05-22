@@ -24,7 +24,7 @@
 
 import glob, os
 
-from File       import File
+from .File       import File
 from ..Makefile import Makefile
 
 # class Folder
@@ -62,7 +62,7 @@ class Folder:
 	# addFile
 	def addFile( self, fileName ):
 		if self._find_file_by_name(fileName):
-			print 'Warning: duplicated file reference', fileName
+			print('Warning: duplicated file reference', fileName)
 			return
 
 		self._files.append( File( self._target, self, fileName ) )
@@ -113,25 +113,25 @@ class Folder:
 		if len( items ) == 1:
 			return self
 
-		if not name in self._folders.keys():
+		if not name in list(self._folders.keys()):
 			self._folders[name] = Folder( self._target, name, self )
 
 		return self._folders[name].resolve( '/'.join( items[1:] ) )
 
 	# filterFiles
 	def filterFiles( self, filter ):
-		result = [file for file in self._files if filter == None or filter( file )]
+		result = [file for file in self._files if filter == None or list(filter( file ))]
 
-		for name, folder in self._folders.items():
+		for name, folder in list(self._folders.items()):
 			result = result + folder.filterFiles( filter )
 
 		return result
 
 	# filterFolders
 	def filterFolders(self, filter):
-		result = [folder for name, folder in self._folders.items() if filter == None or filter(folder)]
+		result = [folder for name, folder in list(self._folders.items()) if filter == None or list(filter(folder))]
 
-		for name, folder in self._folders.items():
+		for name, folder in list(self._folders.items()):
 			result = result + folder.filterFolders(filter)
 
 		return result

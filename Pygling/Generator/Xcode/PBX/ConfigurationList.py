@@ -24,8 +24,8 @@
 #
 #################################################################################
 
-from Resource       import Resource
-from ObjectList     import ObjectList
+from .Resource       import Resource
+from .ObjectList     import ObjectList
 from ...Template    import Template
 
 # class ConfigurationList

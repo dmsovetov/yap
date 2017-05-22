@@ -22,5 +22,5 @@
 # SOFTWARE.
 #
 
-from Solution       import Solution
-from WindowsProject import WindowsProject
+from .Solution       import Solution
+from .WindowsProject import WindowsProject

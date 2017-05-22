@@ -26,7 +26,7 @@
 
 import os
 
-from Xcode5 	import Xcode5
+from .Xcode5 	import Xcode5
 from ..Template import Template
 
 # class MacOS

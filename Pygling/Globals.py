@@ -24,8 +24,8 @@
 
 import os, glob, subprocess, Target
 
-from Location   import PathScope
-from Target     import Folder
+from .Location   import PathScope
+from .Target     import Folder
 
 # create
 def create(makefile, platform, project):
@@ -39,7 +39,7 @@ def create(makefile, platform, project):
 		locations = makefile.platform.find_library(name, required)
 
 		if not locations and required:
-			print 'Error:', name, 'is required'
+			print('Error:', name, 'is required')
 			exit(1)
 
 		return locations
@@ -104,7 +104,7 @@ def create(makefile, platform, project):
 		auth        = {}
 
 		if credentials:
-			execfile(os.path.join(modules, credentials), {}, auth)
+			exec(compile(open(os.path.join(modules, credentials)).read(), os.path.join(modules, credentials), 'exec'), {}, auth)
 
 		if folder:
 			modules = os.path.join(modules, folder)
@@ -123,7 +123,7 @@ def create(makefile, platform, project):
 				try:
 					subprocess.check_call( [ 'git', 'clone', url, modules + '/' + name ] )
 				except:
-					print 'Error: failed to checkout Git repository from', url
+					print('Error: failed to checkout Git repository from', url)
 
 		# Include it to project
 		if makefile:

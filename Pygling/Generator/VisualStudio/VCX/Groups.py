@@ -39,7 +39,7 @@ class Group:
 
 	# setProperties
 	def setProperties( self, properties ):
-		for k, v in properties.items():
+		for k, v in list(properties.items()):
 			if isinstance( v, dict ):
 				Group( self._xml, k, {} ).setProperties( v )
 				continue

@@ -26,10 +26,10 @@
 
 import platform, os, glob, shutil
 
-import Platform, Target, Globals, Builder
+from . import Platform, Target, Globals, Builder
 
-from Location import PathScope
-from Makefile import Makefile
+from .Location import PathScope
+from .Makefile import Makefile
 
 # class Workspace
 class Workspace:
@@ -64,7 +64,7 @@ class Workspace:
 			self._create_makefile(platform)
 
 			# Read workspace
-			execfile( PathScope.current.source + '/Makefile.py', Globals.create(Makefile, platform, Makefile.project) )
+			exec(compile(open( PathScope.current.source + '/Makefile.py' ).read(), PathScope.current.source + '/Makefile.py', 'exec'), Globals.create(Makefile, platform, Makefile.project))
 
 			# Generate project
 			Makefile.generate()
@@ -78,7 +78,7 @@ class Workspace:
 		platforms = self._platforms(platform)
 
 		for platform in platforms:
-			if not platform in Workspace.Builders.keys():
+			if not platform in list(Workspace.Builders.keys()):
 				raise Exception('Do not known how to build for ' + platform)
 
 			config = self._args.configuration
@@ -119,7 +119,7 @@ class Workspace:
 					os.makedirs(lib)
 
 				for file in libs:
-					print 'Installing', os.path.basename(file)
+					print('Installing', os.path.basename(file))
 					shutil.copyfile(file, os.path.join(lib, os.path.basename(file)))
 
 			# Install binaries
@@ -128,7 +128,7 @@ class Workspace:
 					os.makedirs(bin)
 
 				for file in bins:
-					print 'Installing', os.path.basename(file)
+					print('Installing', os.path.basename(file))
 					shutil.copyfile(file, os.path.join(bin, os.path.basename(file)))
 
 
@@ -142,7 +142,7 @@ class Workspace:
 		Makefile.set( 'DEVELOPMENT_TEAM', self._args.xcteam )
 		Makefile.set( 'PACKAGE', self._args.package )
 		Makefile.set( 'PLATFORM_SDK', self._args.platformSdk )
-		Makefile.initialize( Target.Project, self._name, platform, lambda fileName: execfile( fileName, Globals.create(Makefile, platform, Makefile.project) ) )
+		Makefile.initialize( Target.Project, self._name, platform, lambda fileName: exec(compile(open( fileName ).read(), fileName, 'exec'), Globals.create(Makefile, platform, Makefile.project)) )
 		Makefile.project.define( 'DC_PLATFORM_' + platform.upper() )
 		Makefile.project.define( 'DC_PLATFORM=' + platform )
 
@@ -168,7 +168,7 @@ class Workspace:
 	# _platforms
 	def _platforms(self, platform):
 		# Resolve alias
-		if platform != 'all' and platform in Workspace.Aliases.keys():
+		if platform != 'all' and platform in list(Workspace.Aliases.keys()):
 			platform = Workspace.Aliases[platform]
 
 		# Check target platform name
@@ -198,7 +198,7 @@ class Workspace:
 
 	# _substitute_variables
 	def _substitute_variables(self, str, **vars):
-		for k, v in vars.items():
+		for k, v in list(vars.items()):
 			str = str.replace( '[' + k + ']', v )
 		return str
 
@@ -224,7 +224,7 @@ class Workspace:
 
 		system = platform.system()
 
-		if not system in platforms.keys():
+		if not system in list(platforms.keys()):
 			raise Exception('Unknown host platform: ' + system)
 			return None
 

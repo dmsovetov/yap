@@ -22,5 +22,5 @@
 # SOFTWARE.
 #
 
-from Xcode import Xcode
-from VisualStudio import VisualStudio
+from .Xcode import Xcode
+from .VisualStudio import VisualStudio

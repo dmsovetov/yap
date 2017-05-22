@@ -24,8 +24,8 @@
 #
 #################################################################################
 
-from ObjectList     import ObjectList
-from Resource       import Resource
+from .ObjectList     import ObjectList
+from .Resource       import Resource
 from ...Template    import Template
 
 # class Group

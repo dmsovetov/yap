@@ -24,17 +24,17 @@
 #
 #################################################################################
 
-import  ID
+from . import  ID
 import  xml.etree.ElementTree as Xml
 from    xml.dom import minidom
 
-from Groups         import Group
-from Groups         import ItemGroup
-from Groups         import ProjectConfigurations
-from Groups         import PropertyGroup
-from Groups         import PropertySheets
-from Configuration  import Configuration
-from Filters        import Filters
+from .Groups         import Group
+from .Groups         import ItemGroup
+from .Groups         import ProjectConfigurations
+from .Groups         import PropertyGroup
+from .Groups         import PropertySheets
+from .Configuration  import Configuration
+from .Filters        import Filters
 
 # class Project
 class Project:

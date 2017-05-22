@@ -26,9 +26,9 @@
 
 import os
 
-from Resource       import Resource
-from Objects        import Objects
-from ObjectList     import ObjectList
+from .Resource       import Resource
+from .Objects        import Objects
+from .ObjectList     import ObjectList
 from ...Template    import Template
 
 # class Project

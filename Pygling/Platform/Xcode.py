@@ -25,7 +25,7 @@
 import os, subprocess, distutils.version, glob
 
 from collections    import namedtuple
-from Unix           import Unix
+from .Unix           import Unix
 
 # class Xcode
 class Xcode(Unix):
@@ -39,7 +39,7 @@ class Xcode(Unix):
 	# _find_library_by_name
 	def _find_library_by_name(self, library):
 		# Do an alias lookup
-		if library in self._aliases.keys():
+		if library in list(self._aliases.keys()):
 			library = self._aliases[library]
 
 		# Find a framework by name
@@ -73,7 +73,7 @@ class Xcode(Unix):
 			try:
 				return subprocess.check_output( '/usr/libexec/PlistBuddy -c "Print :{1}" "{0}"'.format( path, key ), shell=True ).strip()
 			except:
-				print 'Error: failed to parse property from', path
+				print('Error: failed to parse property from', path)
 				return None
 
 		# read_app_version
@@ -85,7 +85,7 @@ class Xcode(Unix):
 			try:
 				value = subprocess.check_output( ['xcode-select', '-p'] ).strip()
 			except:
-				print 'Error: xcode-select failed'
+				print('Error: xcode-select failed')
 				return None
 
 			return value
@@ -97,7 +97,7 @@ class Xcode(Unix):
 
 		# No SDK path found
 		if not os.path.exists(path):
-			print 'Warning: no {0} SDK found, Xcode path {1}, SDK path {2}'.format( platform, xcode, path )
+			print('Warning: no {0} SDK found, Xcode path {1}, SDK path {2}'.format( platform, xcode, path ))
 			return [ XcodeSDK(path=path, name=platform) ]
 
 		# List SDKs

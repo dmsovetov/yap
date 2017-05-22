@@ -22,8 +22,8 @@
 # SOFTWARE.
 #
 
-from Project        import Project
-from Target         import Target
-from StaticLibrary  import StaticLibrary
-from Executable     import Executable
-from Folder         import Folder
+from .Project        import Project
+from .Target         import Target
+from .StaticLibrary  import StaticLibrary
+from .Executable     import Executable
+from .Folder         import Folder
