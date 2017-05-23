@@ -27,7 +27,7 @@
 import os
 
 from collections import namedtuple
-from Folder     import Folder
+from .Folder     import Folder
 from ..Makefile import Makefile
 from ..Location import Path, PathScope
 
@@ -172,7 +172,7 @@ class Target:
 
 	# filterLibraries
 	def filterLibraries( self, filter = None ):
-		return [library for library in self._linkWith if filter == None or filter( library )]
+		return [library for library in self._linkWith if filter == None or list(filter( library ))]
 
 	# filterFolders
 	def filterFolders(self, filter = None):
@@ -180,7 +180,7 @@ class Target:
 
 	# filterPaths
 	def filterPaths( self, filter = None ):
-		return [path for path in self._paths if filter == None or filter( path )]
+		return [path for path in self._paths if filter == None or list(filter( path ))]
 
 	# sharedLibrary
 	def sharedLibrary( self ):

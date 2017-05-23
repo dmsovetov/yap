@@ -25,7 +25,7 @@
 #################################################################################
 
 from ..Generator import Generator
-from Make        import Make
+from .Make        import Make
 from ..Template  import Template
 
 # class Flash

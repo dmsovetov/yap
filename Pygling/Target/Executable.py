@@ -22,7 +22,7 @@
 # SOFTWARE.
 #
 
-from Target import Target
+from .Target import Target
 
 # class Executable
 class Executable( Target ):

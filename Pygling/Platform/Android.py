@@ -24,7 +24,7 @@
 #
 #################################################################################
 
-from Unix import Unix
+from .Unix import Unix
 
 # class Android
 class Android(Unix):

@@ -42,7 +42,7 @@ class Template:
 		if args == None:
 			return self.result
 		
-		for key, value in args.items():
+		for key, value in list(args.items()):
 			self.result = self.result.replace( '{' + key + '}', str( value ) )
 		
 		if convertLineEndings:

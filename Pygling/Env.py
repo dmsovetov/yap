@@ -35,7 +35,7 @@ class Env:
 	# set
 	def set( self, name, value ):
 		if self.has( name ) and value != None:
-			print 'Env var {0} changed to {1}'.format( name, value )
+			print('Env var {0} changed to {1}'.format( name, value ))
 
 		self.vars[name] = value
 
@@ -48,4 +48,4 @@ class Env:
 
 	# has
 	def has( self, name ):
-		return name in self.vars.keys()
+		return name in list(self.vars.keys())

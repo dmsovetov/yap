@@ -24,7 +24,7 @@
 #
 #################################################################################
 
-from Project import Project
+from .Project import Project
 
 # class WindowsProject
 class WindowsProject( Project ):

@@ -27,7 +27,7 @@
 #################################################################################
 
 import os, argparse
-from Workspace import Workspace
+from .Workspace import Workspace
 
 # class Pygling
 class Pygling:

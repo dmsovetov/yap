@@ -24,7 +24,7 @@
 
 import os
 
-from Platform import Platform
+from .Platform import Platform
 
 # class Unix
 class Unix(Platform):

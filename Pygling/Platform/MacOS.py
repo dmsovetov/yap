@@ -24,7 +24,7 @@
 #
 #################################################################################
 
-from Xcode import Xcode
+from .Xcode import Xcode
 
 # class MacOS
 class MacOS(Xcode):

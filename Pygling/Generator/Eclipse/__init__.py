@@ -24,4 +24,4 @@
 #
 #################################################################################
 
-from Android import Android
+from .Android import Android

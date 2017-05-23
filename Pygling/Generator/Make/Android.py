@@ -26,7 +26,7 @@
 
 import os, string
 
-from Make       import Make
+from .Make       import Make
 from ..Template import Template
 
 # class Android

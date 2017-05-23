@@ -28,7 +28,7 @@ import os
 import sys
 
 from ..Location import PathScope
-from Target     import Target
+from .Target     import Target
 
 sys.path.insert( 1, os.path.join( sys.path[0], '..' ) )
 
@@ -100,7 +100,7 @@ class Project( Target ):
 
 	# filterTargets
 	def filterTargets( self, filter = None ):
-		return [target for target in self._targets if filter == None or filter( target )]
+		return [target for target in self._targets if filter == None or list(filter( target ))]
 
 	# findTarget
 	def findTarget( self, name, types = None ):

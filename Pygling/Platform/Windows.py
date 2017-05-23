@@ -26,7 +26,7 @@
 
 import os, glob
 
-from Platform import Platform
+from .Platform import Platform
 
 # class Windows
 class Windows( Platform ):
@@ -82,14 +82,14 @@ class Windows( Platform ):
 
 		toolsets = dict(vs2010='v100', vs2012='v110', vs2013='v120')
 
-		if sdk in toolsets.keys():
+		if sdk in list(toolsets.keys()):
 			return toolsets[sdk]
 
 		return self.latest_toolset()
 
 	# latest_toolset
 	def latest_toolset(self):
-		commonTools = [key for key in os.environ.keys() if key.endswith('COMNTOOLS')]
+		commonTools = [key for key in list(os.environ.keys()) if key.endswith('COMNTOOLS')]
 		toolSets	= [tools.replace( 'COMNTOOLS', '' ).replace('VS', 'v') for tools in commonTools]
 		return toolSets[-1]
 

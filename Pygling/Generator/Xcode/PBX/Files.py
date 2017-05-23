@@ -26,7 +26,7 @@
 
 import os
 
-from Resource    import Resource
+from .Resource    import Resource
 from ...Template import Template
 
 # class FileReference

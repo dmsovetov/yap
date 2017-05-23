@@ -24,7 +24,7 @@
 #
 #################################################################################
 
-from Resource    import Resource
+from .Resource    import Resource
 from ...Template import Template
 
 # class BuildConfiguration
@@ -37,7 +37,7 @@ class BuildConfiguration( Resource ):
 	# addSetting
 	def addSetting( self, key, value ):
 		# Add the key if doesn't exist
-		if not key in self.settings.keys():
+		if not key in list(self.settings.keys()):
 			self.settings[key] = []
 
 		# Check for duplicates and add
@@ -52,7 +52,7 @@ class BuildConfiguration( Resource ):
 	def compileSettings( self ):
 		result = ''
 
-		for k, v in self.settings.items():
+		for k, v in list(self.settings.items()):
 			if type( v ) == list:
 				value = '(\n'
 				for i in v:

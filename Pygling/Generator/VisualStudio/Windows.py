@@ -26,8 +26,8 @@
 
 import os
 
-from VCX import Solution
-from VCX import WindowsProject
+from .VCX import Solution
+from .VCX import WindowsProject
 from ..Generator import Generator
 
 # class Windows
@@ -61,7 +61,7 @@ class Windows( Generator ):
 			project = self._projects[target.name]
 
 			for lib in self.list_libraries( target ):
-				if lib.name in self._projects.keys():
+				if lib.name in list(self._projects.keys()):
 					project.addDependency( self._projects[lib.name] )
 
 		self._solution.serialize( os.path.join( self.projectpath, self.sourceProject.name + '.sln' ) )
@@ -81,7 +81,7 @@ class Windows( Generator ):
 					else:
 						result.append(os.path.join(location.path.full, location.filename))
 			else:
-				print 'Error: unknown library type', library.type
+				print('Error: unknown library type', library.type)
 
 		return result
 

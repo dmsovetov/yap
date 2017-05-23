@@ -46,7 +46,7 @@ class VisualStudio:
 	# tools
 	@staticmethod
 	def tools():
-		return [k for k, v in os.environ.items() if k.startswith('VS') and k.endswith('COMNTOOLS')]
+		return [k for k, v in list(os.environ.items()) if k.startswith('VS') and k.endswith('COMNTOOLS')]
 
 	# solutions
 	@staticmethod

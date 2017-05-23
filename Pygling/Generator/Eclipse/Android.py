@@ -70,7 +70,7 @@ class Android( Generator ):
 		executables = self.sourceProject.filterTargets(lambda target: target.type == 'executable')
 
 		if len(executables) == 0:
-			print 'Warning: workspace does not contain any executables, the Eclipse project wont be generated'
+			print('Warning: workspace does not contain any executables, the Eclipse project wont be generated')
 			return
 
 		entryPoint  = executables[0]
@@ -109,7 +109,7 @@ class Android( Generator ):
 			Template( Android.Manifest ).compileToFile( os.path.join( self.projectpath, 'AndroidManifest.xml' ),
 		                                            { 'package': package, 'min.sdk': minsdk, 'target.sdk': targetsdk, 'activity': activity, 'name': appname } )
 		else:
-			print 'Using Android manifest file from:', manifests[0].sourcePath
+			print('Using Android manifest file from:', manifests[0].sourcePath)
 			shutil.copyfile(manifests[0].fullPath, os.path.join(self.projectpath, 'AndroidManifest.xml'))
 
 		# Classpath

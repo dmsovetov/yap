@@ -24,7 +24,7 @@
 #
 #################################################################################
 
-from Make import Make
+from .Make import Make
 
 # class HTML5
 class HTML5( Make ):

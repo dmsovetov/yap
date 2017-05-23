@@ -27,7 +27,7 @@
 import  ID, os
 import  xml.etree.ElementTree as Xml
 from    xml.dom import minidom
-from    Groups  import ItemGroup
+from    .Groups  import ItemGroup
 
 # class Filters
 class Filters:
@@ -58,7 +58,7 @@ class Filters:
 
 	# _addFolder
 	def _addFolder( self, folder ):
-		if folder.sourcePath in self._folders.keys():
+		if folder.sourcePath in list(self._folders.keys()):
 			return
 
 		if folder.parent and folder.parent.name != '':

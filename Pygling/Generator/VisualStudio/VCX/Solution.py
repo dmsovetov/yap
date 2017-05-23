@@ -26,7 +26,7 @@
 
 import ID, codecs, os
 from ...Template    import Template
-from WindowsProject import WindowsProject
+from .WindowsProject import WindowsProject
 
 # class Solution
 class Solution:

@@ -274,7 +274,7 @@ class Generator:
 			libtarget = self.findTargetByName(library.name)
 
 			if not libtarget:
-				print 'Error: unknown library', library.name
+				print('Error: unknown library', library.name)
 				continue
 
 			dependencies = dependencies + self.list_library_paths(libtarget)
